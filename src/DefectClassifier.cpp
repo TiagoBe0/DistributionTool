@@ -21,6 +21,13 @@ void DefectClassifier::buildReference(
     ref_.mean_dv = Statistics::mean(ref_dvs);
     Statistics::distanceStats(ref_dvs, ref_.mean_dv,
                                ref_.mean_dist, ref_.var_dist);
+
+    // Fit chi-distribution parameters from the reference distance distribution.
+    std::vector<double> dists;
+    dists.reserve(ref_dvs.size());
+    for (const auto& dv : ref_dvs)
+        dists.push_back(Statistics::euclidean(dv, ref_.mean_dv));
+    Statistics::fitChiParams(dists, ref_.k_chi, ref_.sigma_chi);
 }
 
 void DefectClassifier::setDefectReferences(
@@ -63,9 +70,9 @@ void DefectClassifier::classify(Frame& frame) const {
         // Primary distance metric (Eq. 5)
         atom.dist_to_ref = Statistics::euclidean(atom.dv, ref_.mean_dv);
 
-        // Defect probability  1 − P(d^i | T)
-        double p_lattice = Statistics::latticeProbability(
-            atom.dist_to_ref, ref_.mean_dist, ref_.var_dist);
+        // Defect probability  1 − P(d^i | k, σ)  using chi-distribution model
+        double p_lattice = Statistics::chiProbability(
+            atom.dist_to_ref, ref_.k_chi, ref_.sigma_chi);
         atom.defect_prob = 1.0 - p_lattice;
 
         // Primary decision

@@ -298,8 +298,11 @@ int main(int argc, char* argv[]) {
 
         clf.buildReference(ref_dvs);
         const auto& ref = clf.reference();
-        std::cout << "      q̄(T) built.  <d>=" << ref.mean_dist
-                  << "  var(d)=" << ref.var_dist << '\n';
+        std::cout << "      q̄(T) built.  <d>="
+                  << std::fixed << std::setprecision(4) << ref.mean_dist
+                  << "  σ_d=" << std::sqrt(ref.var_dist)
+                  << "  χ(k=" << std::setprecision(1) << ref.k_chi
+                  << ", σ=" << std::setprecision(4) << ref.sigma_chi << ")\n";
 
         // ══════════════════════════════════════════════════════════════════════
         // 2. DAMAGED FRAME

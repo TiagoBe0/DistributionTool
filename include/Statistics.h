@@ -34,10 +34,19 @@ public:
                                const std::vector<double>& mu,
                                const Eigen::MatrixXd&     inv_cov);
 
-    // Gaussian-model probability of being a lattice atom:
-    //   P(d | T) = exp( −(d − mean_dist)² / (2 · var_dist) )
-    // Centered on mean_dist so that a typical reference atom gives P ≈ 1.
-    static double latticeProbability(double dist, double mean_dist, double var_dist);
+    // Chi-distribution probability model (FaVaD Eq. 6):
+    //   P(d | k, σ) ∝ d^(k−2) · exp(−d²/(2σ²))
+    // Normalised to 1 at the distribution mode d_peak = σ·√(k−2)  (k > 2).
+    // k is the effective number of active DV components; σ is a scale fitted
+    // from the reference distance distribution.
+    static double chiProbability(double d, double k, double sigma);
+
+    // Fit chi-distribution parameters (k, sigma) from a set of distances
+    // using method of moments:
+    //   k     = 2·<d²>² / Var(d²)
+    //   sigma = sqrt(<d²> / k)
+    static void fitChiParams(const std::vector<double>& dists,
+                             double& k_out, double& sigma_out);
 
     // Mean and variance of ||q̃^i − q̄|| over the reference sample.
     static void distanceStats(

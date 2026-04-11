@@ -19,7 +19,12 @@ namespace DistTool {
 struct ReferenceSet {
     std::vector<double> mean_dv;           // q̄(T)
     double              mean_dist = 0.0;   // <d>  of thermalized sample
-    double              var_dist  = 0.0;   // <d²> — used in Eq. 6
+    double              var_dist  = 0.0;   // variance of distances
+
+    // Chi-distribution parameters fitted from the reference distances (FaVaD Eq. 6).
+    // k ≈ number of active DV components; σ is a scale factor.
+    double              k_chi     = 2.0;
+    double              sigma_chi = 1.0;
 
     // Optional per-defect reference DVs (may be empty)
     std::vector<double> dv_interstitial;
