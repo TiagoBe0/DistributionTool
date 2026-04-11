@@ -17,6 +17,66 @@
 using namespace DistTool;
 
 // ─────────────────────────────────────────────────────────────────────────────
+// Reference DV I/O
+// ─────────────────────────────────────────────────────────────────────────────
+
+// Load a descriptor vector from a plain-text file.
+// Format: one float per line (or space-separated); comment lines start with '#'.
+// Normalises to unit length to match our SOAP convention.
+static std::vector<double> loadDV(const std::string& path, int expected_size) {
+    std::ifstream f(path);
+    if (!f) throw std::runtime_error("Cannot open reference DV file: " + path);
+
+    std::vector<double> dv;
+    std::string line;
+    while (std::getline(f, line)) {
+        if (line.empty() || line[0] == '#') continue;
+        std::istringstream ss(line);
+        double v;
+        while (ss >> v) dv.push_back(v);
+    }
+
+    if (dv.empty())
+        throw std::runtime_error("Empty reference DV file: " + path);
+    if (expected_size > 0 && (int)dv.size() != expected_size)
+        throw std::runtime_error(
+            "DV size mismatch in " + path + ": got " +
+            std::to_string(dv.size()) + ", expected " +
+            std::to_string(expected_size));
+
+    // Normalise to unit length (consistent with SOAP normalisation)
+    double norm2 = 0.0;
+    for (double v : dv) norm2 += v * v;
+    if (norm2 > 1e-20) {
+        const double inv = 1.0 / std::sqrt(norm2);
+        for (auto& v : dv) v *= inv;
+    }
+    return dv;
+}
+
+// Write the DV of a single atom (found by id) to a text file.
+static void saveDV(const Frame& frame, int atom_id, const std::string& path) {
+    const Atom* target = nullptr;
+    for (const auto& a : frame.atoms)
+        if (a.id == atom_id) { target = &a; break; }
+    if (!target)
+        throw std::runtime_error("--save-dv: atom id " +
+                                 std::to_string(atom_id) + " not found in frame");
+    if (target->dv.empty())
+        throw std::runtime_error("--save-dv: DV not yet computed for atom " +
+                                 std::to_string(atom_id));
+
+    std::ofstream f(path);
+    if (!f) throw std::runtime_error("Cannot write DV file: " + path);
+    f << "# DV for atom id=" << atom_id
+      << "  size=" << target->dv.size() << '\n';
+    f << std::fixed << std::setprecision(10);
+    for (double v : target->dv) f << v << '\n';
+    std::cout << "  → DV saved: " << path
+              << "  (atom " << atom_id << ", " << target->dv.size() << " components)\n";
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
 // CLI helpers
 // ─────────────────────────────────────────────────────────────────────────────
 
@@ -44,6 +104,12 @@ static void printUsage(const char* prog) {
         "  --threshold T    Distance threshold for defects (default: 0.15)\n"
         "  --vac-dist  D    Vacancy detection distance [Å] (default: r_cut×0.4)\n"
         "  --grid-spacing G Vacancy grid spacing [Å]       (default: 0.5)\n\n"
+        "Reference DV files (secondary classification):\n"
+        "  --ref-sia  FILE  DV file for self-interstitial atom\n"
+        "  --ref-antv FILE  DV file for atom-next-to-vacancy\n"
+        "  --ref-typea FILE DV file for type-A (PCA-discovered) defect\n"
+        "  --save-dv ID FILE  Save DV of atom ID (from damaged frame) to FILE\n"
+        "                     Use this to build reference DV files from known sites\n\n"
         "Output options:\n"
         "  --output   FILE  Main output CSV file         (default: output.csv)\n"
         "  --pca      [N]   Run PCA with N components    (default: 2)\n"
@@ -194,6 +260,9 @@ int main(int argc, char* argv[]) {
     double threshold     = 0.15;
     double vac_dist      = -1.0;   // -1 = auto (r_cut × 0.4)
     double grid_spacing  = 0.5;    // Å — vacancy detection grid spacing
+    std::string sia_file, antv_file, typea_file;
+    int         save_dv_id   = -1;
+    std::string save_dv_path;
     std::string out_file = "output.csv";
     bool   do_pca  = false;
     int    pca_nc  = 2;
@@ -228,6 +297,13 @@ int main(int argc, char* argv[]) {
         else if (a == "--threshold")    threshold    = nextDbl();
         else if (a == "--vac-dist")     vac_dist     = nextDbl();
         else if (a == "--grid-spacing") grid_spacing = nextDbl();
+        else if (a == "--ref-sia")      sia_file     = nextStr();
+        else if (a == "--ref-antv")     antv_file    = nextStr();
+        else if (a == "--ref-typea")    typea_file   = nextStr();
+        else if (a == "--save-dv") {
+            save_dv_id   = nextInt();
+            save_dv_path = nextStr();
+        }
         else if (a == "--output")    out_file     = nextStr();
         else if (a == "--pca") {
             do_pca = true;
@@ -304,6 +380,26 @@ int main(int argc, char* argv[]) {
                   << "  χ(k=" << std::setprecision(1) << ref.k_chi
                   << ", σ=" << std::setprecision(4) << ref.sigma_chi << ")\n";
 
+        // Load optional per-defect reference DVs for secondary classification
+        {
+            const int dvsz = soap.dvSize();
+            std::vector<double> dv_sia, dv_antv, dv_typea;
+            if (!sia_file.empty()) {
+                dv_sia = loadDV(sia_file, dvsz);
+                std::cout << "      SIA reference loaded:   " << sia_file << '\n';
+            }
+            if (!antv_file.empty()) {
+                dv_antv = loadDV(antv_file, dvsz);
+                std::cout << "      ANtV reference loaded:  " << antv_file << '\n';
+            }
+            if (!typea_file.empty()) {
+                dv_typea = loadDV(typea_file, dvsz);
+                std::cout << "      TypeA reference loaded: " << typea_file << '\n';
+            }
+            if (!dv_sia.empty() || !dv_antv.empty() || !dv_typea.empty())
+                clf.setDefectReferences(dv_sia, dv_antv, dv_typea);
+        }
+
         // ══════════════════════════════════════════════════════════════════════
         // 2. DAMAGED FRAME
         // ══════════════════════════════════════════════════════════════════════
@@ -318,6 +414,10 @@ int main(int argc, char* argv[]) {
         desc.computeAll(dmg_frame);
         std::cout << "      Done in " << std::fixed << std::setprecision(2)
                   << timerSec(t0) << " s\n";
+
+        // Optional: save the DV of a specific atom for use as a reference later
+        if (save_dv_id >= 0)
+            saveDV(dmg_frame, save_dv_id, save_dv_path);
 
         // ══════════════════════════════════════════════════════════════════════
         // 3. CLASSIFY
