@@ -518,3 +518,4 @@ Should be roughly half the nearest-neighbour distance. If the grid correctly rec
 3. **Bartók, Kondor & Csányi** (2013). *On representing chemical environments.* Phys. Rev. B **87**, 184115. https://doi.org/10.1103/PhysRevB.87.184115
 
 4. **Plimpton** (1995). *Fast Parallel Algorithms for Short-Range Molecular Dynamics.* J. Comp. Phys. **117**, 1–19. (LAMMPS)
+# DistributionTool
