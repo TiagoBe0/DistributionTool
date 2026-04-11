@@ -78,7 +78,50 @@ void DefectClassifier::classify(Frame& frame) const {
     }
 }
 
-// ── Vacancy identification (Appendix A of the paper) ─────────────────────────
+// ── Sampling-grid vacancy detection (FaVaD §2.3.2) ───────────────────────────
+// Creates a Nx × Ny × Nz uniform grid within the simulation box.
+// Each grid point is queried against the damaged frame's cell list.
+// Points farther than dist_threshold from every atom are collected as
+// vacancy/void positions.
+std::vector<std::array<double,3>> DefectClassifier::findVacanciesGrid(
+    const Frame& damaged,
+    double grid_spacing,
+    double dist_threshold) const
+{
+    if (grid_spacing   <= 0.0) throw std::invalid_argument("grid_spacing must be > 0");
+    if (dist_threshold <= 0.0) throw std::invalid_argument("dist_threshold must be > 0");
+
+    const SimBox& box = damaged.box;
+    const double Lx = box.lx(), Ly = box.ly(), Lz = box.lz();
+
+    const int nx = std::max(1, static_cast<int>(std::ceil(Lx / grid_spacing)));
+    const int ny = std::max(1, static_cast<int>(std::ceil(Ly / grid_spacing)));
+    const int nz = std::max(1, static_cast<int>(std::ceil(Lz / grid_spacing)));
+
+    const double dx = Lx / nx;
+    const double dy = Ly / ny;
+    const double dz = Lz / nz;
+    const double dt2 = dist_threshold * dist_threshold;
+
+    CellList cl;
+    cl.build(damaged, dist_threshold);
+
+    std::vector<std::array<double,3>> vacancies;
+
+    for (int ix = 0; ix < nx; ++ix)
+    for (int iy = 0; iy < ny; ++iy)
+    for (int iz = 0; iz < nz; ++iz) {
+        const double x = box.xb[0] + (ix + 0.5) * dx;
+        const double y = box.yb[0] + (iy + 0.5) * dy;
+        const double z = box.zb[0] + (iz + 0.5) * dz;
+        if (cl.nearestDist2FromPoint(x, y, z) > dt2)
+            vacancies.push_back({x, y, z});
+    }
+
+    return vacancies;
+}
+
+// ── Legacy: vacancy identification from pristine lattice positions ────────────
 // Builds a cell list from the damaged frame for O(N) nearest-site lookup.
 // Returns pristine lattice positions whose nearest atom in `damaged` exceeds
 // `dist_threshold`.

@@ -61,9 +61,18 @@ public:
     // and defect_type on each atom.
     void classify(Frame& frame) const;
 
-    // Identify vacant lattice sites.
-    // Returns positions (x,y,z) of reference lattice sites whose nearest
-    // neighbour in `damaged` is farther than `dist_threshold` [Å].
+    // Sampling-grid vacancy detection (method of FaVaD, §2.3.2).
+    // Places a uniform grid of points inside the simulation box.
+    // Grid points whose nearest atom in `damaged` is farther than
+    // dist_threshold [Å] are returned as vacancy/void positions.
+    // Does NOT require a pristine reference frame.
+    std::vector<std::array<double,3>> findVacanciesGrid(
+        const Frame& damaged,
+        double grid_spacing,       // grid point separation [Å]
+        double dist_threshold) const;
+
+    // Legacy: identify vacant sites from pristine lattice positions.
+    // Kept for comparison; findVacanciesGrid is preferred.
     std::vector<std::array<double,3>> findVacancies(
         const Frame& pristine,
         const Frame& damaged,

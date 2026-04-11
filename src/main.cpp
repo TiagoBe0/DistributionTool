@@ -42,7 +42,8 @@ static void printUsage(const char* prog) {
         "  --sigma  S       Gaussian width [Å] (-1=auto) (default: -1)\n\n"
         "Classification options:\n"
         "  --threshold T    Distance threshold for defects (default: 0.15)\n"
-        "  --vac-dist  D    Vacancy detection distance [Å] (default: a/2)\n\n"
+        "  --vac-dist  D    Vacancy detection distance [Å] (default: r_cut×0.4)\n"
+        "  --grid-spacing G Vacancy grid spacing [Å]       (default: 0.5)\n\n"
         "Output options:\n"
         "  --output   FILE  Main output CSV file         (default: output.csv)\n"
         "  --pca      [N]   Run PCA with N components    (default: 2)\n"
@@ -149,25 +150,30 @@ static void writeHistogram(
 // ─────────────────────────────────────────────────────────────────────────────
 
 static void printSummary(const Frame& frame,
-                         const std::vector<std::array<double,3>>& vacs) {
+                         const std::vector<std::array<double,3>>& vac_pts,
+                         double grid_spacing) {
     int cnt[5] = {0,0,0,0,0};
     for (const auto& a : frame.atoms)
         ++cnt[static_cast<int>(a.defect_type)];
 
+    const double vac_vol = vac_pts.size() * grid_spacing * grid_spacing * grid_spacing;
+
     std::cout << "\n┌─── Defect Summary ───────────────────────────────┐\n"
-              << "│  Total atoms        : " << std::setw(6) << frame.size()    << "                     │\n"
-              << "│  Lattice            : " << std::setw(6) << cnt[0]           << "                     │\n"
-              << "│  Interstitials      : " << std::setw(6) << cnt[1]           << "                     │\n"
-              << "│  Vacancy-adjacent   : " << std::setw(6) << cnt[2]           << "                     │\n"
-              << "│  Type-A defects     : " << std::setw(6) << cnt[3]           << "                     │\n"
-              << "│  Unknown (distorted): " << std::setw(6) << cnt[4]           << "                     │\n"
-              << "│  Vacant sites       : " << std::setw(6) << vacs.size()      << "                     │\n"
+              << "│  Total atoms        : " << std::setw(6) << frame.size() << "                     │\n"
+              << "│  Lattice            : " << std::setw(6) << cnt[0]        << "                     │\n"
+              << "│  Interstitials      : " << std::setw(6) << cnt[1]        << "                     │\n"
+              << "│  Vacancy-adjacent   : " << std::setw(6) << cnt[2]        << "                     │\n"
+              << "│  Type-A defects     : " << std::setw(6) << cnt[3]        << "                     │\n"
+              << "│  Unknown (distorted): " << std::setw(6) << cnt[4]        << "                     │\n"
+              << "│  Vacant grid pts    : " << std::setw(6) << vac_pts.size()<< "                     │\n"
+              << "│  Void volume (est.) : " << std::setw(6) << std::fixed
+                                            << std::setprecision(1) << vac_vol
+                                            << " Å³                 │\n"
               << "└──────────────────────────────────────────────────┘\n";
 
-    // Frenkel pairs = min(interstitials, vacancies) — rough estimate
-    int frenkel = std::min(cnt[1], static_cast<int>(vacs.size()));
-    if (frenkel > 0)
-        std::cout << "  Estimated Frenkel pairs: ~" << frenkel << '\n';
+    // Rough Frenkel pair estimate: interstitials only (vacancies via grid)
+    if (cnt[1] > 0)
+        std::cout << "  Interstitial atoms: " << cnt[1] << '\n';
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -185,8 +191,9 @@ int main(int argc, char* argv[]) {
     soap.sigma     = -1.0;
     soap.normalize = true;
 
-    double threshold  = 0.15;
-    double vac_dist   = -1.0;    // -1 = auto (half nearest-neighbour distance)
+    double threshold     = 0.15;
+    double vac_dist      = -1.0;   // -1 = auto (r_cut × 0.4)
+    double grid_spacing  = 0.5;    // Å — vacancy detection grid spacing
     std::string out_file = "output.csv";
     bool   do_pca  = false;
     int    pca_nc  = 2;
@@ -218,8 +225,9 @@ int main(int argc, char* argv[]) {
         else if (a == "--l-max")     soap.l_max   = nextInt();
         else if (a == "--r-cut")     soap.r_cut   = nextDbl();
         else if (a == "--sigma")     soap.sigma   = nextDbl();
-        else if (a == "--threshold") threshold    = nextDbl();
-        else if (a == "--vac-dist")  vac_dist     = nextDbl();
+        else if (a == "--threshold")    threshold    = nextDbl();
+        else if (a == "--vac-dist")     vac_dist     = nextDbl();
+        else if (a == "--grid-spacing") grid_spacing = nextDbl();
         else if (a == "--output")    out_file     = nextStr();
         else if (a == "--pca") {
             do_pca = true;
@@ -250,7 +258,8 @@ int main(int argc, char* argv[]) {
               << "  l_max="       << soap.l_max
               << "  r_cut="       << soap.r_cut << " Å"
               << "  DV size="     << soap.dvSize() << "\n"
-              << "  Threshold=" << threshold << "\n\n";
+              << "  Threshold=" << threshold
+              << "  grid_spacing=" << grid_spacing << " Å\n\n";
 
     SOAPDescriptor desc(soap);
     DefectClassifier clf(threshold);
@@ -313,12 +322,14 @@ int main(int argc, char* argv[]) {
         std::cout << "\n[4/4] Classifying defects…\n";
         clf.classify(dmg_frame);
 
-        // Vacancy detection
+        // Vacancy detection via sampling grid (FaVaD §2.3.2)
         if (vac_dist < 0.0)
             vac_dist = soap.r_cut * 0.4;   // default: ~40 % of cutoff radius
-        auto vacancies = clf.findVacancies(ref_frame, dmg_frame, vac_dist);
+        std::cout << "      Vacancy grid: " << std::fixed << std::setprecision(2)
+                  << grid_spacing << " Å spacing,  threshold " << vac_dist << " Å\n";
+        auto vacancies = clf.findVacanciesGrid(dmg_frame, grid_spacing, vac_dist);
 
-        printSummary(dmg_frame, vacancies);
+        printSummary(dmg_frame, vacancies, grid_spacing);
 
         // ══════════════════════════════════════════════════════════════════════
         // 4. OUTPUTS
