@@ -1,0 +1,44 @@
+╔══════════════════════════════════════════════════════════════╗
+║  DistributionTool — Defect Detection in Crystalline Solids  ║
+║  Based on: Domínguez-Gutiérrez & von Toussaint (2019)       ║
+╚══════════════════════════════════════════════════════════════╝
+
+Configuration:
+  SOAP  n_max=9  l_max=9  r_cut=5 Å  DV size=450
+  Threshold=0.15  grid_spacing=1 Å
+
+[1/4] Reading reference frame: dump-finalCool.0
+      1024000 atoms, timestep 0
+  [!] Estimated DV memory: 3.7 GB — consider smaller --n-max/--l-max if memory is tight
+[2/4] Computing SOAP descriptors for reference frame…
+      Done in 2.78 s
+      q̄(T) built.  <d>=0.0402  σ_d=0.0194  χ(k=2.0, σ=0.0315)
+
+[3/4] Reading damaged frame: dump-finalCool.160000
+      1024000 atoms, timestep 160000
+      Computing SOAP descriptors for damaged frame…
+      Done in 2.55 s
+
+[4/4] Classifying defects…
+      Vacancy grid: 1.00 Å spacing,  threshold 2.00 Å
+
+┌─── Defect Summary ───────────────────────────────┐
+│  Total atoms        : 1024000                     │
+│  Lattice            : 1003371                     │
+│  Interstitials      :      0                     │
+│  Vacancy-adjacent   :      0                     │
+│  Type-A defects     :      0                     │
+│  Unknown (distorted):  20629                     │
+│  Vacant grid pts    :    252                     │
+│  Void volume (est.) :  252.0 Å³                 │
+└──────────────────────────────────────────────────┘
+
+Writing outputs…
+  → atom CSV written: output_hea.csv
+  → vacancy CSV written: vacancies_output_hea.csv  (252 sites)
+  → histogram CSV written: hist_output_hea.csv
+  Running PCA (3 components)…
+  Explained variance:  PC1=53.4%  PC2=31.9%  PC3=8.6%  (cumulative 93.8%)
+  → PCA CSV written: pca_output_hea.csv
+
+Done.

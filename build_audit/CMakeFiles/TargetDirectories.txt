@@ -1,0 +1,7 @@
+/home/santi/Documentos/DistributionTool/build_audit/CMakeFiles/distool.dir
+/home/santi/Documentos/DistributionTool/build_audit/CMakeFiles/edit_cache.dir
+/home/santi/Documentos/DistributionTool/build_audit/CMakeFiles/rebuild_cache.dir
+/home/santi/Documentos/DistributionTool/build_audit/CMakeFiles/list_install_components.dir
+/home/santi/Documentos/DistributionTool/build_audit/CMakeFiles/install.dir
+/home/santi/Documentos/DistributionTool/build_audit/CMakeFiles/install/local.dir
+/home/santi/Documentos/DistributionTool/build_audit/CMakeFiles/install/strip.dir

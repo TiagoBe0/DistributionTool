@@ -1,0 +1,32 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(wc -l /home/santi/Documentos/DistributionTool/dump.nanoparticula.*)",
+      "Bash(wc -l /home/santi/Documentos/DistributionTool/dump-finalCool.*)",
+      "Bash(ls /home/santi/Documentos/DistributionTool/*.csv /home/santi/Documentos/DistributionTool/*.pdf /home/santi/Documentos/DistributionTool/*.png)",
+      "Bash(./build/distool --n-max 9 --l-max 9 --r-cut 3.5 --sigma -1 --threshold 0.15 --grid-spacing 200.0 --output output_nano.csv --pca 3 --hist 80 dump.nanoparticula.0 dump.nanoparticula.8000)",
+      "Bash(awk 'NR>1 && $1!=\"#\" {print $2}' /home/santi/Documentos/DistributionTool/output_nano.csv)",
+      "Bash(awk 'NR>1 && $1!=\"#\" {if\\($8==\"Unknown\"\\) print $1}' /home/santi/Documentos/DistributionTool/output_nano.csv)",
+      "Bash(awk 'NR>1 && $1!=\"#\" {if\\($8==\"Unknown\"\\) print $6}' /home/santi/Documentos/DistributionTool/output_nano.csv)",
+      "Bash(awk 'NR==1{min=$1} END{print \"min:\"min, \"max:\"$1}')",
+      "Bash(awk 'NR>1 && $1!=\"#\" {if\\($8==\"Lattice\"\\) print $6}' /home/santi/Documentos/DistributionTool/output_nano.csv)",
+      "Bash(awk 'NR>9 {print $1, $2, $3, $4, $5, $6}' /home/santi/Documentos/DistributionTool/dump.nanoparticula.interstitial)",
+      "Bash(awk 'NR>9 {print $1, $2, $3, $4, $5, $6}' /home/santi/Documentos/DistributionTool/dump.nanoparticula.vacancias)",
+      "Bash(awk 'NR==4' /home/santi/Documentos/DistributionTool/dump.nanoparticula.0)",
+      "Bash(echo \"Reference atoms: $\\(awk 'NR==4' /home/santi/Documentos/DistributionTool/dump.nanoparticula.0\\)\")",
+      "Bash(awk 'NR==4' /home/santi/Documentos/DistributionTool/dump.nanoparticula.vacancias)",
+      "Bash(echo \"WS Vacancies: $\\(awk 'NR==4' /home/santi/Documentos/DistributionTool/dump.nanoparticula.vacancias\\)\")",
+      "Bash(awk 'NR==4' /home/santi/Documentos/DistributionTool/dump.nanoparticula.interstitial)",
+      "Bash(awk 'NR>9 {print $2}' /home/santi/Documentos/DistributionTool/dump.nanoparticula.interstitial)",
+      "Bash(awk '{print $6, $7, $8}')",
+      "Read(//tmp/**)",
+      "Bash(awk '{count[$8]++; sum+=$6; n++} END{for\\(t in count\\) print t, count[t]; print \"mean_dist:\", sum/n}')",
+      "Bash(awk 'NR==FNR{ids[$1]=1; next} ids[$1]' /tmp/ws_vac_ids.txt /tmp/soap_out.txt)",
+      "Bash(python3 analisis_nanoparticula.py)",
+      "Bash(pip install:*)"
+    ],
+    "additionalDirectories": [
+      "/home/santi/Documentos/DistributionTool"
+    ]
+  }
+}
