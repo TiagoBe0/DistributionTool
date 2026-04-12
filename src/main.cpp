@@ -212,6 +212,18 @@ static void writeHistogram(
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
+// Path helpers
+// ─────────────────────────────────────────────────────────────────────────────
+
+// Prepend `prefix` to the filename portion of `path`, keeping the directory.
+// E.g. prefixedPath("vacancies_", "/tmp/out.csv") → "/tmp/vacancies_out.csv"
+static std::string prefixedPath(const std::string& prefix, const std::string& path) {
+    auto sep = path.find_last_of("/\\");
+    if (sep == std::string::npos) return prefix + path;
+    return path.substr(0, sep + 1) + prefix + path.substr(sep + 1);
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
 // Summary
 // ─────────────────────────────────────────────────────────────────────────────
 
@@ -442,8 +454,7 @@ int main(int argc, char* argv[]) {
 
         // Vacancy file
         if (!vacancies.empty()) {
-            std::string vac_file = "vacancies_" + out_file;
-            writeVacancyCSV(vacancies, vac_file);
+            writeVacancyCSV(vacancies, prefixedPath("vacancies_", out_file));
         }
 
         // Distance histogram (Fig. 4b equivalent)
@@ -452,7 +463,7 @@ int main(int argc, char* argv[]) {
             dists.reserve(dmg_frame.size());
             for (const auto& a : dmg_frame.atoms)
                 dists.push_back(a.dist_to_ref);
-            writeHistogram(dists, hist_bins, "hist_" + out_file);
+            writeHistogram(dists, hist_bins, prefixedPath("hist_", out_file));
         }
 
         // PCA (Fig. 7 equivalent)
@@ -480,7 +491,7 @@ int main(int argc, char* argv[]) {
             for (const auto& a : dmg_frame.atoms) dmg_dvs.push_back(a.dv);
 
             auto proj = pca.transform(dmg_dvs, pca_nc);
-            writePCAcsv(proj, dmg_frame, "pca_" + out_file);
+            writePCAcsv(proj, dmg_frame, prefixedPath("pca_", out_file));
         }
 
     } catch (const std::exception& e) {
