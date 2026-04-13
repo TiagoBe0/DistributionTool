@@ -153,8 +153,10 @@ def load_hist_csv(path: Path) -> pd.DataFrame:
 
 
 def load_vacancies_csv(path: Path) -> pd.DataFrame:
-    cols = ['x', 'y', 'z']
-    return pd.read_csv(path, sep=r'\s+', comment='#', header=None, names=cols)
+    df = pd.read_csv(path, sep=r'\s+', comment='#', header=None)
+    col_names = ['x', 'y', 'z', 'd_near_max', 'n_grid_pts']
+    df.columns = col_names[:len(df.columns)]   # safe for old 3-col and new 5-col files
+    return df
 
 
 # ─── Utilidades gráficas ──────────────────────────────────────────────────────
@@ -543,11 +545,11 @@ def plot_hist(df: pd.DataFrame, label: str, threshold: float,
 
 def plot_vacancies(df: pd.DataFrame, label: str, outdir: Path, stem: str):
     """
-    4-panel figure para vacancies_output*.csv:
-      [0,0] Proyección XY
-      [0,1] Proyección XZ
-      [1,0] Proyección YZ
-      [1,1] Distribución espacial 1D de x, y, z
+    4-panel figure para vacancies_output*.csv (post-clustering):
+      [0,0] Proyección XY  — color = d_near_max, tamaño ∝ n_grid_pts
+      [0,1] Proyección XZ  — ídem
+      [1,0] Proyección YZ  — ídem
+      [1,1] Distribución de vacancies: histograma de n_grid_pts por cluster
     """
     set_publication_style()
 
@@ -556,20 +558,41 @@ def plot_vacancies(df: pd.DataFrame, label: str, outdir: Path, stem: str):
     Ly = y.max() - y.min()
     Lz = z.max() - z.min()
 
+    # Columnas opcionales (archivos viejos sin clustering no las tienen)
+    has_cluster_cols = ('d_near_max' in df.columns and 'n_grid_pts' in df.columns
+                        and df['d_near_max'].notna().any())
+
+    if has_cluster_cols:
+        d_near = df['d_near_max'].values
+        n_pts  = df['n_grid_pts'].values
+        # Tamaño de marcador: escalar entre 8 y 80 según raíz de n_grid_pts
+        s_raw  = np.sqrt(n_pts.astype(float))
+        s_min, s_max = s_raw.min(), s_raw.max()
+        s_norm = (s_raw - s_min) / (s_max - s_min + 1e-14)
+        marker_size = 8 + 72 * s_norm
+        color_vals  = d_near
+        cbar_label  = 'd_near_max (Å)'
+        cmap        = 'hot_r'
+    else:
+        # Fallback para archivos sin columnas de clustering
+        def norm01(v):
+            vmin, vmax = v.min(), v.max()
+            return (v - vmin) / (vmax - vmin + 1e-14)
+        color_vals  = norm01(z)
+        marker_size = 4
+        cbar_label  = 'z (normalizado)'
+        cmap        = 'viridis'
+        n_pts       = None
+
     fig = plt.figure(figsize=(11, 9))
     gs = gridspec.GridSpec(2, 2, figure=fig, hspace=0.44, wspace=0.38)
 
-    # Normalización para coloreado por la tercera coordenada
-    def norm01(v):
-        vmin, vmax = v.min(), v.max()
-        return (v - vmin) / (vmax - vmin + 1e-14)
-
-    scatter_kw = dict(s=4, alpha=0.65, rasterized=True)
+    scatter_kw = dict(alpha=0.75, rasterized=True)
 
     # ── XY ────────────────────────────────────────────────────────────────────
     ax0 = fig.add_subplot(gs[0, 0])
-    sc0 = ax0.scatter(x, y, c=norm01(z), cmap='viridis', **scatter_kw)
-    add_colorbar(fig, ax0, sc0, label='z (normalizado)')
+    sc0 = ax0.scatter(x, y, c=color_vals, s=marker_size, cmap=cmap, **scatter_kw)
+    add_colorbar(fig, ax0, sc0, label=cbar_label)
     ax0.set_xlabel('x (Å)')
     ax0.set_ylabel('y (Å)')
     ax0.set_title('Proyección XY')
@@ -577,8 +600,8 @@ def plot_vacancies(df: pd.DataFrame, label: str, outdir: Path, stem: str):
 
     # ── XZ ────────────────────────────────────────────────────────────────────
     ax1 = fig.add_subplot(gs[0, 1])
-    sc1 = ax1.scatter(x, z, c=norm01(y), cmap='plasma', **scatter_kw)
-    add_colorbar(fig, ax1, sc1, label='y (normalizado)')
+    sc1 = ax1.scatter(x, z, c=color_vals, s=marker_size, cmap=cmap, **scatter_kw)
+    add_colorbar(fig, ax1, sc1, label=cbar_label)
     ax1.set_xlabel('x (Å)')
     ax1.set_ylabel('z (Å)')
     ax1.set_title('Proyección XZ')
@@ -586,30 +609,69 @@ def plot_vacancies(df: pd.DataFrame, label: str, outdir: Path, stem: str):
 
     # ── YZ ────────────────────────────────────────────────────────────────────
     ax2 = fig.add_subplot(gs[1, 0])
-    sc2 = ax2.scatter(y, z, c=norm01(x), cmap='cividis', **scatter_kw)
-    add_colorbar(fig, ax2, sc2, label='x (normalizado)')
+    sc2 = ax2.scatter(y, z, c=color_vals, s=marker_size, cmap=cmap, **scatter_kw)
+    add_colorbar(fig, ax2, sc2, label=cbar_label)
     ax2.set_xlabel('y (Å)')
     ax2.set_ylabel('z (Å)')
     ax2.set_title('Proyección YZ')
     ax2.set_aspect('equal', adjustable='box')
 
-    # ── Distribuciones 1D ─────────────────────────────────────────────────────
+    # ── Distribución de tamaño de clusters / vacancies ────────────────────────
     ax3 = fig.add_subplot(gs[1, 1])
-    nbins = 60
-    palette = {'x': '#1a9641', 'y': '#2166ac', 'z': '#d73027'}
-    for coord_name, vals in [('x', x), ('y', y), ('z', z)]:
-        counts, edges = np.histogram(vals, bins=nbins)
-        centers = 0.5 * (edges[:-1] + edges[1:])
-        norm_counts = counts / counts.max()
-        ax3.fill_between(centers, 0, norm_counts,
-                         alpha=0.25, color=palette[coord_name], step='mid')
-        ax3.step(centers, norm_counts, color=palette[coord_name],
-                 lw=1.2, where='mid',
-                 label=f'{coord_name}  ({vals.min():.1f}–{vals.max():.1f} Å)')
-    ax3.set_xlabel('Coordenada (Å)')
-    ax3.set_ylabel('Densidad normalizada')
-    ax3.set_title('Distribución espacial de vacancias')
-    ax3.legend(fontsize=7.5, handlelength=1.4)
+    if has_cluster_cols and n_pts is not None:
+        # Bins 1–100 individuales; todo lo que supere 100 se acumula en el
+        # último bin (posición 101 en el eje, etiquetado "100+").
+        OVF = 101   # posición del bin de overflow en el eje x
+        n_clipped = np.where(n_pts > 100, OVF, n_pts)
+        bins = np.arange(0.5, OVF + 1.5, 1)   # [0.5, 1.5, …, 101.5] → 101 bins
+
+        ax3.hist(n_clipped, bins=bins, color='#2166ac', edgecolor='white',
+                 linewidth=0.3, rasterized=True)
+
+        # Etiquetas del eje x: cada 10 unidades + "100+" al final
+        tick_pos    = list(range(10, 101, 10)) + [OVF]
+        tick_labels = [str(t) for t in range(10, 101, 10)] + ['100+']
+        ax3.set_xticks(tick_pos)
+        ax3.set_xticklabels(tick_labels, fontsize=7)
+        ax3.set_xlim(0.5, OVF + 0.5)
+
+        # Separador visual entre la escala regular y el bin de overflow
+        ax3.axvline(OVF - 0.5, color='#888888', lw=0.8, ls=':')
+
+        # Anotar cuántas vacancias cayeron en overflow si las hay
+        overflow_n = int((n_pts > 100).sum())
+        if overflow_n > 0:
+            ymax = ax3.get_ylim()[1]
+            ax3.text(OVF, overflow_n * 1.02, str(overflow_n),
+                     ha='center', va='bottom', fontsize=7, color='#d73027')
+
+        # Línea de mediana (solo si está en el rango regular)
+        med = float(np.median(n_pts))
+        if med <= 100:
+            ax3.axvline(med, color='#d73027', lw=1.2, ls='--',
+                        label=f'mediana = {med:.0f}')
+            ax3.legend(fontsize=7.5)
+
+        ax3.set_xlabel('Puntos de grilla por vacancia (n_grid_pts)')
+        ax3.set_ylabel('Número de vacancias')
+        ax3.set_title('Distribución de vacancias por tamaño')
+    else:
+        # Fallback: distribuciones 1D por coordenada
+        nbins = 60
+        palette = {'x': '#1a9641', 'y': '#2166ac', 'z': '#d73027'}
+        for coord_name, vals in [('x', x), ('y', y), ('z', z)]:
+            counts, edges = np.histogram(vals, bins=nbins)
+            centers = 0.5 * (edges[:-1] + edges[1:])
+            norm_counts = counts / counts.max()
+            ax3.fill_between(centers, 0, norm_counts,
+                             alpha=0.25, color=palette[coord_name], step='mid')
+            ax3.step(centers, norm_counts, color=palette[coord_name],
+                     lw=1.2, where='mid',
+                     label=f'{coord_name}  ({vals.min():.1f}–{vals.max():.1f} Å)')
+        ax3.set_xlabel('Coordenada (Å)')
+        ax3.set_ylabel('Densidad normalizada')
+        ax3.set_title('Distribución espacial de vacancias')
+        ax3.legend(fontsize=7.5, handlelength=1.4)
 
     vol = Lx * Ly * Lz
     density = len(df) / vol if vol > 0 else 0.0

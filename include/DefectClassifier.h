@@ -34,13 +34,27 @@ struct ReferenceSet {
     bool isSet() const { return !mean_dv.empty(); }
 };
 
+/// One empty-space grid point found during vacancy detection.
+struct VacancyPoint {
+    std::array<double,3> pos;
+    double d_near;   ///< distance to nearest atom [Å]
+};
+
+/// One physical vacancy (or void cluster) produced by merging nearby grid points.
+struct VacancyCluster {
+    std::array<double,3> center;     ///< position of the grid point with max d_near
+    double               d_near_max; ///< peak void depth in this cluster [Å]
+    int                  n_pts;      ///< number of grid points merged into this cluster
+};
+
 /**
  * DefectClassifier
  *
  * Pipeline:
- *   1. buildReference()  — compute q̄(T) from a pristine/thermalized frame.
- *   2. classify()        — label every atom in a damaged frame.
- *   3. findVacancies()   — locate vacant lattice sites via k-d brute-force.
+ *   1. buildReference()        — compute q̄(T) from a pristine/thermalized frame.
+ *   2. classify()              — label every atom in a damaged frame.
+ *   3. findVacanciesGrid()     — locate vacant grid points (FaVaD §2.3.2).
+ *   4. clusterVacancyPoints()  — merge grid points into individual vacancy events.
  *
  * Classification rule (§2.3 of the paper):
  *   d^i = ||q̃^i − q̄(T)||
@@ -69,12 +83,24 @@ public:
     // Sampling-grid vacancy detection (method of FaVaD, §2.3.2).
     // Places a uniform grid of points inside the simulation box.
     // Grid points whose nearest atom in `damaged` is farther than
-    // dist_threshold [Å] are returned as vacancy/void positions.
-    // Does NOT require a pristine reference frame.
-    std::vector<std::array<double,3>> findVacanciesGrid(
+    // dist_threshold [Å] are returned as VacancyPoint objects that include
+    // the actual d_near value.  Does NOT require a pristine reference frame.
+    std::vector<VacancyPoint> findVacanciesGrid(
         const Frame& damaged,
         double grid_spacing,       // grid point separation [Å]
         double dist_threshold) const;
+
+    // Greedy clustering of vacancy grid points into individual vacancy events
+    // (FaVaD §2.3.2 iterative algorithm).
+    // Seeds clusters from the grid point with the largest d_near, absorbs all
+    // unassigned points within r_cluster [Å], then repeats until done.
+    // box is used to apply minimum-image PBC when comparing grid point distances;
+    // pass box.periodic = {false,false,false} to disable PBC (e.g. nanoparticles).
+    // Returns one VacancyCluster per physical vacancy/void detected.
+    std::vector<VacancyCluster> clusterVacancyPoints(
+        const std::vector<VacancyPoint>& pts,
+        double r_cluster,
+        const SimBox& box) const;
 
     // Legacy: identify vacant sites from pristine lattice positions.
     // Kept for comparison; findVacanciesGrid is preferred.

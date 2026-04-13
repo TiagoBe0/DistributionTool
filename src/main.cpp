@@ -101,9 +101,11 @@ static void printUsage(const char* prog) {
         "  --r-cut  R       Cutoff radius [Å]            (default: 5.0)\n"
         "  --sigma  S       Gaussian width [Å] (-1=auto) (default: -1)\n\n"
         "Classification options:\n"
-        "  --threshold T    Distance threshold for defects (default: 0.15)\n"
-        "  --vac-dist  D    Vacancy detection distance [Å] (default: r_cut×0.4)\n"
-        "  --grid-spacing G Vacancy grid spacing [Å]       (default: 0.5)\n\n"
+        "  --threshold T          Distance threshold for defects (default: 0.15)\n"
+        "  --vac-dist  D          Vacancy detection distance [Å] (default: r_cut×0.4)\n"
+        "  --grid-spacing G       Vacancy grid spacing [Å]       (default: 0.5)\n"
+        "  --vac-cluster-radius R Cluster radius for vacancy merging [Å]\n"
+        "                         (default: vac-dist; use FaVaD greedy algorithm)\n\n"
         "Reference DV files (secondary classification):\n"
         "  --ref-sia  FILE  DV file for self-interstitial atom\n"
         "  --ref-antv FILE  DV file for atom-next-to-vacancy\n"
@@ -172,16 +174,20 @@ static void writePCAcsv(
 }
 
 static void writeVacancyCSV(
-    const std::vector<std::array<double,3>>& vacs,
+    const std::vector<VacancyCluster>& clusters,
     const std::string& path)
 {
     std::ofstream f(path);
     if (!f) throw std::runtime_error("Cannot write: " + path);
-    f << "# x y z\n" << std::fixed << std::setprecision(8);
-    for (const auto& v : vacs)
-        f << v[0] << ' ' << v[1] << ' ' << v[2] << '\n';
+    f << "# x y z d_near_max n_grid_pts\n" << std::fixed << std::setprecision(8);
+    for (const auto& c : clusters)
+        f << c.center[0] << ' '
+          << c.center[1] << ' '
+          << c.center[2] << ' '
+          << c.d_near_max << ' '
+          << c.n_pts      << '\n';
     std::cout << "  → vacancy CSV written: " << path
-              << "  (" << vacs.size() << " sites)\n";
+              << "  (" << clusters.size() << " vacancies)\n";
 }
 
 static void writeHistogram(
@@ -228,7 +234,8 @@ static std::string prefixedPath(const std::string& prefix, const std::string& pa
 // ─────────────────────────────────────────────────────────────────────────────
 
 static void printSummary(const Frame& frame,
-                         const std::vector<std::array<double,3>>& vac_pts,
+                         const std::vector<VacancyPoint>& vac_pts,
+                         const std::vector<VacancyCluster>& clusters,
                          double grid_spacing) {
     int cnt[5] = {0,0,0,0,0};
     for (const auto& a : frame.atoms)
@@ -237,21 +244,18 @@ static void printSummary(const Frame& frame,
     const double vac_vol = vac_pts.size() * grid_spacing * grid_spacing * grid_spacing;
 
     std::cout << "\n┌─── Defect Summary ───────────────────────────────┐\n"
-              << "│  Total atoms        : " << std::setw(6) << frame.size() << "                     │\n"
-              << "│  Lattice            : " << std::setw(6) << cnt[0]        << "                     │\n"
-              << "│  Interstitials      : " << std::setw(6) << cnt[1]        << "                     │\n"
-              << "│  Vacancy-adjacent   : " << std::setw(6) << cnt[2]        << "                     │\n"
-              << "│  Type-A defects     : " << std::setw(6) << cnt[3]        << "                     │\n"
-              << "│  Unknown (distorted): " << std::setw(6) << cnt[4]        << "                     │\n"
-              << "│  Vacant grid pts    : " << std::setw(6) << vac_pts.size()<< "                     │\n"
+              << "│  Total atoms        : " << std::setw(6) << frame.size()     << "                     │\n"
+              << "│  Lattice            : " << std::setw(6) << cnt[0]           << "                     │\n"
+              << "│  Interstitials      : " << std::setw(6) << cnt[1]           << "                     │\n"
+              << "│  Vacancy-adjacent   : " << std::setw(6) << cnt[2]           << "                     │\n"
+              << "│  Type-A defects     : " << std::setw(6) << cnt[3]           << "                     │\n"
+              << "│  Unknown (distorted): " << std::setw(6) << cnt[4]           << "                     │\n"
+              << "│  Vacancies (clustered): " << std::setw(4) << clusters.size()<< "                     │\n"
+              << "│  Vacant grid pts    : " << std::setw(6) << vac_pts.size()   << "                     │\n"
               << "│  Void volume (est.) : " << std::setw(6) << std::fixed
                                             << std::setprecision(1) << vac_vol
                                             << " Å³                 │\n"
               << "└──────────────────────────────────────────────────┘\n";
-
-    // Rough Frenkel pair estimate: interstitials only (vacancies via grid)
-    if (cnt[1] > 0)
-        std::cout << "  Interstitial atoms: " << cnt[1] << '\n';
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -269,9 +273,10 @@ int main(int argc, char* argv[]) {
     soap.sigma     = -1.0;
     soap.normalize = true;
 
-    double threshold     = 0.15;
-    double vac_dist      = -1.0;   // -1 = auto (r_cut × 0.4)
-    double grid_spacing  = 0.5;    // Å — vacancy detection grid spacing
+    double threshold          = 0.15;
+    double vac_dist           = -1.0;   // -1 = auto (r_cut × 0.4)
+    double grid_spacing       = 0.5;    // Å — vacancy detection grid spacing
+    double vac_cluster_radius = -1.0;   // -1 = auto (= vac_dist after resolve)
     std::string sia_file, antv_file, typea_file;
     int         save_dv_id   = -1;
     std::string save_dv_path;
@@ -307,8 +312,9 @@ int main(int argc, char* argv[]) {
         else if (a == "--r-cut")     soap.r_cut   = nextDbl();
         else if (a == "--sigma")     soap.sigma   = nextDbl();
         else if (a == "--threshold")    threshold    = nextDbl();
-        else if (a == "--vac-dist")     vac_dist     = nextDbl();
-        else if (a == "--grid-spacing") grid_spacing = nextDbl();
+        else if (a == "--vac-dist")           vac_dist           = nextDbl();
+        else if (a == "--grid-spacing")       grid_spacing       = nextDbl();
+        else if (a == "--vac-cluster-radius") vac_cluster_radius = nextDbl();
         else if (a == "--ref-sia")      sia_file     = nextStr();
         else if (a == "--ref-antv")     antv_file    = nextStr();
         else if (a == "--ref-typea")    typea_file   = nextStr();
@@ -440,11 +446,17 @@ int main(int argc, char* argv[]) {
         // Vacancy detection via sampling grid (FaVaD §2.3.2)
         if (vac_dist < 0.0)
             vac_dist = soap.r_cut * 0.4;   // default: ~40 % of cutoff radius
-        std::cout << "      Vacancy grid: " << std::fixed << std::setprecision(2)
-                  << grid_spacing << " Å spacing,  threshold " << vac_dist << " Å\n";
-        auto vacancies = clf.findVacanciesGrid(dmg_frame, grid_spacing, vac_dist);
+        if (vac_cluster_radius < 0.0)
+            vac_cluster_radius = vac_dist; // default: same radius as detection threshold
 
-        printSummary(dmg_frame, vacancies, grid_spacing);
+        std::cout << "      Vacancy grid: " << std::fixed << std::setprecision(2)
+                  << grid_spacing << " Å spacing,  threshold " << vac_dist << " Å"
+                  << ",  cluster radius " << vac_cluster_radius << " Å\n";
+
+        auto vac_pts  = clf.findVacanciesGrid(dmg_frame, grid_spacing, vac_dist);
+        auto clusters = clf.clusterVacancyPoints(vac_pts, vac_cluster_radius, dmg_frame.box);
+
+        printSummary(dmg_frame, vac_pts, clusters, grid_spacing);
 
         // ══════════════════════════════════════════════════════════════════════
         // 4. OUTPUTS
@@ -452,9 +464,9 @@ int main(int argc, char* argv[]) {
         std::cout << "\nWriting outputs…\n";
         writeAtomCSV(dmg_frame, out_file);
 
-        // Vacancy file
-        if (!vacancies.empty()) {
-            writeVacancyCSV(vacancies, prefixedPath("vacancies_", out_file));
+        // Vacancy file: one row per cluster (physical vacancy)
+        if (!clusters.empty()) {
+            writeVacancyCSV(clusters, prefixedPath("vacancies_", out_file));
         }
 
         // Distance histogram (Fig. 4b equivalent)
