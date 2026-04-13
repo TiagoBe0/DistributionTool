@@ -3,6 +3,7 @@
 #include <algorithm>
 #include <cmath>
 #include <limits>
+#include <numeric>
 #include <stdexcept>
 
 namespace DistTool {
@@ -88,9 +89,9 @@ void DefectClassifier::classify(Frame& frame) const {
 // ── Sampling-grid vacancy detection (FaVaD §2.3.2) ───────────────────────────
 // Creates a Nx × Ny × Nz uniform grid within the simulation box.
 // Each grid point is queried against the damaged frame's cell list.
-// Points farther than dist_threshold from every atom are collected as
-// vacancy/void positions.
-std::vector<std::array<double,3>> DefectClassifier::findVacanciesGrid(
+// Points farther than dist_threshold from every atom are returned as
+// VacancyPoint objects that include the actual d_near value (not just a flag).
+std::vector<VacancyPoint> DefectClassifier::findVacanciesGrid(
     const Frame& damaged,
     double grid_spacing,
     double dist_threshold) const
@@ -113,7 +114,7 @@ std::vector<std::array<double,3>> DefectClassifier::findVacanciesGrid(
     CellList cl;
     cl.build(damaged, dist_threshold);
 
-    std::vector<std::array<double,3>> vacancies;
+    std::vector<VacancyPoint> vacancies;
 
     for (int ix = 0; ix < nx; ++ix)
     for (int iy = 0; iy < ny; ++iy)
@@ -121,11 +122,79 @@ std::vector<std::array<double,3>> DefectClassifier::findVacanciesGrid(
         const double x = box.xb[0] + (ix + 0.5) * dx;
         const double y = box.yb[0] + (iy + 0.5) * dy;
         const double z = box.zb[0] + (iz + 0.5) * dz;
-        if (cl.nearestDist2FromPoint(x, y, z) > dt2)
-            vacancies.push_back({x, y, z});
+        const double d2 = cl.nearestDist2FromPoint(x, y, z);
+        if (d2 > dt2)
+            vacancies.push_back({{x, y, z}, std::sqrt(d2)});
     }
 
     return vacancies;
+}
+
+// ── Greedy vacancy clustering (FaVaD §2.3.2 iterative algorithm) ─────────────
+// Seeds each cluster from the unassigned grid point with the largest d_near
+// (deepest void), absorbs all unassigned points within r_cluster, repeats.
+// Applies minimum-image PBC using the supplied SimBox.
+// Returns one VacancyCluster per physical vacancy/void event.
+std::vector<VacancyCluster> DefectClassifier::clusterVacancyPoints(
+    const std::vector<VacancyPoint>& pts,
+    double r_cluster,
+    const SimBox& box) const
+{
+    if (r_cluster <= 0.0) throw std::invalid_argument("r_cluster must be > 0");
+
+    const int n = static_cast<int>(pts.size());
+    if (n == 0) return {};
+
+    const double Lx = box.lx(), Ly = box.ly(), Lz = box.lz();
+
+    // Minimum-image displacement along one axis.
+    auto mi = [](double d, double L, bool periodic) -> double {
+        if (!periodic || L <= 0.0) return d;
+        return d - L * std::round(d / L);
+    };
+
+    // Sort indices by d_near descending so we always seed from the deepest void.
+    std::vector<int> order(n);
+    std::iota(order.begin(), order.end(), 0);
+    std::sort(order.begin(), order.end(), [&](int a, int b){
+        return pts[a].d_near > pts[b].d_near;
+    });
+
+    const double rc2 = r_cluster * r_cluster;
+    std::vector<bool> assigned(n, false);
+    std::vector<VacancyCluster> clusters;
+
+    for (int ii = 0; ii < n; ++ii) {
+        const int i = order[ii];
+        if (assigned[i]) continue;
+
+        // Seed new cluster from the deepest remaining point.
+        VacancyCluster cl;
+        cl.center     = pts[i].pos;
+        cl.d_near_max = pts[i].d_near;
+        cl.n_pts      = 1;
+        assigned[i]   = true;
+
+        // Absorb all unassigned points within r_cluster of this seed (with PBC).
+        for (int jj = ii + 1; jj < n; ++jj) {
+            const int j = order[jj];
+            if (assigned[j]) continue;
+            double ddx = pts[j].pos[0] - cl.center[0];
+            double ddy = pts[j].pos[1] - cl.center[1];
+            double ddz = pts[j].pos[2] - cl.center[2];
+            ddx = mi(ddx, Lx, box.periodic[0]);
+            ddy = mi(ddy, Ly, box.periodic[1]);
+            ddz = mi(ddz, Lz, box.periodic[2]);
+            if (ddx*ddx + ddy*ddy + ddz*ddz <= rc2) {
+                assigned[j] = true;
+                ++cl.n_pts;
+            }
+        }
+
+        clusters.push_back(cl);
+    }
+
+    return clusters;
 }
 
 // ── Legacy: vacancy identification from pristine lattice positions ────────────
