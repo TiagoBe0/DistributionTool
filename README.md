@@ -45,6 +45,8 @@ LAMMPS dump (damaged)   ──►  Compute SOAP DVs  ──►  Classify atoms
                                                            │
                                                     Detect vacancies (grid)
                                                            │
+                                                    Cluster vacancy points
+                                                           │
                                                     PCA (optional)
 ```
 
@@ -52,7 +54,8 @@ LAMMPS dump (damaged)   ──►  Compute SOAP DVs  ──►  Classify atoms
 2. **Damaged frame**: compute DVs for the irradiated sample; compare each atom to $\bar{q}(T)$.
 3. **Classification**: threshold on distance $d^i$; secondary classification by nearest known defect reference.
 4. **Vacancy detection**: uniform sampling grid; points farther than a threshold from any atom are vacancy/void regions.
-5. **PCA** (optional): project DVs to 2–3 dimensions; clusters reveal unknown defect geometries.
+5. **Vacancy clustering**: greedy algorithm merges nearby grid points into individual physical vacancy events.
+6. **PCA** (optional): project DVs to 2–3 dimensions; clusters reveal unknown defect geometries.
 
 ---
 
@@ -236,6 +239,25 @@ The estimated void volume is $|\mathcal{V}| \cdot \Delta^3$, which converges as 
 - Detects extended voids and crowdion regions, not only single vacancies.
 - Volume estimate is grid-refinement consistent.
 
+#### Vacancy clustering
+
+Raw grid points are merged into individual physical vacancy events by a greedy algorithm (FaVaD §2.3.2):
+
+1. Sort all vacant grid points by $d_\text{near}$ in descending order (deepest void first).
+2. Take the first unassigned point as the seed of a new cluster.
+3. Absorb every remaining unassigned point within $r_\text{cluster}$ (default = $d_\text{vac}$) using minimum-image PBC.
+4. Repeat from step 2 until all points are assigned.
+
+Each resulting `VacancyCluster` records:
+
+| Field | Description |
+|---|---|
+| `center` | Position of the grid point with maximum $d_\text{near}$ in the cluster |
+| `d_near_max` | Peak void depth $\max(d_\text{near})$ within the cluster [Å] |
+| `n_pts` | Number of grid points merged into this cluster |
+
+The cluster count equals the number of distinct physical vacancies (or void pockets) detected in the frame. The `--vac-cluster-radius` option overrides $r_\text{cluster}$ independently of `--vac-dist`.
+
 ---
 
 ### 3.7 Principal Component Analysis
@@ -310,6 +332,30 @@ struct Frame { int timestep; SimBox box; std::vector<Atom> atoms; };
 
 Linked-cell algorithm for $O(N)$ neighbour queries. Cells have side $\geq r_\text{cut}$; each query visits 27 cells. Supports both `neighbours(int i)` (displacement vectors for SOAP) and `nearestDist2FromPoint(x,y,z)` (for vacancy detection).
 
+**`DefectClassifier.h`** — key types
+
+```cpp
+struct VacancyPoint {
+    std::array<double,3> pos;
+    double d_near;   // distance to nearest atom [Å]
+};
+
+struct VacancyCluster {
+    std::array<double,3> center;     // position of grid point with max d_near
+    double               d_near_max; // peak void depth in this cluster [Å]
+    int                  n_pts;      // grid points merged into this cluster
+};
+```
+
+`DefectClassifier` exposes four pipeline steps:
+
+| Method | Purpose |
+|---|---|
+| `buildReference(dvs)` | Compute $\bar{q}(T)$ and fit chi-distribution from pristine DVs |
+| `classify(frame)` | Label every atom; populate `dist_to_ref`, `defect_prob`, `defect_type` |
+| `findVacanciesGrid(frame, Δ, d_vac)` | Return all empty grid points as `VacancyPoint` objects |
+| `clusterVacancyPoints(pts, r, box)` | Merge grid points into `VacancyCluster` events (greedy + PBC) |
+
 ### Performance-critical paths
 
 | Hot path | Technique |
@@ -319,6 +365,7 @@ Linked-cell algorithm for $O(N)$ neighbour queries. Cells have side $\geq r_\tex
 | `SOAPDescriptor::computeAll` | `CellList` $O(N)$ neighbour search; per-thread buffers (OpenMP) |
 | `CellList::nearestDist2FromPoint` | 27-cell search with PBC minimum image |
 | Vacancy grid | $O(N_\text{grid} \cdot 27\rho r_\text{vac}^3)$; no heap allocation per query |
+| `clusterVacancyPoints` | $O(M^2)$ in the number of vacant grid points $M$; sort + single pass |
 
 ---
 
@@ -378,6 +425,7 @@ cmake --build build_debug -j$(nproc)
 | `--threshold T` | 0.15 | Distance threshold for defect classification |
 | `--vac-dist D` | r_cut×0.4 | Vacancy detection distance [Å] |
 | `--grid-spacing G` | 0.5 | Vacancy grid spacing [Å] |
+| `--vac-cluster-radius R` | = vac-dist | Cluster merge radius for vacancy grouping [Å] |
 | `--ref-sia FILE` | — | Reference DV file for SIA atoms |
 | `--ref-antv FILE` | — | Reference DV file for ANtV atoms |
 | `--ref-typea FILE` | — | Reference DV file for type-A atoms |
@@ -393,6 +441,7 @@ cmake --build build_debug -j$(nproc)
 ./build/distool \
     --n-max 9 --l-max 9 --r-cut 5.5 \
     --threshold 0.15 --grid-spacing 0.2 \
+    --vac-cluster-radius 3.0 \
     --pca 2 --hist \
     pristine_Fe_300K.dump damaged_Fe_10keV.dump
 ```
@@ -414,7 +463,7 @@ cmake --build build_debug -j$(nproc)
 | File | Contents |
 |---|---|
 | `output.csv` | Per-atom: `id type x y z dist_to_ref defect_prob defect_type` |
-| `vacancies_output.csv` | Vacancy grid points: `x y z` |
+| `vacancies_output.csv` | One row per vacancy cluster: `x y z d_near_max n_grid_pts` |
 | `hist_output.csv` | Distance histogram: `bin_centre count` |
 | `pca_output.csv` | PCA projection: `id type pc1 pc2 … dist_to_ref defect_type` |
 
@@ -426,6 +475,16 @@ cmake --build build_debug -j$(nproc)
 | `defect_prob` | $1 - P_\text{norm}(d^i \mid k, \sigma)$ from chi-distribution model |
 | `defect_type` | `Lattice`, `Interstitial`, `VacancyAdj`, `TypeA`, or `Unknown` |
 
+**`vacancies_output.csv` column descriptions**
+
+| Column | Description |
+|---|---|
+| `x y z` | Position of the grid point with the largest $d_\text{near}$ in the cluster |
+| `d_near_max` | Peak distance to the nearest atom within the cluster [Å] |
+| `n_grid_pts` | Number of empty grid points merged into this cluster |
+
+Each row represents one physical vacancy event (or void pocket). The total number of rows equals the vacancy count printed in the defect summary.
+
 ---
 
 ## 8. Typical workflow
@@ -436,7 +495,8 @@ cmake --build build_debug -j$(nproc)
 ./build/distool ref.dump damaged.dump --pca 2 --hist
 ```
 
-Inspect `pca_output.csv`: clusters of atoms far from the lattice cluster indicate unknown defect types.
+Inspect `pca_output.csv`: clusters of atoms far from the lattice cluster indicate unknown defect types.  
+Inspect `vacancies_output.csv`: each row is one physical vacancy event; `n_grid_pts` indicates cluster size and `d_near_max` measures how deep (empty) the void is.
 
 ### Step 2 — build reference DV for a known defect site
 
