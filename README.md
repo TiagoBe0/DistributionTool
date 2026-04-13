@@ -30,7 +30,7 @@ A C++17 command-line tool for semi-automatic identification and classification o
 
 Energetic particle impacts (neutrons, ions) create collision cascades in crystalline materials, leaving behind point defects: **vacancies** (missing atoms), **self-interstitial atoms** (SIAs), and more complex defect clusters. Quantifying this damage is critical for fusion and fission materials research.
 
-Classical approaches (Wigner-Seitz cell, Voronoi tessellation) work well at 0 K but fail at elevated temperatures where thermal motion blurs the lattice. This tool uses a descriptor-vector (fingerprint) approach that is robust to thermal noise and does not require the pristine lattice positions at classification time.
+Classical approaches (Wigner-Seitz cell, Voronoi tessellation) work well at 300 K but fail at elevated temperatures where thermal motion blurs the lattice. This tool uses a descriptor-vector (fingerprint) approach that is robust to thermal noise and does not require the pristine lattice positions at classification time.
 
 ---
 
