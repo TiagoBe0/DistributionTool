@@ -64,9 +64,9 @@ class DefectClassifier {
 public:
     explicit DefectClassifier(double threshold = 0.15);
 
-    // Build the reference set from a set of descriptor vectors
-    // (all atoms in the pristine/thermalized frame).
-    void buildReference(const std::vector<std::vector<double>>& ref_dvs);
+    // Build the reference set from atoms in the pristine/thermalized frame.
+    // DVs are read directly from atom.dv — no intermediate copy is made.
+    void buildReference(const std::vector<Atom>& atoms);
 
     // Optionally add reference DVs for known defect types
     // to improve secondary classification accuracy.

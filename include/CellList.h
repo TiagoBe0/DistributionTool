@@ -66,9 +66,13 @@ public:
         for (int dix = -1; dix <= 1; ++dix)
         for (int diy = -1; diy <= 1; ++diy)
         for (int diz = -1; diz <= 1; ++diz) {
-            int jx = ((ix + dix) % nx_ + nx_) % nx_;
-            int jy = ((iy + diy) % ny_ + ny_) % ny_;
-            int jz = ((iz + diz) % nz_ + nz_) % nz_;
+            int jx = ix + dix, jy = iy + diy, jz = iz + diz;
+            if (box.periodic[0]) jx = ((jx % nx_) + nx_) % nx_;
+            else if (jx < 0 || jx >= nx_) continue;
+            if (box.periodic[1]) jy = ((jy % ny_) + ny_) % ny_;
+            else if (jy < 0 || jy >= ny_) continue;
+            if (box.periodic[2]) jz = ((jz % nz_) + nz_) % nz_;
+            else if (jz < 0 || jz >= nz_) continue;
 
             for (int j : cells_[cellIdx(jx, jy, jz)]) {
                 const Atom& aj = frame_->atoms[j];
@@ -100,14 +104,15 @@ public:
         for (int dix = -1; dix <= 1; ++dix)
         for (int diy = -1; diy <= 1; ++diy)
         for (int diz = -1; diz <= 1; ++diz) {
-            int jx = ix + dix;
-            int jy = iy + diy;
-            int jz = iz + diz;
+            int jx = ix + dix, jy = iy + diy, jz = iz + diz;
 
-            // Periodic cell wrapping
-            jx = ((jx % nx_) + nx_) % nx_;
-            jy = ((jy % ny_) + ny_) % ny_;
-            jz = ((jz % nz_) + nz_) % nz_;
+            // Wrap periodic dimensions; skip out-of-range cells in non-periodic ones.
+            if (box.periodic[0]) jx = ((jx % nx_) + nx_) % nx_;
+            else if (jx < 0 || jx >= nx_) continue;
+            if (box.periodic[1]) jy = ((jy % ny_) + ny_) % ny_;
+            else if (jy < 0 || jy >= ny_) continue;
+            if (box.periodic[2]) jz = ((jz % nz_) + nz_) % nz_;
+            else if (jz < 0 || jz >= nz_) continue;
 
             for (int j : cells_[cellIdx(jx, jy, jz)]) {
                 if (j == i) continue;

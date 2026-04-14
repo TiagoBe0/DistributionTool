@@ -12,26 +12,41 @@ DefectClassifier::DefectClassifier(double threshold)
     : threshold_(threshold)
 {}
 
-// ── Build reference from pristine DVs ────────────────────────────────────────
-void DefectClassifier::buildReference(
-    const std::vector<std::vector<double>>& ref_dvs)
+// ── Build reference from pristine atoms ──────────────────────────────────────
+void DefectClassifier::buildReference(const std::vector<Atom>& atoms)
 {
-    if (ref_dvs.empty())
-        throw std::invalid_argument("buildReference: empty DV set");
+    if (atoms.empty())
+        throw std::invalid_argument("buildReference: empty atom set");
 
-    ref_.mean_dv = Statistics::mean(ref_dvs);
+    const int d  = static_cast<int>(atoms[0].dv.size());
+    const int nd = static_cast<int>(atoms.size());
+
+    if (d == 0)
+        throw std::invalid_argument(
+            "buildReference: atoms have empty descriptor vectors — "
+            "call computeAll() before buildReference()");
+
+    // Compute mean DV directly from atoms — no intermediate vector-of-vectors.
+    ref_.mean_dv.assign(d, 0.0);
+    for (const auto& a : atoms) {
+        if (static_cast<int>(a.dv.size()) != d)
+            throw std::invalid_argument(
+                "buildReference: inconsistent DV sizes (" +
+                std::to_string(a.dv.size()) + " vs " + std::to_string(d) + ")");
+        for (int i = 0; i < d; ++i) ref_.mean_dv[i] += a.dv[i];
+    }
+    for (auto& v : ref_.mean_dv) v /= nd;
 
     // Compute distances once; reuse for mean/var and chi-fit.
     std::vector<double> dists;
-    dists.reserve(ref_dvs.size());
-    for (const auto& dv : ref_dvs)
-        dists.push_back(Statistics::euclidean(dv, ref_.mean_dv));
+    dists.reserve(nd);
+    for (const auto& a : atoms)
+        dists.push_back(Statistics::euclidean(a.dv, ref_.mean_dv));
 
-    const int nd = static_cast<int>(dists.size());
     ref_.mean_dist = std::accumulate(dists.begin(), dists.end(), 0.0) / nd;
     double var = 0.0;
-    for (double d : dists) { const double delta = d - ref_.mean_dist; var += delta * delta; }
-    ref_.var_dist = var / nd;
+    for (double dist : dists) { const double delta = dist - ref_.mean_dist; var += delta * delta; }
+    ref_.var_dist = var / (nd > 1 ? nd - 1 : 1);  // sample variance (unbiased)
 
     Statistics::fitChiParams(dists, ref_.k_chi, ref_.sigma_chi);
 }

@@ -89,7 +89,11 @@ void Statistics::fitChiParams(const std::vector<double>& dists,
         sigma_out = std::sqrt(mean_d2 / 2.0);
         return;
     }
-    k_out     = std::max(2.0, 2.0 * mean_d2 * mean_d2 / var_d2);
+    // Cap k to avoid catastrophic cancellation in chiProbability for very
+    // sharply-peaked distributions (e.g. near-perfect crystals at low T).
+    // In practice k ≈ effective DV dimensionality; 2000 is generous.
+    constexpr double k_max = 2000.0;
+    k_out     = std::min(k_max, std::max(2.0, 2.0 * mean_d2 * mean_d2 / var_d2));
     sigma_out = std::sqrt(mean_d2 / k_out);
 }
 

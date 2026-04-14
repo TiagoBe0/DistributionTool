@@ -70,6 +70,19 @@ TEST_CASE("Statistics::chiProbability — farther from mode gives lower probabil
 
 // ── fitChiParams ──────────────────────────────────────────────────────────────
 
+TEST_CASE("Statistics::fitChiParams — k is capped at 2000") {
+    // Distances clustered very tightly → raw k >> 2000 without the cap.
+    // d in {0.1 - ε, 0.1 + ε} with ε = 1e-4 gives var(d²) ≈ 6e-10 → k ≈ 3e5.
+    const double eps = 1e-4;
+    std::vector<double> dists(1000);
+    for (int i = 0;   i < 500; ++i) dists[i]   = 0.1 - eps;
+    for (int i = 500; i < 1000; ++i) dists[i]  = 0.1 + eps;
+    double k_fit, sigma_fit;
+    Statistics::fitChiParams(dists, k_fit, sigma_fit);
+    REQUIRE(k_fit <= 2000.0 + 1e-9);
+    REQUIRE(k_fit >= 2.0);
+}
+
 TEST_CASE("Statistics::fitChiParams — recovers k=8, sigma=0.1 from exact moments") {
     // Construct distances with exact moments for chi(k=8, sigma=0.1):
     //   E[d^2] = k*sigma^2 = 0.08

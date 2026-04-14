@@ -1,4 +1,5 @@
 #pragma once
+#include "AtomData.h"
 #include <Eigen/Dense>
 #include <vector>
 
@@ -19,13 +20,13 @@ namespace DistTool {
  */
 class PCA {
 public:
-    // Fit PCA to a data matrix (rows = samples, cols = features).
-    void fit(const std::vector<std::vector<double>>& data);
+    // Fit PCA to atoms — reads atom.dv directly, no intermediate copy.
+    void fit(const std::vector<Atom>& atoms);
 
-    // Project data onto the first `n_components` principal axes.
-    // Returns matrix of shape [n_samples][n_components].
+    // Project atoms onto the first `n_components` principal axes.
+    // Returns matrix of shape [n_atoms][n_components].
     std::vector<std::vector<double>> transform(
-        const std::vector<std::vector<double>>& data,
+        const std::vector<Atom>& atoms,
         int n_components = 2) const;
 
     // Explained variance fraction for each component (descending).

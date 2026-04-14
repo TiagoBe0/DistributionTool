@@ -5,26 +5,25 @@
 
 namespace DistTool {
 
-void PCA::fit(const std::vector<std::vector<double>>& data) {
-    if (data.empty()) throw std::invalid_argument("PCA::fit — empty data");
+void PCA::fit(const std::vector<Atom>& atoms) {
+    if (atoms.empty()) throw std::invalid_argument("PCA::fit — empty data");
 
-    const int n = static_cast<int>(data.size());
-    const int d = static_cast<int>(data[0].size());
+    const int n = static_cast<int>(atoms.size());
+    const int d = static_cast<int>(atoms[0].dv.size());
 
     if (n < 2) throw std::invalid_argument("PCA::fit — need at least 2 samples");
 
     // ── Center the data ───────────────────────────────────────────────────────
     mean_ = Eigen::VectorXd::Zero(d);
-    for (const auto& row : data) {
-        for (int j = 0; j < d; ++j) mean_(j) += row[j];
-    }
+    for (const auto& a : atoms)
+        for (int j = 0; j < d; ++j) mean_(j) += a.dv[j];
     mean_ /= n;
 
     // ── Build centred data matrix X  [n × d] ─────────────────────────────────
     Eigen::MatrixXd X(n, d);
     for (int i = 0; i < n; ++i)
         for (int j = 0; j < d; ++j)
-            X(i, j) = data[i][j] - mean_(j);
+            X(i, j) = atoms[i].dv[j] - mean_(j);
 
     // ── Covariance matrix  C = XᵀX / (n−1),  [d × d] ────────────────────────
     Eigen::MatrixXd C = (X.transpose() * X) / static_cast<double>(n - 1);
@@ -50,12 +49,12 @@ void PCA::fit(const std::vector<std::vector<double>>& data) {
 }
 
 std::vector<std::vector<double>> PCA::transform(
-    const std::vector<std::vector<double>>& data,
+    const std::vector<Atom>& atoms,
     int n_components) const
 {
     if (!fitted_) throw std::runtime_error("PCA::transform — not fitted yet");
 
-    const int n  = static_cast<int>(data.size());
+    const int n  = static_cast<int>(atoms.size());
     const int d  = static_cast<int>(mean_.size());
     const int nc = std::min(n_components, static_cast<int>(evecs_.rows()));
 
@@ -63,7 +62,7 @@ std::vector<std::vector<double>> PCA::transform(
 
     for (int i = 0; i < n; ++i) {
         Eigen::VectorXd x(d);
-        for (int j = 0; j < d; ++j) x(j) = data[i][j] - mean_(j);
+        for (int j = 0; j < d; ++j) x(j) = atoms[i].dv[j] - mean_(j);
 
         for (int k = 0; k < nc; ++k)
             result[i][k] = evecs_.row(k).dot(x);
