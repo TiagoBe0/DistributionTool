@@ -30,12 +30,7 @@ std::vector<Frame> LammpsDumpReader::readAll() {
     std::vector<Frame> frames;
     while (hasNext()) {
         try { frames.push_back(parseFrame()); }
-        catch (const std::runtime_error& e) {
-            // EOF reached cleanly between frames — normal termination.
-            std::string msg = e.what();
-            if (msg.find("EOF") != std::string::npos) break;
-            throw;  // Re-throw real parse errors.
-        }
+        catch (const CleanEof&) { break; }  // normal end-of-file between frames
     }
     return frames;
 }
@@ -60,18 +55,23 @@ Frame LammpsDumpReader::parseFrame() {
     while (std::getline(file_, line)) {
         if (line.find("ITEM: TIMESTEP") != std::string::npos) break;
     }
-    if (file_.eof()) throw std::runtime_error("EOF before TIMESTEP");
+    if (file_.eof()) throw CleanEof{};   // clean end-of-file between frames
 
     std::getline(file_, line);
     frame.timestep = std::stoi(line);
 
     // ── NUMBER OF ATOMS ───────────────────────────────────────────────────────
-    std::getline(file_, line);   // "ITEM: NUMBER OF ATOMS"
-    std::getline(file_, line);
+    if (!std::getline(file_, line) || line.find("NUMBER OF ATOMS") == std::string::npos)
+        throw std::runtime_error("Expected 'ITEM: NUMBER OF ATOMS' in: " + path_);
+    if (!std::getline(file_, line))
+        throw std::runtime_error("Missing atom count after NUMBER OF ATOMS in: " + path_);
     int n_atoms = std::stoi(line);
+    if (n_atoms < 0)
+        throw std::runtime_error("Negative atom count in: " + path_);
 
     // ── BOX BOUNDS ────────────────────────────────────────────────────────────
-    std::getline(file_, line);   // "ITEM: BOX BOUNDS ..."
+    if (!std::getline(file_, line) || line.find("BOX BOUNDS") == std::string::npos)
+        throw std::runtime_error("Expected 'ITEM: BOX BOUNDS' in: " + path_);
 
     // Detect box format from the header tokens:
     //   "abc origin"  → 4 numbers/row: ax ay az ox | bx by bz oy | cx cy cz oz
@@ -152,7 +152,8 @@ Frame LammpsDumpReader::parseFrame() {
     }
 
     // ── ATOMS ─────────────────────────────────────────────────────────────────
-    std::getline(file_, line);   // "ITEM: ATOMS id type x y z ..."
+    if (!std::getline(file_, line) || line.find("ITEM: ATOMS") == std::string::npos)
+        throw std::runtime_error("Expected 'ITEM: ATOMS' header in: " + path_);
     auto cols = splitColumns(line);
 
     // Map column names to indices

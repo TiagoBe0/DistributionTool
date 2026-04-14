@@ -345,6 +345,14 @@ int main(int argc, char* argv[]) {
         std::cerr << "Error: provide both <reference.dump> and <damaged.dump>\n\n";
         printUsage(argv[0]); return 1;
     }
+    if (soap.n_max < 1 || soap.l_max < 1) {
+        std::cerr << "Error: --n-max and --l-max must be >= 1\n";
+        return 1;
+    }
+    if (soap.r_cut <= 0.0) {
+        std::cerr << "Error: --r-cut must be > 0\n";
+        return 1;
+    }
 
     // ── Print configuration ───────────────────────────────────────────────────
     std::cout << "Configuration:\n"
@@ -386,13 +394,7 @@ int main(int argc, char* argv[]) {
         std::cout << "      Done in " << std::fixed << std::setprecision(2)
                   << timerSec(t0) << " s\n";
 
-        // Collect reference DVs and build statistics
-        std::vector<std::vector<double>> ref_dvs;
-        ref_dvs.reserve(ref_frame.size());
-        for (const auto& atom : ref_frame.atoms)
-            ref_dvs.push_back(atom.dv);
-
-        clf.buildReference(ref_dvs);
+        clf.buildReference(ref_frame.atoms);
         const auto& ref = clf.reference();
         std::cout << "      q̄(T) built.  <d>="
                   << std::fixed << std::setprecision(4) << ref.mean_dist
@@ -486,9 +488,9 @@ int main(int argc, char* argv[]) {
         if (do_pca) {
             std::cout << "  Running PCA (" << pca_nc << " components)…\n";
 
-            // Fit on reference DVs so PCA axes reflect the pristine crystal
+            // Fit on reference atoms so PCA axes reflect the pristine crystal
             PCA pca;
-            pca.fit(ref_dvs);
+            pca.fit(ref_frame.atoms);
 
             const auto& evr = pca.explainedVarianceRatio();
             std::cout << "  Explained variance:";
@@ -501,12 +503,7 @@ int main(int argc, char* argv[]) {
             }
             std::cout << "  (cumulative " << cumvar*100 << "%)\n";
 
-            // Project damaged frame DVs
-            std::vector<std::vector<double>> dmg_dvs;
-            dmg_dvs.reserve(dmg_frame.size());
-            for (const auto& a : dmg_frame.atoms) dmg_dvs.push_back(a.dv);
-
-            auto proj = pca.transform(dmg_dvs, pca_nc);
+            auto proj = pca.transform(dmg_frame.atoms, pca_nc);
             writePCAcsv(proj, dmg_frame, prefixedPath("pca_", out_file));
         }
 

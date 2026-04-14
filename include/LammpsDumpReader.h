@@ -25,6 +25,14 @@ public:
     // Convenience: read every frame in the file.
     std::vector<Frame> readAll();
 
+    // Thrown by parseFrame() only when EOF is reached before finding any
+    // ITEM: TIMESTEP header — i.e. a clean end-of-file between frames.
+    // readAll() catches this to terminate iteration; readNext() lets it propagate
+    // as a std::runtime_error so callers see a meaningful message.
+    struct CleanEof : std::runtime_error {
+        CleanEof() : std::runtime_error("No more frames in file") {}
+    };
+
 private:
     std::string           path_;
     mutable std::ifstream file_;  // mutable: peek() in hasNext() updates stream state

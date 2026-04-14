@@ -3,6 +3,7 @@ add_executable(distool_tests
     test_statistics.cpp
     test_descriptors.cpp
     test_classifier.cpp
+    test_pca.cpp
     test_reader.cpp
 )
 
