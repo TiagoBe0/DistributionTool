@@ -11,7 +11,14 @@ endif()
 message(STATUS "Build type: ${CMAKE_BUILD_TYPE}")
 
 # Compiler flags
-set(CMAKE_CXX_FLAGS_RELEASE  "-O3 -march=native -DNDEBUG")
+# -march=native optimises for the build host CPU; pass -DNATIVE_MARCH=OFF to
+# produce a portable binary (e.g. for sharing the executable with other machines).
+option(NATIVE_MARCH "Optimise for the build host CPU (-march=native)" ON)
+if(NATIVE_MARCH)
+  set(CMAKE_CXX_FLAGS_RELEASE "-O3 -march=native -DNDEBUG -Wall")
+else()
+  set(CMAKE_CXX_FLAGS_RELEASE "-O3 -DNDEBUG -Wall")
+endif()
 set(CMAKE_CXX_FLAGS_DEBUG    "-g -O0 -Wall -Wextra")
 
 # ── Eigen3 (header-only) ────────────────────────────────────────────────────
@@ -21,8 +28,8 @@ message(STATUS "Eigen3 found: ${EIGEN3_INCLUDE_DIR}")
 # ── OpenMP (optional, speeds up neighbor-list & descriptor loops) ────────────
 find_package(OpenMP)
 
-# ── Sources ──────────────────────────────────────────────────────────────────
-set(SOURCES
+# ── Library (shared between distool and tests) ────────────────────────────────
+set(LIB_SOURCES
     src/LammpsDumpReader.cpp
     src/SphericalHarmonics.cpp
     src/RadialBasis.cpp
@@ -30,22 +37,28 @@ set(SOURCES
     src/Statistics.cpp
     src/DefectClassifier.cpp
     src/PCA.cpp
-    src/main.cpp
 )
 
-add_executable(distool ${SOURCES})
-target_include_directories(distool PRIVATE include)
-target_link_libraries(distool PRIVATE Eigen3::Eigen)
+add_library(distool_lib OBJECT ${LIB_SOURCES})
+target_include_directories(distool_lib PUBLIC include)
+target_link_libraries(distool_lib PUBLIC Eigen3::Eigen)
 
 if(OpenMP_CXX_FOUND)
-    target_link_libraries(distool PRIVATE OpenMP::OpenMP_CXX)
-    target_compile_definitions(distool PRIVATE USE_OPENMP)
+    target_link_libraries(distool_lib PUBLIC OpenMP::OpenMP_CXX)
+    target_compile_definitions(distool_lib PUBLIC USE_OPENMP)
     message(STATUS "OpenMP support: enabled")
 else()
     message(STATUS "OpenMP support: disabled")
 endif()
 
+# ── Main executable ───────────────────────────────────────────────────────────
+add_executable(distool src/main.cpp)
+target_link_libraries(distool PRIVATE distool_lib)
 install(TARGETS distool DESTINATION bin)
+
+# ── Tests ─────────────────────────────────────────────────────────────────────
+enable_testing()
+add_subdirectory(tests)
 
 # ── Quick-build helper ────────────────────────────────────────────────────────
 message(STATUS "")

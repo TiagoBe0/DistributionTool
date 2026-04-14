@@ -1,7 +1,6 @@
 #pragma once
 #include "AtomData.h"
 #include "Statistics.h"
-#include <Eigen/Dense>
 #include <string>
 #include <vector>
 
@@ -101,13 +100,6 @@ public:
         const std::vector<VacancyPoint>& pts,
         double r_cluster,
         const SimBox& box) const;
-
-    // Legacy: identify vacant sites from pristine lattice positions.
-    // Kept for comparison; findVacanciesGrid is preferred.
-    std::vector<std::array<double,3>> findVacancies(
-        const Frame& pristine,
-        const Frame& damaged,
-        double dist_threshold) const;
 
     double           threshold()  const { return threshold_; }
     const ReferenceSet& reference() const { return ref_; }

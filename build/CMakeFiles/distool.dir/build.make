@@ -69,108 +69,10 @@ include CMakeFiles/distool.dir/progress.make
 # Include the compile flags for this target's objects.
 include CMakeFiles/distool.dir/flags.make
 
-CMakeFiles/distool.dir/src/LammpsDumpReader.cpp.o: CMakeFiles/distool.dir/flags.make
-CMakeFiles/distool.dir/src/LammpsDumpReader.cpp.o: /home/santi/Documentos/DistributionTool/src/LammpsDumpReader.cpp
-CMakeFiles/distool.dir/src/LammpsDumpReader.cpp.o: CMakeFiles/distool.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/santi/Documentos/DistributionTool/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object CMakeFiles/distool.dir/src/LammpsDumpReader.cpp.o"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/distool.dir/src/LammpsDumpReader.cpp.o -MF CMakeFiles/distool.dir/src/LammpsDumpReader.cpp.o.d -o CMakeFiles/distool.dir/src/LammpsDumpReader.cpp.o -c /home/santi/Documentos/DistributionTool/src/LammpsDumpReader.cpp
-
-CMakeFiles/distool.dir/src/LammpsDumpReader.cpp.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/distool.dir/src/LammpsDumpReader.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/santi/Documentos/DistributionTool/src/LammpsDumpReader.cpp > CMakeFiles/distool.dir/src/LammpsDumpReader.cpp.i
-
-CMakeFiles/distool.dir/src/LammpsDumpReader.cpp.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/distool.dir/src/LammpsDumpReader.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/santi/Documentos/DistributionTool/src/LammpsDumpReader.cpp -o CMakeFiles/distool.dir/src/LammpsDumpReader.cpp.s
-
-CMakeFiles/distool.dir/src/SphericalHarmonics.cpp.o: CMakeFiles/distool.dir/flags.make
-CMakeFiles/distool.dir/src/SphericalHarmonics.cpp.o: /home/santi/Documentos/DistributionTool/src/SphericalHarmonics.cpp
-CMakeFiles/distool.dir/src/SphericalHarmonics.cpp.o: CMakeFiles/distool.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/santi/Documentos/DistributionTool/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building CXX object CMakeFiles/distool.dir/src/SphericalHarmonics.cpp.o"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/distool.dir/src/SphericalHarmonics.cpp.o -MF CMakeFiles/distool.dir/src/SphericalHarmonics.cpp.o.d -o CMakeFiles/distool.dir/src/SphericalHarmonics.cpp.o -c /home/santi/Documentos/DistributionTool/src/SphericalHarmonics.cpp
-
-CMakeFiles/distool.dir/src/SphericalHarmonics.cpp.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/distool.dir/src/SphericalHarmonics.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/santi/Documentos/DistributionTool/src/SphericalHarmonics.cpp > CMakeFiles/distool.dir/src/SphericalHarmonics.cpp.i
-
-CMakeFiles/distool.dir/src/SphericalHarmonics.cpp.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/distool.dir/src/SphericalHarmonics.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/santi/Documentos/DistributionTool/src/SphericalHarmonics.cpp -o CMakeFiles/distool.dir/src/SphericalHarmonics.cpp.s
-
-CMakeFiles/distool.dir/src/RadialBasis.cpp.o: CMakeFiles/distool.dir/flags.make
-CMakeFiles/distool.dir/src/RadialBasis.cpp.o: /home/santi/Documentos/DistributionTool/src/RadialBasis.cpp
-CMakeFiles/distool.dir/src/RadialBasis.cpp.o: CMakeFiles/distool.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/santi/Documentos/DistributionTool/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building CXX object CMakeFiles/distool.dir/src/RadialBasis.cpp.o"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/distool.dir/src/RadialBasis.cpp.o -MF CMakeFiles/distool.dir/src/RadialBasis.cpp.o.d -o CMakeFiles/distool.dir/src/RadialBasis.cpp.o -c /home/santi/Documentos/DistributionTool/src/RadialBasis.cpp
-
-CMakeFiles/distool.dir/src/RadialBasis.cpp.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/distool.dir/src/RadialBasis.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/santi/Documentos/DistributionTool/src/RadialBasis.cpp > CMakeFiles/distool.dir/src/RadialBasis.cpp.i
-
-CMakeFiles/distool.dir/src/RadialBasis.cpp.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/distool.dir/src/RadialBasis.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/santi/Documentos/DistributionTool/src/RadialBasis.cpp -o CMakeFiles/distool.dir/src/RadialBasis.cpp.s
-
-CMakeFiles/distool.dir/src/SOAPDescriptor.cpp.o: CMakeFiles/distool.dir/flags.make
-CMakeFiles/distool.dir/src/SOAPDescriptor.cpp.o: /home/santi/Documentos/DistributionTool/src/SOAPDescriptor.cpp
-CMakeFiles/distool.dir/src/SOAPDescriptor.cpp.o: CMakeFiles/distool.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/santi/Documentos/DistributionTool/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Building CXX object CMakeFiles/distool.dir/src/SOAPDescriptor.cpp.o"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/distool.dir/src/SOAPDescriptor.cpp.o -MF CMakeFiles/distool.dir/src/SOAPDescriptor.cpp.o.d -o CMakeFiles/distool.dir/src/SOAPDescriptor.cpp.o -c /home/santi/Documentos/DistributionTool/src/SOAPDescriptor.cpp
-
-CMakeFiles/distool.dir/src/SOAPDescriptor.cpp.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/distool.dir/src/SOAPDescriptor.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/santi/Documentos/DistributionTool/src/SOAPDescriptor.cpp > CMakeFiles/distool.dir/src/SOAPDescriptor.cpp.i
-
-CMakeFiles/distool.dir/src/SOAPDescriptor.cpp.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/distool.dir/src/SOAPDescriptor.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/santi/Documentos/DistributionTool/src/SOAPDescriptor.cpp -o CMakeFiles/distool.dir/src/SOAPDescriptor.cpp.s
-
-CMakeFiles/distool.dir/src/Statistics.cpp.o: CMakeFiles/distool.dir/flags.make
-CMakeFiles/distool.dir/src/Statistics.cpp.o: /home/santi/Documentos/DistributionTool/src/Statistics.cpp
-CMakeFiles/distool.dir/src/Statistics.cpp.o: CMakeFiles/distool.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/santi/Documentos/DistributionTool/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Building CXX object CMakeFiles/distool.dir/src/Statistics.cpp.o"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/distool.dir/src/Statistics.cpp.o -MF CMakeFiles/distool.dir/src/Statistics.cpp.o.d -o CMakeFiles/distool.dir/src/Statistics.cpp.o -c /home/santi/Documentos/DistributionTool/src/Statistics.cpp
-
-CMakeFiles/distool.dir/src/Statistics.cpp.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/distool.dir/src/Statistics.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/santi/Documentos/DistributionTool/src/Statistics.cpp > CMakeFiles/distool.dir/src/Statistics.cpp.i
-
-CMakeFiles/distool.dir/src/Statistics.cpp.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/distool.dir/src/Statistics.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/santi/Documentos/DistributionTool/src/Statistics.cpp -o CMakeFiles/distool.dir/src/Statistics.cpp.s
-
-CMakeFiles/distool.dir/src/DefectClassifier.cpp.o: CMakeFiles/distool.dir/flags.make
-CMakeFiles/distool.dir/src/DefectClassifier.cpp.o: /home/santi/Documentos/DistributionTool/src/DefectClassifier.cpp
-CMakeFiles/distool.dir/src/DefectClassifier.cpp.o: CMakeFiles/distool.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/santi/Documentos/DistributionTool/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_6) "Building CXX object CMakeFiles/distool.dir/src/DefectClassifier.cpp.o"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/distool.dir/src/DefectClassifier.cpp.o -MF CMakeFiles/distool.dir/src/DefectClassifier.cpp.o.d -o CMakeFiles/distool.dir/src/DefectClassifier.cpp.o -c /home/santi/Documentos/DistributionTool/src/DefectClassifier.cpp
-
-CMakeFiles/distool.dir/src/DefectClassifier.cpp.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/distool.dir/src/DefectClassifier.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/santi/Documentos/DistributionTool/src/DefectClassifier.cpp > CMakeFiles/distool.dir/src/DefectClassifier.cpp.i
-
-CMakeFiles/distool.dir/src/DefectClassifier.cpp.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/distool.dir/src/DefectClassifier.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/santi/Documentos/DistributionTool/src/DefectClassifier.cpp -o CMakeFiles/distool.dir/src/DefectClassifier.cpp.s
-
-CMakeFiles/distool.dir/src/PCA.cpp.o: CMakeFiles/distool.dir/flags.make
-CMakeFiles/distool.dir/src/PCA.cpp.o: /home/santi/Documentos/DistributionTool/src/PCA.cpp
-CMakeFiles/distool.dir/src/PCA.cpp.o: CMakeFiles/distool.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/santi/Documentos/DistributionTool/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_7) "Building CXX object CMakeFiles/distool.dir/src/PCA.cpp.o"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/distool.dir/src/PCA.cpp.o -MF CMakeFiles/distool.dir/src/PCA.cpp.o.d -o CMakeFiles/distool.dir/src/PCA.cpp.o -c /home/santi/Documentos/DistributionTool/src/PCA.cpp
-
-CMakeFiles/distool.dir/src/PCA.cpp.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/distool.dir/src/PCA.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/santi/Documentos/DistributionTool/src/PCA.cpp > CMakeFiles/distool.dir/src/PCA.cpp.i
-
-CMakeFiles/distool.dir/src/PCA.cpp.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/distool.dir/src/PCA.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/santi/Documentos/DistributionTool/src/PCA.cpp -o CMakeFiles/distool.dir/src/PCA.cpp.s
-
 CMakeFiles/distool.dir/src/main.cpp.o: CMakeFiles/distool.dir/flags.make
 CMakeFiles/distool.dir/src/main.cpp.o: /home/santi/Documentos/DistributionTool/src/main.cpp
 CMakeFiles/distool.dir/src/main.cpp.o: CMakeFiles/distool.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/santi/Documentos/DistributionTool/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_8) "Building CXX object CMakeFiles/distool.dir/src/main.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/santi/Documentos/DistributionTool/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object CMakeFiles/distool.dir/src/main.cpp.o"
 	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/distool.dir/src/main.cpp.o -MF CMakeFiles/distool.dir/src/main.cpp.o.d -o CMakeFiles/distool.dir/src/main.cpp.o -c /home/santi/Documentos/DistributionTool/src/main.cpp
 
 CMakeFiles/distool.dir/src/main.cpp.i: cmake_force
@@ -183,31 +85,31 @@ CMakeFiles/distool.dir/src/main.cpp.s: cmake_force
 
 # Object files for target distool
 distool_OBJECTS = \
-"CMakeFiles/distool.dir/src/LammpsDumpReader.cpp.o" \
-"CMakeFiles/distool.dir/src/SphericalHarmonics.cpp.o" \
-"CMakeFiles/distool.dir/src/RadialBasis.cpp.o" \
-"CMakeFiles/distool.dir/src/SOAPDescriptor.cpp.o" \
-"CMakeFiles/distool.dir/src/Statistics.cpp.o" \
-"CMakeFiles/distool.dir/src/DefectClassifier.cpp.o" \
-"CMakeFiles/distool.dir/src/PCA.cpp.o" \
 "CMakeFiles/distool.dir/src/main.cpp.o"
 
 # External object files for target distool
-distool_EXTERNAL_OBJECTS =
+distool_EXTERNAL_OBJECTS = \
+"/home/santi/Documentos/DistributionTool/build/CMakeFiles/distool_lib.dir/src/LammpsDumpReader.cpp.o" \
+"/home/santi/Documentos/DistributionTool/build/CMakeFiles/distool_lib.dir/src/SphericalHarmonics.cpp.o" \
+"/home/santi/Documentos/DistributionTool/build/CMakeFiles/distool_lib.dir/src/RadialBasis.cpp.o" \
+"/home/santi/Documentos/DistributionTool/build/CMakeFiles/distool_lib.dir/src/SOAPDescriptor.cpp.o" \
+"/home/santi/Documentos/DistributionTool/build/CMakeFiles/distool_lib.dir/src/Statistics.cpp.o" \
+"/home/santi/Documentos/DistributionTool/build/CMakeFiles/distool_lib.dir/src/DefectClassifier.cpp.o" \
+"/home/santi/Documentos/DistributionTool/build/CMakeFiles/distool_lib.dir/src/PCA.cpp.o"
 
-distool: CMakeFiles/distool.dir/src/LammpsDumpReader.cpp.o
-distool: CMakeFiles/distool.dir/src/SphericalHarmonics.cpp.o
-distool: CMakeFiles/distool.dir/src/RadialBasis.cpp.o
-distool: CMakeFiles/distool.dir/src/SOAPDescriptor.cpp.o
-distool: CMakeFiles/distool.dir/src/Statistics.cpp.o
-distool: CMakeFiles/distool.dir/src/DefectClassifier.cpp.o
-distool: CMakeFiles/distool.dir/src/PCA.cpp.o
 distool: CMakeFiles/distool.dir/src/main.cpp.o
+distool: CMakeFiles/distool_lib.dir/src/LammpsDumpReader.cpp.o
+distool: CMakeFiles/distool_lib.dir/src/SphericalHarmonics.cpp.o
+distool: CMakeFiles/distool_lib.dir/src/RadialBasis.cpp.o
+distool: CMakeFiles/distool_lib.dir/src/SOAPDescriptor.cpp.o
+distool: CMakeFiles/distool_lib.dir/src/Statistics.cpp.o
+distool: CMakeFiles/distool_lib.dir/src/DefectClassifier.cpp.o
+distool: CMakeFiles/distool_lib.dir/src/PCA.cpp.o
 distool: CMakeFiles/distool.dir/build.make
 distool: /usr/lib/gcc/x86_64-linux-gnu/13/libgomp.so
 distool: /usr/lib/x86_64-linux-gnu/libpthread.a
 distool: CMakeFiles/distool.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=/home/santi/Documentos/DistributionTool/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_9) "Linking CXX executable distool"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=/home/santi/Documentos/DistributionTool/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Linking CXX executable distool"
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/distool.dir/link.txt --verbose=$(VERBOSE)
 
 # Rule to build all files generated by this target.

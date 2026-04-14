@@ -1,5 +1,6 @@
 #include "LammpsDumpReader.h"
 #include <algorithm>
+#include <iostream>
 #include <sstream>
 #include <stdexcept>
 #include <string>
@@ -14,7 +15,9 @@ LammpsDumpReader::LammpsDumpReader(const std::string& path)
 }
 
 bool LammpsDumpReader::hasNext() const {
-    return file_.good() && !file_.eof();
+    // peek() attempts to read the next byte without consuming it.
+    // Returns EOF only when the stream is truly exhausted.
+    return file_.peek() != std::char_traits<char>::eof();
 }
 
 Frame LammpsDumpReader::readNext() {
@@ -27,7 +30,12 @@ std::vector<Frame> LammpsDumpReader::readAll() {
     std::vector<Frame> frames;
     while (hasNext()) {
         try { frames.push_back(parseFrame()); }
-        catch (const std::exception&) { break; }
+        catch (const std::runtime_error& e) {
+            // EOF reached cleanly between frames — normal termination.
+            std::string msg = e.what();
+            if (msg.find("EOF") != std::string::npos) break;
+            throw;  // Re-throw real parse errors.
+        }
     }
     return frames;
 }
@@ -162,6 +170,21 @@ Frame LammpsDumpReader::parseFrame() {
     int y_c    = colIdx({"y","yu","ys"});
     int z_c    = colIdx({"z","zu","zs"});
 
+    // Detect scaled coordinates (xs/ys/zs are in [0,1] and must be unscaled).
+    bool x_scaled = (x_c >= 0 && cols[x_c] == "xs");
+    bool y_scaled = (y_c >= 0 && cols[y_c] == "ys");
+    bool z_scaled = (z_c >= 0 && cols[z_c] == "zs");
+
+    if (x_scaled || y_scaled || z_scaled)
+        std::cout << "      [!] Scaled coordinates detected ("
+                  << (x_scaled ? "xs " : "") << (y_scaled ? "ys " : "")
+                  << (z_scaled ? "zs" : "")
+                  << ") — converting to Å.\n";
+
+    const double xlo = frame.box.xb[0], lx = frame.box.lx();
+    const double ylo = frame.box.yb[0], ly = frame.box.ly();
+    const double zlo = frame.box.zb[0], lz = frame.box.lz();
+
     frame.atoms.resize(n_atoms);
     for (int i = 0; i < n_atoms; ++i) {
         std::getline(file_, line);
@@ -176,6 +199,10 @@ Frame LammpsDumpReader::parseFrame() {
         if (x_c    >= 0 && x_c    < (int)vals.size()) a.x    = std::stod(vals[x_c]);
         if (y_c    >= 0 && y_c    < (int)vals.size()) a.y    = std::stod(vals[y_c]);
         if (z_c    >= 0 && z_c    < (int)vals.size()) a.z    = std::stod(vals[z_c]);
+
+        if (x_scaled) a.x = xlo + a.x * lx;
+        if (y_scaled) a.y = ylo + a.y * ly;
+        if (z_scaled) a.z = zlo + a.z * lz;
     }
 
     // Sort by atom id for deterministic ordering

@@ -1,50 +1,80 @@
 [
 {
   "directory": "/home/santi/Documentos/DistributionTool/build",
-  "command": "/usr/bin/c++ -DUSE_OPENMP -I/home/santi/Documentos/DistributionTool/include -isystem /usr/include/eigen3 -O3 -march=native -DNDEBUG -std=gnu++17 -fopenmp -o CMakeFiles/distool.dir/src/LammpsDumpReader.cpp.o -c /home/santi/Documentos/DistributionTool/src/LammpsDumpReader.cpp",
+  "command": "/usr/bin/c++ -DUSE_OPENMP -I/home/santi/Documentos/DistributionTool/include -isystem /usr/include/eigen3 -O3 -march=native -DNDEBUG -Wall -std=gnu++17 -fopenmp -o CMakeFiles/distool_lib.dir/src/LammpsDumpReader.cpp.o -c /home/santi/Documentos/DistributionTool/src/LammpsDumpReader.cpp",
   "file": "/home/santi/Documentos/DistributionTool/src/LammpsDumpReader.cpp",
-  "output": "CMakeFiles/distool.dir/src/LammpsDumpReader.cpp.o"
+  "output": "CMakeFiles/distool_lib.dir/src/LammpsDumpReader.cpp.o"
 },
 {
   "directory": "/home/santi/Documentos/DistributionTool/build",
-  "command": "/usr/bin/c++ -DUSE_OPENMP -I/home/santi/Documentos/DistributionTool/include -isystem /usr/include/eigen3 -O3 -march=native -DNDEBUG -std=gnu++17 -fopenmp -o CMakeFiles/distool.dir/src/SphericalHarmonics.cpp.o -c /home/santi/Documentos/DistributionTool/src/SphericalHarmonics.cpp",
+  "command": "/usr/bin/c++ -DUSE_OPENMP -I/home/santi/Documentos/DistributionTool/include -isystem /usr/include/eigen3 -O3 -march=native -DNDEBUG -Wall -std=gnu++17 -fopenmp -o CMakeFiles/distool_lib.dir/src/SphericalHarmonics.cpp.o -c /home/santi/Documentos/DistributionTool/src/SphericalHarmonics.cpp",
   "file": "/home/santi/Documentos/DistributionTool/src/SphericalHarmonics.cpp",
-  "output": "CMakeFiles/distool.dir/src/SphericalHarmonics.cpp.o"
+  "output": "CMakeFiles/distool_lib.dir/src/SphericalHarmonics.cpp.o"
 },
 {
   "directory": "/home/santi/Documentos/DistributionTool/build",
-  "command": "/usr/bin/c++ -DUSE_OPENMP -I/home/santi/Documentos/DistributionTool/include -isystem /usr/include/eigen3 -O3 -march=native -DNDEBUG -std=gnu++17 -fopenmp -o CMakeFiles/distool.dir/src/RadialBasis.cpp.o -c /home/santi/Documentos/DistributionTool/src/RadialBasis.cpp",
+  "command": "/usr/bin/c++ -DUSE_OPENMP -I/home/santi/Documentos/DistributionTool/include -isystem /usr/include/eigen3 -O3 -march=native -DNDEBUG -Wall -std=gnu++17 -fopenmp -o CMakeFiles/distool_lib.dir/src/RadialBasis.cpp.o -c /home/santi/Documentos/DistributionTool/src/RadialBasis.cpp",
   "file": "/home/santi/Documentos/DistributionTool/src/RadialBasis.cpp",
-  "output": "CMakeFiles/distool.dir/src/RadialBasis.cpp.o"
+  "output": "CMakeFiles/distool_lib.dir/src/RadialBasis.cpp.o"
 },
 {
   "directory": "/home/santi/Documentos/DistributionTool/build",
-  "command": "/usr/bin/c++ -DUSE_OPENMP -I/home/santi/Documentos/DistributionTool/include -isystem /usr/include/eigen3 -O3 -march=native -DNDEBUG -std=gnu++17 -fopenmp -o CMakeFiles/distool.dir/src/SOAPDescriptor.cpp.o -c /home/santi/Documentos/DistributionTool/src/SOAPDescriptor.cpp",
+  "command": "/usr/bin/c++ -DUSE_OPENMP -I/home/santi/Documentos/DistributionTool/include -isystem /usr/include/eigen3 -O3 -march=native -DNDEBUG -Wall -std=gnu++17 -fopenmp -o CMakeFiles/distool_lib.dir/src/SOAPDescriptor.cpp.o -c /home/santi/Documentos/DistributionTool/src/SOAPDescriptor.cpp",
   "file": "/home/santi/Documentos/DistributionTool/src/SOAPDescriptor.cpp",
-  "output": "CMakeFiles/distool.dir/src/SOAPDescriptor.cpp.o"
+  "output": "CMakeFiles/distool_lib.dir/src/SOAPDescriptor.cpp.o"
 },
 {
   "directory": "/home/santi/Documentos/DistributionTool/build",
-  "command": "/usr/bin/c++ -DUSE_OPENMP -I/home/santi/Documentos/DistributionTool/include -isystem /usr/include/eigen3 -O3 -march=native -DNDEBUG -std=gnu++17 -fopenmp -o CMakeFiles/distool.dir/src/Statistics.cpp.o -c /home/santi/Documentos/DistributionTool/src/Statistics.cpp",
+  "command": "/usr/bin/c++ -DUSE_OPENMP -I/home/santi/Documentos/DistributionTool/include -isystem /usr/include/eigen3 -O3 -march=native -DNDEBUG -Wall -std=gnu++17 -fopenmp -o CMakeFiles/distool_lib.dir/src/Statistics.cpp.o -c /home/santi/Documentos/DistributionTool/src/Statistics.cpp",
   "file": "/home/santi/Documentos/DistributionTool/src/Statistics.cpp",
-  "output": "CMakeFiles/distool.dir/src/Statistics.cpp.o"
+  "output": "CMakeFiles/distool_lib.dir/src/Statistics.cpp.o"
 },
 {
   "directory": "/home/santi/Documentos/DistributionTool/build",
-  "command": "/usr/bin/c++ -DUSE_OPENMP -I/home/santi/Documentos/DistributionTool/include -isystem /usr/include/eigen3 -O3 -march=native -DNDEBUG -std=gnu++17 -fopenmp -o CMakeFiles/distool.dir/src/DefectClassifier.cpp.o -c /home/santi/Documentos/DistributionTool/src/DefectClassifier.cpp",
+  "command": "/usr/bin/c++ -DUSE_OPENMP -I/home/santi/Documentos/DistributionTool/include -isystem /usr/include/eigen3 -O3 -march=native -DNDEBUG -Wall -std=gnu++17 -fopenmp -o CMakeFiles/distool_lib.dir/src/DefectClassifier.cpp.o -c /home/santi/Documentos/DistributionTool/src/DefectClassifier.cpp",
   "file": "/home/santi/Documentos/DistributionTool/src/DefectClassifier.cpp",
-  "output": "CMakeFiles/distool.dir/src/DefectClassifier.cpp.o"
+  "output": "CMakeFiles/distool_lib.dir/src/DefectClassifier.cpp.o"
 },
 {
   "directory": "/home/santi/Documentos/DistributionTool/build",
-  "command": "/usr/bin/c++ -DUSE_OPENMP -I/home/santi/Documentos/DistributionTool/include -isystem /usr/include/eigen3 -O3 -march=native -DNDEBUG -std=gnu++17 -fopenmp -o CMakeFiles/distool.dir/src/PCA.cpp.o -c /home/santi/Documentos/DistributionTool/src/PCA.cpp",
+  "command": "/usr/bin/c++ -DUSE_OPENMP -I/home/santi/Documentos/DistributionTool/include -isystem /usr/include/eigen3 -O3 -march=native -DNDEBUG -Wall -std=gnu++17 -fopenmp -o CMakeFiles/distool_lib.dir/src/PCA.cpp.o -c /home/santi/Documentos/DistributionTool/src/PCA.cpp",
   "file": "/home/santi/Documentos/DistributionTool/src/PCA.cpp",
-  "output": "CMakeFiles/distool.dir/src/PCA.cpp.o"
+  "output": "CMakeFiles/distool_lib.dir/src/PCA.cpp.o"
 },
 {
   "directory": "/home/santi/Documentos/DistributionTool/build",
-  "command": "/usr/bin/c++ -DUSE_OPENMP -I/home/santi/Documentos/DistributionTool/include -isystem /usr/include/eigen3 -O3 -march=native -DNDEBUG -std=gnu++17 -fopenmp -o CMakeFiles/distool.dir/src/main.cpp.o -c /home/santi/Documentos/DistributionTool/src/main.cpp",
+  "command": "/usr/bin/c++ -DUSE_OPENMP -I/home/santi/Documentos/DistributionTool/include -isystem /usr/include/eigen3 -O3 -march=native -DNDEBUG -Wall -std=gnu++17 -fopenmp -o CMakeFiles/distool.dir/src/main.cpp.o -c /home/santi/Documentos/DistributionTool/src/main.cpp",
   "file": "/home/santi/Documentos/DistributionTool/src/main.cpp",
   "output": "CMakeFiles/distool.dir/src/main.cpp.o"
+},
+{
+  "directory": "/home/santi/Documentos/DistributionTool/build/tests",
+  "command": "/usr/bin/c++ -DTEST_DATA_DIR=\\\"/home/santi/Documentos/DistributionTool\\\" -DUSE_OPENMP -I/home/santi/Documentos/DistributionTool/tests -I/home/santi/Documentos/DistributionTool/include -isystem /usr/include/eigen3 -O3 -march=native -DNDEBUG -Wall -std=gnu++17 -fopenmp -o CMakeFiles/distool_tests.dir/main.cpp.o -c /home/santi/Documentos/DistributionTool/tests/main.cpp",
+  "file": "/home/santi/Documentos/DistributionTool/tests/main.cpp",
+  "output": "tests/CMakeFiles/distool_tests.dir/main.cpp.o"
+},
+{
+  "directory": "/home/santi/Documentos/DistributionTool/build/tests",
+  "command": "/usr/bin/c++ -DTEST_DATA_DIR=\\\"/home/santi/Documentos/DistributionTool\\\" -DUSE_OPENMP -I/home/santi/Documentos/DistributionTool/tests -I/home/santi/Documentos/DistributionTool/include -isystem /usr/include/eigen3 -O3 -march=native -DNDEBUG -Wall -std=gnu++17 -fopenmp -o CMakeFiles/distool_tests.dir/test_statistics.cpp.o -c /home/santi/Documentos/DistributionTool/tests/test_statistics.cpp",
+  "file": "/home/santi/Documentos/DistributionTool/tests/test_statistics.cpp",
+  "output": "tests/CMakeFiles/distool_tests.dir/test_statistics.cpp.o"
+},
+{
+  "directory": "/home/santi/Documentos/DistributionTool/build/tests",
+  "command": "/usr/bin/c++ -DTEST_DATA_DIR=\\\"/home/santi/Documentos/DistributionTool\\\" -DUSE_OPENMP -I/home/santi/Documentos/DistributionTool/tests -I/home/santi/Documentos/DistributionTool/include -isystem /usr/include/eigen3 -O3 -march=native -DNDEBUG -Wall -std=gnu++17 -fopenmp -o CMakeFiles/distool_tests.dir/test_descriptors.cpp.o -c /home/santi/Documentos/DistributionTool/tests/test_descriptors.cpp",
+  "file": "/home/santi/Documentos/DistributionTool/tests/test_descriptors.cpp",
+  "output": "tests/CMakeFiles/distool_tests.dir/test_descriptors.cpp.o"
+},
+{
+  "directory": "/home/santi/Documentos/DistributionTool/build/tests",
+  "command": "/usr/bin/c++ -DTEST_DATA_DIR=\\\"/home/santi/Documentos/DistributionTool\\\" -DUSE_OPENMP -I/home/santi/Documentos/DistributionTool/tests -I/home/santi/Documentos/DistributionTool/include -isystem /usr/include/eigen3 -O3 -march=native -DNDEBUG -Wall -std=gnu++17 -fopenmp -o CMakeFiles/distool_tests.dir/test_classifier.cpp.o -c /home/santi/Documentos/DistributionTool/tests/test_classifier.cpp",
+  "file": "/home/santi/Documentos/DistributionTool/tests/test_classifier.cpp",
+  "output": "tests/CMakeFiles/distool_tests.dir/test_classifier.cpp.o"
+},
+{
+  "directory": "/home/santi/Documentos/DistributionTool/build/tests",
+  "command": "/usr/bin/c++ -DTEST_DATA_DIR=\\\"/home/santi/Documentos/DistributionTool\\\" -DUSE_OPENMP -I/home/santi/Documentos/DistributionTool/tests -I/home/santi/Documentos/DistributionTool/include -isystem /usr/include/eigen3 -O3 -march=native -DNDEBUG -Wall -std=gnu++17 -fopenmp -o CMakeFiles/distool_tests.dir/test_reader.cpp.o -c /home/santi/Documentos/DistributionTool/tests/test_reader.cpp",
+  "file": "/home/santi/Documentos/DistributionTool/tests/test_reader.cpp",
+  "output": "tests/CMakeFiles/distool_tests.dir/test_reader.cpp.o"
 }
 ]

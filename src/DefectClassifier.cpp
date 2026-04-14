@@ -20,14 +20,19 @@ void DefectClassifier::buildReference(
         throw std::invalid_argument("buildReference: empty DV set");
 
     ref_.mean_dv = Statistics::mean(ref_dvs);
-    Statistics::distanceStats(ref_dvs, ref_.mean_dv,
-                               ref_.mean_dist, ref_.var_dist);
 
-    // Fit chi-distribution parameters from the reference distance distribution.
+    // Compute distances once; reuse for mean/var and chi-fit.
     std::vector<double> dists;
     dists.reserve(ref_dvs.size());
     for (const auto& dv : ref_dvs)
         dists.push_back(Statistics::euclidean(dv, ref_.mean_dv));
+
+    const int nd = static_cast<int>(dists.size());
+    ref_.mean_dist = std::accumulate(dists.begin(), dists.end(), 0.0) / nd;
+    double var = 0.0;
+    for (double d : dists) { const double delta = d - ref_.mean_dist; var += delta * delta; }
+    ref_.var_dist = var / nd;
+
     Statistics::fitChiParams(dists, ref_.k_chi, ref_.sigma_chi);
 }
 
@@ -135,6 +140,9 @@ std::vector<VacancyPoint> DefectClassifier::findVacanciesGrid(
 // (deepest void), absorbs all unassigned points within r_cluster, repeats.
 // Applies minimum-image PBC using the supplied SimBox.
 // Returns one VacancyCluster per physical vacancy/void event.
+//
+// Complexity: O(M log M) sort + O(M) spatial grid build + O(M · 27k) clustering,
+// where k = average vacancy points per grid cell.  Was O(M²) before.
 std::vector<VacancyCluster> DefectClassifier::clusterVacancyPoints(
     const std::vector<VacancyPoint>& pts,
     double r_cluster,
@@ -146,6 +154,27 @@ std::vector<VacancyCluster> DefectClassifier::clusterVacancyPoints(
     if (n == 0) return {};
 
     const double Lx = box.lx(), Ly = box.ly(), Lz = box.lz();
+
+    // ── Spatial grid over vacancy points (same idea as CellList) ─────────────
+    // Each cell side = r_cluster so the 3×3×3 shell covers the full search radius.
+    const int gnx = std::max(1, static_cast<int>(std::floor(Lx / r_cluster)));
+    const int gny = std::max(1, static_cast<int>(std::floor(Ly / r_cluster)));
+    const int gnz = std::max(1, static_cast<int>(std::floor(Lz / r_cluster)));
+    const double gcx = Lx / gnx, gcy = Ly / gny, gcz = Lz / gnz;
+    const double xlo = box.xb[0], ylo = box.yb[0], zlo = box.zb[0];
+
+    auto cellOf = [&](const std::array<double,3>& pos, int& ix, int& iy, int& iz) {
+        ix = std::min(gnx-1, std::max(0, static_cast<int>((pos[0] - xlo) / gcx)));
+        iy = std::min(gny-1, std::max(0, static_cast<int>((pos[1] - ylo) / gcy)));
+        iz = std::min(gnz-1, std::max(0, static_cast<int>((pos[2] - zlo) / gcz)));
+    };
+
+    std::vector<std::vector<int>> grid(gnx * gny * gnz);
+    for (int i = 0; i < n; ++i) {
+        int ix, iy, iz;
+        cellOf(pts[i].pos, ix, iy, iz);
+        grid[ix * gny * gnz + iy * gnz + iz].push_back(i);
+    }
 
     // Minimum-image displacement along one axis.
     auto mi = [](double d, double L, bool periodic) -> double {
@@ -175,19 +204,31 @@ std::vector<VacancyCluster> DefectClassifier::clusterVacancyPoints(
         cl.n_pts      = 1;
         assigned[i]   = true;
 
-        // Absorb all unassigned points within r_cluster of this seed (with PBC).
-        for (int jj = ii + 1; jj < n; ++jj) {
-            const int j = order[jj];
-            if (assigned[j]) continue;
-            double ddx = pts[j].pos[0] - cl.center[0];
-            double ddy = pts[j].pos[1] - cl.center[1];
-            double ddz = pts[j].pos[2] - cl.center[2];
-            ddx = mi(ddx, Lx, box.periodic[0]);
-            ddy = mi(ddy, Ly, box.periodic[1]);
-            ddz = mi(ddz, Lz, box.periodic[2]);
-            if (ddx*ddx + ddy*ddy + ddz*ddz <= rc2) {
-                assigned[j] = true;
-                ++cl.n_pts;
+        // Query the 3×3×3 cell neighbourhood of the seed.
+        int six, siy, siz;
+        cellOf(pts[i].pos, six, siy, siz);
+
+        for (int dix = -1; dix <= 1; ++dix)
+        for (int diy = -1; diy <= 1; ++diy)
+        for (int diz = -1; diz <= 1; ++diz) {
+            int jx = six + dix, jy = siy + diy, jz = siz + diz;
+            // Periodic: wrap; non-periodic: skip out-of-range shells.
+            if (box.periodic[0]) jx = ((jx % gnx) + gnx) % gnx;
+            else if (jx < 0 || jx >= gnx) continue;
+            if (box.periodic[1]) jy = ((jy % gny) + gny) % gny;
+            else if (jy < 0 || jy >= gny) continue;
+            if (box.periodic[2]) jz = ((jz % gnz) + gnz) % gnz;
+            else if (jz < 0 || jz >= gnz) continue;
+
+            for (int j : grid[jx * gny * gnz + jy * gnz + jz]) {
+                if (assigned[j]) continue;
+                double ddx = mi(pts[j].pos[0] - cl.center[0], Lx, box.periodic[0]);
+                double ddy = mi(pts[j].pos[1] - cl.center[1], Ly, box.periodic[1]);
+                double ddz = mi(pts[j].pos[2] - cl.center[2], Lz, box.periodic[2]);
+                if (ddx*ddx + ddy*ddy + ddz*ddz <= rc2) {
+                    assigned[j] = true;
+                    ++cl.n_pts;
+                }
             }
         }
 
@@ -195,32 +236,6 @@ std::vector<VacancyCluster> DefectClassifier::clusterVacancyPoints(
     }
 
     return clusters;
-}
-
-// ── Legacy: vacancy identification from pristine lattice positions ────────────
-// Builds a cell list from the damaged frame for O(N) nearest-site lookup.
-// Returns pristine lattice positions whose nearest atom in `damaged` exceeds
-// `dist_threshold`.
-std::vector<std::array<double,3>> DefectClassifier::findVacancies(
-    const Frame& pristine,
-    const Frame& damaged,
-    double dist_threshold) const
-{
-    // Build a cell list from the damaged frame — O(N) construction,
-    // O(27·k) per query where k = average atoms per cell.
-    CellList cl;
-    cl.build(damaged, dist_threshold);
-    const double dt2 = dist_threshold * dist_threshold;
-
-    std::vector<std::array<double,3>> vacancies;
-    vacancies.reserve(pristine.atoms.size() / 16); // rough pre-alloc
-
-    for (const auto& ref_atom : pristine.atoms) {
-        if (cl.nearestDist2FromPoint(ref_atom.x, ref_atom.y, ref_atom.z) > dt2)
-            vacancies.push_back({ref_atom.x, ref_atom.y, ref_atom.z});
-    }
-
-    return vacancies;
 }
 
 } // namespace DistTool

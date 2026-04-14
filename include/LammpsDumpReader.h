@@ -26,8 +26,8 @@ public:
     std::vector<Frame> readAll();
 
 private:
-    std::string   path_;
-    std::ifstream file_;
+    std::string           path_;
+    mutable std::ifstream file_;  // mutable: peek() in hasNext() updates stream state
 
     Frame parseFrame();
 
