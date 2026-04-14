@@ -65,10 +65,6 @@ private:
         double* c_buf,      // [n_max × (l_max+1)²], zeroed before call
         std::vector<double>& dv_out) const;
 
-    // Fallback O(N) brute-force neighbour list (used if cell list unavailable).
-    std::vector<std::array<double,3>> neighborList(
-        const Frame& frame, int i) const;
-
     static std::array<double,3> minImage(
         std::array<double,3> dr, const SimBox& box);
 };

@@ -65,6 +65,16 @@ CMAKE_BINARY_DIR = /home/santi/Documentos/DistributionTool/build
 #=============================================================================
 # Targets provided globally by CMake.
 
+# Special rule for the target test
+test:
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --cyan "Running tests..."
+	/usr/bin/ctest --force-new-ctest-process $(ARGS)
+.PHONY : test
+
+# Special rule for the target test
+test/fast: test
+.PHONY : test/fast
+
 # Special rule for the target edit_cache
 edit_cache:
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --cyan "No interactive CMake dialog available..."
@@ -162,6 +172,19 @@ depend:
 .PHONY : depend
 
 #=============================================================================
+# Target rules for targets named distool_lib
+
+# Build rule for target.
+distool_lib: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 distool_lib
+.PHONY : distool_lib
+
+# fast build rule for target.
+distool_lib/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/distool_lib.dir/build.make CMakeFiles/distool_lib.dir/build
+.PHONY : distool_lib/fast
+
+#=============================================================================
 # Target rules for targets named distool
 
 # Build rule for target.
@@ -174,12 +197,25 @@ distool/fast:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/distool.dir/build.make CMakeFiles/distool.dir/build
 .PHONY : distool/fast
 
+#=============================================================================
+# Target rules for targets named distool_tests
+
+# Build rule for target.
+distool_tests: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 distool_tests
+.PHONY : distool_tests
+
+# fast build rule for target.
+distool_tests/fast:
+	$(MAKE) $(MAKESILENT) -f tests/CMakeFiles/distool_tests.dir/build.make tests/CMakeFiles/distool_tests.dir/build
+.PHONY : distool_tests/fast
+
 src/DefectClassifier.o: src/DefectClassifier.cpp.o
 .PHONY : src/DefectClassifier.o
 
 # target to build an object file
 src/DefectClassifier.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/distool.dir/build.make CMakeFiles/distool.dir/src/DefectClassifier.cpp.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/distool_lib.dir/build.make CMakeFiles/distool_lib.dir/src/DefectClassifier.cpp.o
 .PHONY : src/DefectClassifier.cpp.o
 
 src/DefectClassifier.i: src/DefectClassifier.cpp.i
@@ -187,7 +223,7 @@ src/DefectClassifier.i: src/DefectClassifier.cpp.i
 
 # target to preprocess a source file
 src/DefectClassifier.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/distool.dir/build.make CMakeFiles/distool.dir/src/DefectClassifier.cpp.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/distool_lib.dir/build.make CMakeFiles/distool_lib.dir/src/DefectClassifier.cpp.i
 .PHONY : src/DefectClassifier.cpp.i
 
 src/DefectClassifier.s: src/DefectClassifier.cpp.s
@@ -195,7 +231,7 @@ src/DefectClassifier.s: src/DefectClassifier.cpp.s
 
 # target to generate assembly for a file
 src/DefectClassifier.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/distool.dir/build.make CMakeFiles/distool.dir/src/DefectClassifier.cpp.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/distool_lib.dir/build.make CMakeFiles/distool_lib.dir/src/DefectClassifier.cpp.s
 .PHONY : src/DefectClassifier.cpp.s
 
 src/LammpsDumpReader.o: src/LammpsDumpReader.cpp.o
@@ -203,7 +239,7 @@ src/LammpsDumpReader.o: src/LammpsDumpReader.cpp.o
 
 # target to build an object file
 src/LammpsDumpReader.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/distool.dir/build.make CMakeFiles/distool.dir/src/LammpsDumpReader.cpp.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/distool_lib.dir/build.make CMakeFiles/distool_lib.dir/src/LammpsDumpReader.cpp.o
 .PHONY : src/LammpsDumpReader.cpp.o
 
 src/LammpsDumpReader.i: src/LammpsDumpReader.cpp.i
@@ -211,7 +247,7 @@ src/LammpsDumpReader.i: src/LammpsDumpReader.cpp.i
 
 # target to preprocess a source file
 src/LammpsDumpReader.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/distool.dir/build.make CMakeFiles/distool.dir/src/LammpsDumpReader.cpp.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/distool_lib.dir/build.make CMakeFiles/distool_lib.dir/src/LammpsDumpReader.cpp.i
 .PHONY : src/LammpsDumpReader.cpp.i
 
 src/LammpsDumpReader.s: src/LammpsDumpReader.cpp.s
@@ -219,7 +255,7 @@ src/LammpsDumpReader.s: src/LammpsDumpReader.cpp.s
 
 # target to generate assembly for a file
 src/LammpsDumpReader.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/distool.dir/build.make CMakeFiles/distool.dir/src/LammpsDumpReader.cpp.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/distool_lib.dir/build.make CMakeFiles/distool_lib.dir/src/LammpsDumpReader.cpp.s
 .PHONY : src/LammpsDumpReader.cpp.s
 
 src/PCA.o: src/PCA.cpp.o
@@ -227,7 +263,7 @@ src/PCA.o: src/PCA.cpp.o
 
 # target to build an object file
 src/PCA.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/distool.dir/build.make CMakeFiles/distool.dir/src/PCA.cpp.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/distool_lib.dir/build.make CMakeFiles/distool_lib.dir/src/PCA.cpp.o
 .PHONY : src/PCA.cpp.o
 
 src/PCA.i: src/PCA.cpp.i
@@ -235,7 +271,7 @@ src/PCA.i: src/PCA.cpp.i
 
 # target to preprocess a source file
 src/PCA.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/distool.dir/build.make CMakeFiles/distool.dir/src/PCA.cpp.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/distool_lib.dir/build.make CMakeFiles/distool_lib.dir/src/PCA.cpp.i
 .PHONY : src/PCA.cpp.i
 
 src/PCA.s: src/PCA.cpp.s
@@ -243,7 +279,7 @@ src/PCA.s: src/PCA.cpp.s
 
 # target to generate assembly for a file
 src/PCA.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/distool.dir/build.make CMakeFiles/distool.dir/src/PCA.cpp.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/distool_lib.dir/build.make CMakeFiles/distool_lib.dir/src/PCA.cpp.s
 .PHONY : src/PCA.cpp.s
 
 src/RadialBasis.o: src/RadialBasis.cpp.o
@@ -251,7 +287,7 @@ src/RadialBasis.o: src/RadialBasis.cpp.o
 
 # target to build an object file
 src/RadialBasis.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/distool.dir/build.make CMakeFiles/distool.dir/src/RadialBasis.cpp.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/distool_lib.dir/build.make CMakeFiles/distool_lib.dir/src/RadialBasis.cpp.o
 .PHONY : src/RadialBasis.cpp.o
 
 src/RadialBasis.i: src/RadialBasis.cpp.i
@@ -259,7 +295,7 @@ src/RadialBasis.i: src/RadialBasis.cpp.i
 
 # target to preprocess a source file
 src/RadialBasis.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/distool.dir/build.make CMakeFiles/distool.dir/src/RadialBasis.cpp.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/distool_lib.dir/build.make CMakeFiles/distool_lib.dir/src/RadialBasis.cpp.i
 .PHONY : src/RadialBasis.cpp.i
 
 src/RadialBasis.s: src/RadialBasis.cpp.s
@@ -267,7 +303,7 @@ src/RadialBasis.s: src/RadialBasis.cpp.s
 
 # target to generate assembly for a file
 src/RadialBasis.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/distool.dir/build.make CMakeFiles/distool.dir/src/RadialBasis.cpp.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/distool_lib.dir/build.make CMakeFiles/distool_lib.dir/src/RadialBasis.cpp.s
 .PHONY : src/RadialBasis.cpp.s
 
 src/SOAPDescriptor.o: src/SOAPDescriptor.cpp.o
@@ -275,7 +311,7 @@ src/SOAPDescriptor.o: src/SOAPDescriptor.cpp.o
 
 # target to build an object file
 src/SOAPDescriptor.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/distool.dir/build.make CMakeFiles/distool.dir/src/SOAPDescriptor.cpp.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/distool_lib.dir/build.make CMakeFiles/distool_lib.dir/src/SOAPDescriptor.cpp.o
 .PHONY : src/SOAPDescriptor.cpp.o
 
 src/SOAPDescriptor.i: src/SOAPDescriptor.cpp.i
@@ -283,7 +319,7 @@ src/SOAPDescriptor.i: src/SOAPDescriptor.cpp.i
 
 # target to preprocess a source file
 src/SOAPDescriptor.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/distool.dir/build.make CMakeFiles/distool.dir/src/SOAPDescriptor.cpp.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/distool_lib.dir/build.make CMakeFiles/distool_lib.dir/src/SOAPDescriptor.cpp.i
 .PHONY : src/SOAPDescriptor.cpp.i
 
 src/SOAPDescriptor.s: src/SOAPDescriptor.cpp.s
@@ -291,7 +327,7 @@ src/SOAPDescriptor.s: src/SOAPDescriptor.cpp.s
 
 # target to generate assembly for a file
 src/SOAPDescriptor.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/distool.dir/build.make CMakeFiles/distool.dir/src/SOAPDescriptor.cpp.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/distool_lib.dir/build.make CMakeFiles/distool_lib.dir/src/SOAPDescriptor.cpp.s
 .PHONY : src/SOAPDescriptor.cpp.s
 
 src/SphericalHarmonics.o: src/SphericalHarmonics.cpp.o
@@ -299,7 +335,7 @@ src/SphericalHarmonics.o: src/SphericalHarmonics.cpp.o
 
 # target to build an object file
 src/SphericalHarmonics.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/distool.dir/build.make CMakeFiles/distool.dir/src/SphericalHarmonics.cpp.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/distool_lib.dir/build.make CMakeFiles/distool_lib.dir/src/SphericalHarmonics.cpp.o
 .PHONY : src/SphericalHarmonics.cpp.o
 
 src/SphericalHarmonics.i: src/SphericalHarmonics.cpp.i
@@ -307,7 +343,7 @@ src/SphericalHarmonics.i: src/SphericalHarmonics.cpp.i
 
 # target to preprocess a source file
 src/SphericalHarmonics.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/distool.dir/build.make CMakeFiles/distool.dir/src/SphericalHarmonics.cpp.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/distool_lib.dir/build.make CMakeFiles/distool_lib.dir/src/SphericalHarmonics.cpp.i
 .PHONY : src/SphericalHarmonics.cpp.i
 
 src/SphericalHarmonics.s: src/SphericalHarmonics.cpp.s
@@ -315,7 +351,7 @@ src/SphericalHarmonics.s: src/SphericalHarmonics.cpp.s
 
 # target to generate assembly for a file
 src/SphericalHarmonics.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/distool.dir/build.make CMakeFiles/distool.dir/src/SphericalHarmonics.cpp.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/distool_lib.dir/build.make CMakeFiles/distool_lib.dir/src/SphericalHarmonics.cpp.s
 .PHONY : src/SphericalHarmonics.cpp.s
 
 src/Statistics.o: src/Statistics.cpp.o
@@ -323,7 +359,7 @@ src/Statistics.o: src/Statistics.cpp.o
 
 # target to build an object file
 src/Statistics.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/distool.dir/build.make CMakeFiles/distool.dir/src/Statistics.cpp.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/distool_lib.dir/build.make CMakeFiles/distool_lib.dir/src/Statistics.cpp.o
 .PHONY : src/Statistics.cpp.o
 
 src/Statistics.i: src/Statistics.cpp.i
@@ -331,7 +367,7 @@ src/Statistics.i: src/Statistics.cpp.i
 
 # target to preprocess a source file
 src/Statistics.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/distool.dir/build.make CMakeFiles/distool.dir/src/Statistics.cpp.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/distool_lib.dir/build.make CMakeFiles/distool_lib.dir/src/Statistics.cpp.i
 .PHONY : src/Statistics.cpp.i
 
 src/Statistics.s: src/Statistics.cpp.s
@@ -339,7 +375,7 @@ src/Statistics.s: src/Statistics.cpp.s
 
 # target to generate assembly for a file
 src/Statistics.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/distool.dir/build.make CMakeFiles/distool.dir/src/Statistics.cpp.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/distool_lib.dir/build.make CMakeFiles/distool_lib.dir/src/Statistics.cpp.s
 .PHONY : src/Statistics.cpp.s
 
 src/main.o: src/main.cpp.o
@@ -378,7 +414,10 @@ help:
 	@echo "... install/strip"
 	@echo "... list_install_components"
 	@echo "... rebuild_cache"
+	@echo "... test"
 	@echo "... distool"
+	@echo "... distool_lib"
+	@echo "... distool_tests"
 	@echo "... src/DefectClassifier.o"
 	@echo "... src/DefectClassifier.i"
 	@echo "... src/DefectClassifier.s"

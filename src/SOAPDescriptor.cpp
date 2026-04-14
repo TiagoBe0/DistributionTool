@@ -33,25 +33,6 @@ std::array<double,3> SOAPDescriptor::minImage(
     return dr;
 }
 
-// ── Fallback brute-force neighbour list (used only when cell list unavailable)
-std::vector<std::array<double,3>> SOAPDescriptor::neighborList(
-    const Frame& frame, int i) const
-{
-    const Atom& ai = frame.atoms[i];
-    const double rc2 = params_.r_cut * params_.r_cut;
-    std::vector<std::array<double,3>> nb;
-    nb.reserve(64);
-    for (int j = 0; j < frame.size(); ++j) {
-        if (j == i) continue;
-        const Atom& aj = frame.atoms[j];
-        std::array<double,3> dr = {aj.x - ai.x, aj.y - ai.y, aj.z - ai.z};
-        dr = minImage(dr, frame.box);
-        if (dr[0]*dr[0] + dr[1]*dr[1] + dr[2]*dr[2] < rc2)
-            nb.push_back(dr);
-    }
-    return nb;
-}
-
 // ── Core SOAP computation — HOT PATH ─────────────────────────────────────────
 // All work buffers are passed in by the caller so no heap allocation happens
 // inside this function.  `phi_buf` size = n_max, `ylm_buf` size = nYlm,

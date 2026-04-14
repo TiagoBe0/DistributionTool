@@ -367,6 +367,8 @@ int main(int argc, char* argv[]) {
         Frame ref_frame = ref_reader.readNext();
         std::cout << "      " << ref_frame.size() << " atoms, timestep "
                   << ref_frame.timestep << '\n';
+        if (ref_reader.hasNext())
+            std::cout << "  [!] Reference file has multiple frames; only the first is used.\n";
 
         // Memory estimate warning
         {
@@ -426,6 +428,8 @@ int main(int argc, char* argv[]) {
         Frame dmg_frame = dmg_reader.readNext();
         std::cout << "      " << dmg_frame.size() << " atoms, timestep "
                   << dmg_frame.timestep << '\n';
+        if (dmg_reader.hasNext())
+            std::cout << "  [!] Damaged file has multiple frames; only the first is used.\n";
 
         std::cout << "      Computing SOAP descriptors for damaged frame…\n";
         t0 = std::chrono::steady_clock::now();
