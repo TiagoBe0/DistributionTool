@@ -190,6 +190,34 @@ static void writeVacancyCSV(
               << "  (" << clusters.size() << " vacancies)\n";
 }
 
+// Write analyzed LAMMPS dump — same box/timestep as input, with extra columns
+// defect_label is the integer value of DefectType (readable by OVITO as property)
+static void writeLAMMPSDump(const Frame& frame, const std::string& path) {
+    std::ofstream f(path);
+    if (!f) throw std::runtime_error("Cannot write dump: " + path);
+
+    f << "ITEM: TIMESTEP\n" << frame.timestep << "\n";
+    f << "ITEM: NUMBER OF ATOMS\n" << frame.size() << "\n";
+    f << "ITEM: BOX BOUNDS pp pp pp\n"
+      << std::fixed << std::setprecision(10)
+      << frame.box.xb[0] << " " << frame.box.xb[1] << "\n"
+      << frame.box.yb[0] << " " << frame.box.yb[1] << "\n"
+      << frame.box.zb[0] << " " << frame.box.zb[1] << "\n";
+    f << "ITEM: ATOMS id type x y z dist_to_ref defect_prob defect_label\n";
+    f << std::setprecision(8);
+    for (const auto& a : frame.atoms) {
+        f << a.id   << ' '
+          << a.type << ' '
+          << a.x    << ' '
+          << a.y    << ' '
+          << a.z    << ' '
+          << a.dist_to_ref << ' '
+          << a.defect_prob << ' '
+          << static_cast<int>(a.defect_type) << '\n';
+    }
+    std::cout << "  → analyzed dump written: " << path << '\n';
+}
+
 static void writeHistogram(
     const std::vector<double>& dists,
     int nbins,
@@ -469,6 +497,7 @@ int main(int argc, char* argv[]) {
         // ══════════════════════════════════════════════════════════════════════
         std::cout << "\nWriting outputs…\n";
         writeAtomCSV(dmg_frame, out_file);
+        writeLAMMPSDump(dmg_frame, prefixedPath("analyzed_", dmg_file));
 
         // Vacancy file: one row per cluster (physical vacancy)
         if (!clusters.empty()) {
