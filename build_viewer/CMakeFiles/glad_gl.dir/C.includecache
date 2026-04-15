@@ -1,0 +1,32 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/build_viewer/gladsources/glad_gl/src/gl.c
+stdio.h
+-
+stdlib.h
+-
+string.h
+-
+glad/gl.h
+-
+
+gladsources/glad_gl/include/KHR/khrplatform.h
+stdint.h
+-
+inttypes.h
+-
+stdint.h
+-
+
+gladsources/glad_gl/include/glad/gl.h
+winapifamily.h
+-
+KHR/khrplatform.h
+-
+
