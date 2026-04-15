@@ -1088,12 +1088,12 @@ static void drawVisualizationUI(App& app, Renderer& rend) {
     // Percentile quick-set buttons
     ImGui::TextDisabled("quick filter:");
     ImGui::SameLine();
-    if (ImGui::SmallButton("top 10%%")) {
+    if (ImGui::SmallButton("top 10%")) {
         float cut = app.dist_min + (app.dist_max - app.dist_min) * 0.9f;
         app.filter_lo = cut; app.filter_hi = app.dist_max; changed = true;
     }
     ImGui::SameLine();
-    if (ImGui::SmallButton("top 25%%")) {
+    if (ImGui::SmallButton("top 25%")) {
         float cut = app.dist_min + (app.dist_max - app.dist_min) * 0.75f;
         app.filter_lo = cut; app.filter_hi = app.dist_max; changed = true;
     }
@@ -1267,9 +1267,10 @@ int main(int argc, char* argv[]) {
     while (!glfwWindowShouldClose(win)) {
         glfwPollEvents();
 
-        int fbw, fbh;
+        int fbw, fbh, winw, winh;
         glfwGetFramebufferSize(win, &fbw, &fbh);
-        app.win_w = fbw; app.win_h = fbh;
+        glfwGetWindowSize(win, &winw, &winh);
+        app.win_w = fbw; app.win_h = winh;  // fbw for GL, winh for ImGui (logical px)
 
         glViewport(0, 0, fbw, fbh);
         glClearColor(0.07f, 0.07f, 0.09f, 1.f);
@@ -1307,6 +1308,11 @@ int main(int argc, char* argv[]) {
 
         glfwSwapBuffers(win);
     }
+
+    // Join analysis worker before tearing down — avoids std::terminate()
+    // if the window is closed while distool is still running.
+    if (app.analysis.worker.joinable())
+        app.analysis.worker.join();
 
     ImGui_ImplOpenGL3_Shutdown();
     ImGui_ImplGlfw_Shutdown();
