@@ -865,6 +865,9 @@ static void saveAnalyzedDump(const App& app, const std::string& path, bool visib
         xlo -= mx; xhi += mx; ylo -= my; yhi += my; zlo -= mz; zhi += mz;
     }
 
+    if (src.empty())
+        throw std::runtime_error("No hay átomos para exportar.");
+
     std::ofstream f(path);
     if (!f) throw std::runtime_error("No se puede escribir: " + path);
 
@@ -1057,9 +1060,9 @@ static void loadIntoViewer(App& app, Renderer& rend, const std::string& path) {
                 || path.rfind("dump", 0) != std::string::npos;
     BoxBounds box; int ts = 0;
     std::vector<AtomRecord> atoms = is_dump ? loadDump(path, &box, &ts) : loadCSV(path);
-    app.loaded_box       = box;
-    app.loaded_timestep  = ts;
     if (atoms.empty()) return;
+    app.loaded_box      = box;
+    app.loaded_timestep = ts;
 
     app.all_atoms = std::move(atoms);
     app.filename  = path;
