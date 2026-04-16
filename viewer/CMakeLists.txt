@@ -5,6 +5,9 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)  # lets VS Code find FetchContent headers
 
+# Standard GNU install paths
+include(GNUInstallDirs)
+
 include(FetchContent)
 
 # ── GLFW ──────────────────────────────────────────────────────────────────────
@@ -14,6 +17,7 @@ FetchContent_Declare(glfw
 set(GLFW_BUILD_DOCS     OFF CACHE BOOL "" FORCE)
 set(GLFW_BUILD_TESTS    OFF CACHE BOOL "" FORCE)
 set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
+set(GLFW_BUILD_WAYLAND  OFF CACHE BOOL "" FORCE)
 FetchContent_MakeAvailable(glfw)
 
 # ── GLM ───────────────────────────────────────────────────────────────────────
@@ -70,6 +74,14 @@ if(NOT CMAKE_BUILD_TYPE)
     set(CMAKE_BUILD_TYPE Release)
 endif()
 set(CMAKE_CXX_FLAGS_RELEASE "-O2 -DNDEBUG")
+
+# ── Install rules (Linux) ─────────────────────────────────────────────────────
+install(TARGETS distool_viewer
+        RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
+
+# README: se instala para que el botón Info lo encuentre dentro del AppImage
+install(FILES ${CMAKE_SOURCE_DIR}/../README.md
+        DESTINATION ${CMAKE_INSTALL_DATADIR}/distool)
 
 message(STATUS "")
 message(STATUS "Build viewer:")

@@ -4,19 +4,19 @@
 cmake_minimum_required(VERSION 3.5)
 
 file(MAKE_DIRECTORY
-  "/home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/build_viewer/_deps/imgui-src"
-  "/home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/build_viewer/_deps/imgui-build"
-  "/home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/build_viewer/_deps/imgui-subbuild/imgui-populate-prefix"
-  "/home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/build_viewer/_deps/imgui-subbuild/imgui-populate-prefix/tmp"
-  "/home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/build_viewer/_deps/imgui-subbuild/imgui-populate-prefix/src/imgui-populate-stamp"
-  "/home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/build_viewer/_deps/imgui-subbuild/imgui-populate-prefix/src"
-  "/home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/build_viewer/_deps/imgui-subbuild/imgui-populate-prefix/src/imgui-populate-stamp"
+  "/home/santi/Documentos/DistributionTool/build_viewer/_deps/imgui-src"
+  "/home/santi/Documentos/DistributionTool/build_viewer/_deps/imgui-build"
+  "/home/santi/Documentos/DistributionTool/build_viewer/_deps/imgui-subbuild/imgui-populate-prefix"
+  "/home/santi/Documentos/DistributionTool/build_viewer/_deps/imgui-subbuild/imgui-populate-prefix/tmp"
+  "/home/santi/Documentos/DistributionTool/build_viewer/_deps/imgui-subbuild/imgui-populate-prefix/src/imgui-populate-stamp"
+  "/home/santi/Documentos/DistributionTool/build_viewer/_deps/imgui-subbuild/imgui-populate-prefix/src"
+  "/home/santi/Documentos/DistributionTool/build_viewer/_deps/imgui-subbuild/imgui-populate-prefix/src/imgui-populate-stamp"
 )
 
 set(configSubDirs )
 foreach(subDir IN LISTS configSubDirs)
-    file(MAKE_DIRECTORY "/home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/build_viewer/_deps/imgui-subbuild/imgui-populate-prefix/src/imgui-populate-stamp/${subDir}")
+    file(MAKE_DIRECTORY "/home/santi/Documentos/DistributionTool/build_viewer/_deps/imgui-subbuild/imgui-populate-prefix/src/imgui-populate-stamp/${subDir}")
 endforeach()
 if(cfgdir)
-  file(MAKE_DIRECTORY "/home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/build_viewer/_deps/imgui-subbuild/imgui-populate-prefix/src/imgui-populate-stamp${cfgdir}") # cfgdir has leading slash
+  file(MAKE_DIRECTORY "/home/santi/Documentos/DistributionTool/build_viewer/_deps/imgui-subbuild/imgui-populate-prefix/src/imgui-populate-stamp${cfgdir}") # cfgdir has leading slash
 endif()

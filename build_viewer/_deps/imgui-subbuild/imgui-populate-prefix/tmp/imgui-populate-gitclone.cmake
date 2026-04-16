@@ -3,21 +3,21 @@
 
 cmake_minimum_required(VERSION 3.5)
 
-if(EXISTS "/home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/build_viewer/_deps/imgui-subbuild/imgui-populate-prefix/src/imgui-populate-stamp/imgui-populate-gitclone-lastrun.txt" AND EXISTS "/home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/build_viewer/_deps/imgui-subbuild/imgui-populate-prefix/src/imgui-populate-stamp/imgui-populate-gitinfo.txt" AND
-  "/home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/build_viewer/_deps/imgui-subbuild/imgui-populate-prefix/src/imgui-populate-stamp/imgui-populate-gitclone-lastrun.txt" IS_NEWER_THAN "/home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/build_viewer/_deps/imgui-subbuild/imgui-populate-prefix/src/imgui-populate-stamp/imgui-populate-gitinfo.txt")
+if(EXISTS "/home/santi/Documentos/DistributionTool/build_viewer/_deps/imgui-subbuild/imgui-populate-prefix/src/imgui-populate-stamp/imgui-populate-gitclone-lastrun.txt" AND EXISTS "/home/santi/Documentos/DistributionTool/build_viewer/_deps/imgui-subbuild/imgui-populate-prefix/src/imgui-populate-stamp/imgui-populate-gitinfo.txt" AND
+  "/home/santi/Documentos/DistributionTool/build_viewer/_deps/imgui-subbuild/imgui-populate-prefix/src/imgui-populate-stamp/imgui-populate-gitclone-lastrun.txt" IS_NEWER_THAN "/home/santi/Documentos/DistributionTool/build_viewer/_deps/imgui-subbuild/imgui-populate-prefix/src/imgui-populate-stamp/imgui-populate-gitinfo.txt")
   message(STATUS
     "Avoiding repeated git clone, stamp file is up to date: "
-    "'/home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/build_viewer/_deps/imgui-subbuild/imgui-populate-prefix/src/imgui-populate-stamp/imgui-populate-gitclone-lastrun.txt'"
+    "'/home/santi/Documentos/DistributionTool/build_viewer/_deps/imgui-subbuild/imgui-populate-prefix/src/imgui-populate-stamp/imgui-populate-gitclone-lastrun.txt'"
   )
   return()
 endif()
 
 execute_process(
-  COMMAND ${CMAKE_COMMAND} -E rm -rf "/home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/build_viewer/_deps/imgui-src"
+  COMMAND ${CMAKE_COMMAND} -E rm -rf "/home/santi/Documentos/DistributionTool/build_viewer/_deps/imgui-src"
   RESULT_VARIABLE error_code
 )
 if(error_code)
-  message(FATAL_ERROR "Failed to remove directory: '/home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/build_viewer/_deps/imgui-src'")
+  message(FATAL_ERROR "Failed to remove directory: '/home/santi/Documentos/DistributionTool/build_viewer/_deps/imgui-src'")
 endif()
 
 # try the clone 3 times in case there is an odd git clone issue
@@ -27,7 +27,7 @@ while(error_code AND number_of_tries LESS 3)
   execute_process(
     COMMAND "/usr/bin/git"
             clone --no-checkout --config "advice.detachedHead=false" "https://github.com/ocornut/imgui.git" "imgui-src"
-    WORKING_DIRECTORY "/home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/build_viewer/_deps"
+    WORKING_DIRECTORY "/home/santi/Documentos/DistributionTool/build_viewer/_deps"
     RESULT_VARIABLE error_code
   )
   math(EXPR number_of_tries "${number_of_tries} + 1")
@@ -42,7 +42,7 @@ endif()
 execute_process(
   COMMAND "/usr/bin/git"
           checkout "v1.91.5" --
-  WORKING_DIRECTORY "/home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/build_viewer/_deps/imgui-src"
+  WORKING_DIRECTORY "/home/santi/Documentos/DistributionTool/build_viewer/_deps/imgui-src"
   RESULT_VARIABLE error_code
 )
 if(error_code)
@@ -54,20 +54,20 @@ if(init_submodules)
   execute_process(
     COMMAND "/usr/bin/git" 
             submodule update --recursive --init 
-    WORKING_DIRECTORY "/home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/build_viewer/_deps/imgui-src"
+    WORKING_DIRECTORY "/home/santi/Documentos/DistributionTool/build_viewer/_deps/imgui-src"
     RESULT_VARIABLE error_code
   )
 endif()
 if(error_code)
-  message(FATAL_ERROR "Failed to update submodules in: '/home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/build_viewer/_deps/imgui-src'")
+  message(FATAL_ERROR "Failed to update submodules in: '/home/santi/Documentos/DistributionTool/build_viewer/_deps/imgui-src'")
 endif()
 
 # Complete success, update the script-last-run stamp file:
 #
 execute_process(
-  COMMAND ${CMAKE_COMMAND} -E copy "/home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/build_viewer/_deps/imgui-subbuild/imgui-populate-prefix/src/imgui-populate-stamp/imgui-populate-gitinfo.txt" "/home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/build_viewer/_deps/imgui-subbuild/imgui-populate-prefix/src/imgui-populate-stamp/imgui-populate-gitclone-lastrun.txt"
+  COMMAND ${CMAKE_COMMAND} -E copy "/home/santi/Documentos/DistributionTool/build_viewer/_deps/imgui-subbuild/imgui-populate-prefix/src/imgui-populate-stamp/imgui-populate-gitinfo.txt" "/home/santi/Documentos/DistributionTool/build_viewer/_deps/imgui-subbuild/imgui-populate-prefix/src/imgui-populate-stamp/imgui-populate-gitclone-lastrun.txt"
   RESULT_VARIABLE error_code
 )
 if(error_code)
-  message(FATAL_ERROR "Failed to copy script-last-run stamp file: '/home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/build_viewer/_deps/imgui-subbuild/imgui-populate-prefix/src/imgui-populate-stamp/imgui-populate-gitclone-lastrun.txt'")
+  message(FATAL_ERROR "Failed to copy script-last-run stamp file: '/home/santi/Documentos/DistributionTool/build_viewer/_deps/imgui-subbuild/imgui-populate-prefix/src/imgui-populate-stamp/imgui-populate-gitclone-lastrun.txt'")
 endif()

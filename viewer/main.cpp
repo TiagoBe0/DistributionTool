@@ -33,6 +33,7 @@
 #include <cmath>
 #include <cstring>
 #include <fstream>
+#include <iomanip>
 #include <iostream>
 #include <limits>
 #include <mutex>
@@ -54,6 +55,13 @@ struct AtomRecord {
     float  dist_to_ref = 0.f;
     float  defect_prob = 0.f;
     int    defect_label = 0;  // 0=Lattice,1=Interstitial,2=VacAdj,3=TypeA,4=Unknown
+};
+
+struct BoxBounds {
+    double xlo = -1, xhi = 1;
+    double ylo = -1, yhi = 1;
+    double zlo = -1, zhi = 1;
+    bool   valid = false;
 };
 
 static const char* defectName(int d) {
@@ -147,14 +155,41 @@ static std::vector<AtomRecord> loadCSV(const std::string& path) {
 }
 
 // Load analyzed LAMMPS dump (ITEM: ATOMS id type x y z dist_to_ref defect_prob defect_label)
-static std::vector<AtomRecord> loadDump(const std::string& path) {
+static std::vector<AtomRecord> loadDump(const std::string& path,
+                                         BoxBounds* out_box = nullptr,
+                                         int* out_timestep  = nullptr) {
     std::ifstream f(path);
     if (!f) throw std::runtime_error("Cannot open: " + path);
 
     std::string line;
     std::vector<AtomRecord> atoms;
+    BoxBounds box;
+    int timestep = 0;
+    bool next_is_timestep = false;
+    bool next_is_natoms   = false;
 
     while (std::getline(f, line)) {
+        if (next_is_timestep) {
+            try { timestep = std::stoi(line); } catch (...) {}
+            next_is_timestep = false;
+            continue;
+        }
+        if (next_is_natoms) { next_is_natoms = false; continue; }
+
+        if (line.find("ITEM: TIMESTEP") != std::string::npos) {
+            next_is_timestep = true; continue;
+        }
+        if (line.find("ITEM: NUMBER OF ATOMS") != std::string::npos) {
+            next_is_natoms = true; continue;
+        }
+        if (line.find("ITEM: BOX BOUNDS") != std::string::npos) {
+            std::string bl;
+            if (std::getline(f, bl)) { std::istringstream ss(bl); ss >> box.xlo >> box.xhi; }
+            if (std::getline(f, bl)) { std::istringstream ss(bl); ss >> box.ylo >> box.yhi; }
+            if (std::getline(f, bl)) { std::istringstream ss(bl); ss >> box.zlo >> box.zhi; }
+            box.valid = true;
+            continue;
+        }
         if (line.find("ITEM: ATOMS") == std::string::npos) continue;
 
         // Parse column names
@@ -207,6 +242,8 @@ static std::vector<AtomRecord> loadDump(const std::string& path) {
         }
         break; // Only first frame
     }
+    if (out_box)      *out_box      = box;
+    if (out_timestep) *out_timestep = timestep;
     return atoms;
 }
 
@@ -645,10 +682,22 @@ struct App {
 
     // Stats
     std::string filename;
+    std::vector<float> dist_histogram;   // normalized bin heights [0,1], HIST_BINS entries
+    int defect_counts[5] = {0,0,0,0,0}; // atoms per defect type (indices 0-4)
+    BoxBounds   loaded_box;              // box bounds from last loaded dump (may be invalid)
+    int         loaded_timestep = 0;    // timestep from last loaded dump
 
     // Sub-systems
     AnalysisState analysis;
     int active_tab = 0;   // 0=Analizar, 1=Visualizar
+
+    // README viewer
+    bool show_readme = false;
+    std::vector<std::string> readme_lines;
+
+    // True mientras el resultado visible en el viewer es de un análisis anterior
+    // al que está actualmente en curso (o falló).
+    bool result_is_stale = false;
 };
 
 // ═══════════════════════════════════════════════════════════════════════════════
@@ -718,6 +767,23 @@ static void buildGpuData(App& app, Renderer& rend) {
 // Center camera on loaded data
 // ═══════════════════════════════════════════════════════════════════════════════
 
+static constexpr int HIST_BINS = 80;
+
+static void buildHistogram(App& app) {
+    app.dist_histogram.assign(HIST_BINS, 0.f);
+    if (app.all_atoms.empty()) return;
+    float range = app.dist_max - app.dist_min;
+    if (range < 1e-9f) range = 1.f;
+    for (const auto& a : app.all_atoms) {
+        int bin = (int)((a.dist_to_ref - app.dist_min) / range * HIST_BINS);
+        bin = std::clamp(bin, 0, HIST_BINS - 1);
+        app.dist_histogram[bin] += 1.f;
+    }
+    float mx = *std::max_element(app.dist_histogram.begin(), app.dist_histogram.end());
+    if (mx > 0.f)
+        for (auto& v : app.dist_histogram) v /= mx;
+}
+
 static void centerCamera(App& app) {
     if (app.all_atoms.empty()) return;
     glm::vec3 mn(1e30f), mx(-1e30f);
@@ -745,6 +811,86 @@ static std::string browseFile(const char* title) {
     std::string s(buf);
     while (!s.empty() && (s.back() == '\n' || s.back() == '\r')) s.pop_back();
     return s;
+}
+
+// Opens a native save-file dialog via zenity.
+static std::string browseSave(const char* title, const char* default_filename = "") {
+    std::string cmd = std::string("zenity --file-selection --save --confirm-overwrite"
+                                  " --title=\"") + title + "\"";
+    if (default_filename && default_filename[0])
+        cmd += std::string(" --filename=\"") + default_filename + "\"";
+    cmd += " 2>/dev/null";
+    FILE* f = popen(cmd.c_str(), "r");
+    if (!f) return "";
+    char buf[4096] = {};
+    if (fgets(buf, sizeof(buf), f)) { /* got path */ }
+    pclose(f);
+    std::string s(buf);
+    while (!s.empty() && (s.back() == '\n' || s.back() == '\r')) s.pop_back();
+    return s;
+}
+
+// Write a LAMMPS dump with defect results (all atoms or only visible/filtered ones).
+static void saveAnalyzedDump(const App& app, const std::string& path, bool visible_only) {
+    // Build the list of atoms to export
+    std::vector<const AtomRecord*> src;
+    if (visible_only) {
+        src.reserve(app.visible_indices.size());
+        for (int i : app.visible_indices)
+            src.push_back(&app.all_atoms[i]);
+    } else {
+        src.reserve(app.all_atoms.size());
+        for (const auto& a : app.all_atoms)
+            src.push_back(&a);
+    }
+
+    // Determine box bounds
+    double xlo, xhi, ylo, yhi, zlo, zhi;
+    if (app.loaded_box.valid) {
+        xlo = app.loaded_box.xlo; xhi = app.loaded_box.xhi;
+        ylo = app.loaded_box.ylo; yhi = app.loaded_box.yhi;
+        zlo = app.loaded_box.zlo; zhi = app.loaded_box.zhi;
+    } else {
+        xlo = ylo = zlo =  1e30;
+        xhi = yhi = zhi = -1e30;
+        for (const auto* a : src) {
+            if (a->x < xlo) xlo = a->x; if (a->x > xhi) xhi = a->x;
+            if (a->y < ylo) ylo = a->y; if (a->y > yhi) yhi = a->y;
+            if (a->z < zlo) zlo = a->z; if (a->z > zhi) zhi = a->z;
+        }
+        // Add a small margin so boundary atoms aren't exactly on the box edge
+        double mx = (xhi - xlo) * 0.01 + 1.0;
+        double my = (yhi - ylo) * 0.01 + 1.0;
+        double mz = (zhi - zlo) * 0.01 + 1.0;
+        xlo -= mx; xhi += mx; ylo -= my; yhi += my; zlo -= mz; zhi += mz;
+    }
+
+    std::ofstream f(path);
+    if (!f) throw std::runtime_error("No se puede escribir: " + path);
+
+    f << "ITEM: TIMESTEP\n" << app.loaded_timestep << "\n";
+    f << "ITEM: NUMBER OF ATOMS\n" << src.size() << "\n";
+    f << "ITEM: BOX BOUNDS pp pp pp\n"
+      << std::fixed << std::setprecision(10)
+      << xlo << " " << xhi << "\n"
+      << ylo << " " << yhi << "\n"
+      << zlo << " " << zhi << "\n";
+    f << "ITEM: ATOMS id type x y z dist_to_ref defect_prob defect_label\n";
+    f << std::setprecision(8);
+    for (const auto* a : src) {
+        f << a->id          << ' '
+          << a->type        << ' '
+          << a->x           << ' '
+          << a->y           << ' '
+          << a->z           << ' '
+          << a->dist_to_ref << ' '
+          << a->defect_prob << ' '
+          << a->defect_label << '\n';
+    }
+    f.flush();
+    f.close();
+    if (!f.good())
+        throw std::runtime_error("Error al escribir (disco lleno?): " + path);
 }
 
 // Locate the distool executable relative to this viewer or in PATH.
@@ -909,7 +1055,10 @@ static void cbFramebuffer(GLFWwindow*, int w, int h) {
 static void loadIntoViewer(App& app, Renderer& rend, const std::string& path) {
     bool is_dump = path.find(".dump") != std::string::npos
                 || path.rfind("dump", 0) != std::string::npos;
-    std::vector<AtomRecord> atoms = is_dump ? loadDump(path) : loadCSV(path);
+    BoxBounds box; int ts = 0;
+    std::vector<AtomRecord> atoms = is_dump ? loadDump(path, &box, &ts) : loadCSV(path);
+    app.loaded_box       = box;
+    app.loaded_timestep  = ts;
     if (atoms.empty()) return;
 
     app.all_atoms = std::move(atoms);
@@ -934,7 +1083,12 @@ static void loadIntoViewer(App& app, Renderer& rend, const std::string& path) {
 
     for (int i = 0; i < 5; ++i) app.defect_filter[i] = true;
 
+    for (int i = 0; i < 5; ++i) app.defect_counts[i] = 0;
+    for (const auto& a : app.all_atoms)
+        app.defect_counts[std::min(a.defect_label, 4)]++;
+
     centerCamera(app);
+    buildHistogram(app);
     buildGpuData(app, rend);
 }
 
@@ -978,7 +1132,25 @@ static void drawAnalysisUI(App& app, Renderer& rend) {
         ImGui::SliderFloat("r_cut (Å)", &st.r_cut, 1.f, 12.f, "%.1f");
         if (ImGui::IsItemHovered())
             ImGui::SetTooltip("Radio de corte para descriptores SOAP");
-        ImGui::TextDisabled("DV size: %d", (st.n_max*(st.n_max+1)/2) * (st.l_max+1));
+
+        // Estimado de memoria en tiempo real
+        const int dv_size = (st.n_max*(st.n_max+1)/2) * (st.l_max+1);
+        ImGui::TextDisabled("DV size: %d", dv_size);
+        if (!app.all_atoms.empty()) {
+            const double est_gb = (double)app.all_atoms.size() * dv_size * 8.0 / 1e9;
+            if (est_gb >= 1.0)
+                ImGui::TextColored({1.f, 0.55f, 0.1f, 1.f},
+                    "  RAM por frame: ~%.1f GB", est_gb);
+            else
+                ImGui::TextDisabled("  RAM por frame: ~%.0f MB", est_gb * 1024.0);
+        }
+
+        // Presets rápidos
+        ImGui::TextDisabled("Preset:");
+        ImGui::SameLine();
+        if (ImGui::SmallButton("Ligero (6/6)"))  { st.n_max = 6;  st.l_max = 6; }
+        ImGui::SameLine();
+        if (ImGui::SmallButton("Paper (9/9)"))   { st.n_max = 9;  st.l_max = 9; }
     }
 
     // ── Defect detection ──────────────────────────────────────────────
@@ -1019,6 +1191,8 @@ static void drawAnalysisUI(App& app, Renderer& rend) {
         }
         st.done = false; st.success = false; st.result_loaded = false;
         st.running = true;
+        // Marcar que el resultado visible es de un análisis anterior
+        app.result_is_stale = true;
         if (st.worker.joinable()) st.worker.join();
         st.worker = std::thread(runAnalysisThread, &st);
     }
@@ -1027,6 +1201,9 @@ static void drawAnalysisUI(App& app, Renderer& rend) {
     ImGui::Spacing();
     if (st.running) {
         ImGui::TextColored({1.f, 0.8f, 0.f, 1.f}, "  Procesando...");
+        if (app.result_is_stale && !app.filename.empty())
+            ImGui::TextColored({0.7f, 0.7f, 0.3f, 1.f},
+                "  (visualizando resultado anterior)");
     } else if (st.done) {
         if (st.success) {
             ImGui::TextColored({0.3f, 1.f, 0.3f, 1.f}, "  Completado.");
@@ -1035,11 +1212,15 @@ static void drawAnalysisUI(App& app, Renderer& rend) {
                 if (ImGui::SmallButton("Abrir")) {
                     loadIntoViewer(app, rend, st.result_csv);
                     st.result_loaded = true;
+                    app.result_is_stale = false;
                     app.active_tab = 1;
                 }
             }
         } else {
             ImGui::TextColored({1.f, 0.3f, 0.3f, 1.f}, "  Error — ver log.");
+            if (app.result_is_stale && !app.filename.empty())
+                ImGui::TextColored({1.f, 0.6f, 0.2f, 1.f},
+                    "  Atencion: aun se muestra el resultado anterior.");
         }
     }
 
@@ -1071,6 +1252,52 @@ static void drawVisualizationUI(App& app, Renderer& rend) {
         ImGui::TextDisabled("%s", app.filename.c_str());
         ImGui::Text("%d átomos  /  %d visibles",
                     (int)app.all_atoms.size(), (int)app.visible_indices.size());
+
+        // ── Export dump ───────────────────────────────────────────────────
+        ImGui::Spacing();
+        static bool  s_visible_only  = false;
+        static char  s_export_msg[256] = {};
+        static bool  s_export_ok     = false;
+
+        ImGui::TextDisabled("EXPORTAR DUMP (.dump para OVITO)");
+        ImGui::Checkbox("Solo visibles", &s_visible_only);
+        if (ImGui::IsItemHovered())
+            ImGui::SetTooltip("Exportar sólo los átomos que pasan el filtro actual;\n"
+                              "desmarcado = todos los átomos con sus etiquetas.");
+        ImGui::SameLine();
+        if (ImGui::SmallButton("Guardar .dump")) {
+            // Build a sensible default filename
+            std::string base = app.filename;
+            size_t sl = base.rfind('/');
+            if (sl != std::string::npos) base = base.substr(sl + 1);
+            // Strip extension
+            size_t dot = base.rfind('.');
+            if (dot != std::string::npos) base = base.substr(0, dot);
+            // Ensure "analyzed_" prefix
+            if (base.rfind("analyzed_", 0) == std::string::npos)
+                base = "analyzed_" + base;
+            std::string defname = base + ".dump";
+
+            std::string out = browseSave("Guardar dump analizado", defname.c_str());
+            if (!out.empty()) {
+                try {
+                    saveAnalyzedDump(app, out, s_visible_only);
+                    snprintf(s_export_msg, sizeof(s_export_msg),
+                             "OK: %s", out.c_str());
+                    s_export_ok = true;
+                } catch (const std::exception& e) {
+                    snprintf(s_export_msg, sizeof(s_export_msg),
+                             "Error: %s", e.what());
+                    s_export_ok = false;
+                }
+            }
+        }
+        if (s_export_msg[0] != '\0') {
+            if (s_export_ok)
+                ImGui::TextColored({0.3f, 1.f, 0.3f, 1.f}, "%s", s_export_msg);
+            else
+                ImGui::TextColored({1.f, 0.4f, 0.4f, 1.f}, "%s", s_export_msg);
+        }
     } else {
         ImGui::TextColored({1.f,0.6f,0.3f,1.f}, "Sin datos.");
         ImGui::TextWrapped("Usá la pestaña Analizar o pasá un CSV como argumento.");
@@ -1084,6 +1311,25 @@ static void drawVisualizationUI(App& app, Renderer& rend) {
     changed |= ImGui::SliderFloat("lo", &app.filter_lo, app.dist_min, app.dist_max, "%.4f");
     changed |= ImGui::SliderFloat("hi", &app.filter_hi, app.dist_min, app.dist_max, "%.4f");
     if (app.filter_lo > app.filter_hi) std::swap(app.filter_lo, app.filter_hi);
+
+    // Histogram with filter overlay
+    if (!app.dist_histogram.empty()) {
+        ImGui::PlotHistogram("##disthist", app.dist_histogram.data(),
+                             HIST_BINS, 0, nullptr, 0.f, 1.f, {-1, 55});
+        // Overlay filter lines using draw list
+        ImVec2 p0 = ImGui::GetItemRectMin();
+        ImVec2 p1 = ImGui::GetItemRectMax();
+        float  w  = p1.x - p0.x;
+        float  rng = app.dist_max - app.dist_min;
+        if (rng > 1e-9f) {
+            float xlo = p0.x + (app.filter_lo - app.dist_min) / rng * w;
+            float xhi = p0.x + (app.filter_hi - app.dist_min) / rng * w;
+            auto* dl  = ImGui::GetWindowDrawList();
+            dl->AddRectFilled({xlo, p0.y}, {xhi, p1.y}, IM_COL32(255, 200, 50, 35));
+            dl->AddLine({xlo, p0.y}, {xlo, p1.y}, IM_COL32(255, 200, 50, 220), 1.5f);
+            dl->AddLine({xhi, p0.y}, {xhi, p1.y}, IM_COL32(255, 200, 50, 220), 1.5f);
+        }
+    }
 
     // Percentile quick-set buttons
     ImGui::TextDisabled("quick filter:");
@@ -1112,7 +1358,9 @@ static void drawVisualizationUI(App& app, Renderer& rend) {
     };
     for (int i = 0; i < 5; ++i) {
         ImGui::PushStyleColor(ImGuiCol_CheckMark, ImVec4(cols[i][0],cols[i][1],cols[i][2],1));
-        changed |= ImGui::Checkbox(dnames[i], &app.defect_filter[i]);
+        char label[64];
+        snprintf(label, sizeof(label), "%s (%d)", dnames[i], app.defect_counts[i]);
+        changed |= ImGui::Checkbox(label, &app.defect_filter[i]);
         ImGui::PopStyleColor();
     }
     ImGui::Separator();
@@ -1158,6 +1406,117 @@ static void drawVisualizationUI(App& app, Renderer& rend) {
     if (changed) buildGpuData(app, rend);
 }
 
+// ── README loader ─────────────────────────────────────────────────────────────
+// Busca README.md en rutas relativas al ejecutable y en la instalación estándar.
+static std::string findReadme() {
+    char exe[4096] = {};
+    ssize_t len = readlink("/proc/self/exe", exe, sizeof(exe) - 1);
+    if (len > 0) {
+        std::string dir(exe, (size_t)len);
+        dir = dir.substr(0, dir.rfind('/'));
+        for (const char* rel : {
+                "/README.md",           // desarrollo: exe junto al README
+                "/../README.md",        // exe en build_viewer/
+                "/../../README.md",     // exe en subdirectorio más profundo
+                "/../share/distool/README.md",  // instalación sistema
+        }) {
+            std::string p = dir + rel;
+            if (access(p.c_str(), R_OK) == 0) return p;
+        }
+    }
+    // AppImage expone $APPDIR
+    const char* appdir = getenv("APPDIR");
+    if (appdir) {
+        std::string p = std::string(appdir) + "/usr/share/distool/README.md";
+        if (access(p.c_str(), R_OK) == 0) return p;
+    }
+    return "";
+}
+
+static void loadReadme(App& app) {
+    std::string path = findReadme();
+    app.readme_lines.clear();
+    if (path.empty()) return;
+    std::ifstream f(path);
+    std::string line;
+    while (std::getline(f, line)) {
+        // Normalizar fin de línea Windows
+        if (!line.empty() && line.back() == '\r') line.pop_back();
+        app.readme_lines.push_back(std::move(line));
+    }
+}
+
+// ── README floating window ────────────────────────────────────────────────────
+static void drawReadmeWindow(App& app) {
+    if (!app.show_readme) return;
+
+    ImGui::SetNextWindowSize({720, 560}, ImGuiCond_FirstUseEver);
+    ImGui::SetNextWindowPos({360, 60},  ImGuiCond_FirstUseEver);
+
+    bool open = true;
+    ImGui::Begin("README — DistributionTool", &open,
+                 ImGuiWindowFlags_HorizontalScrollbar);
+    if (!open) app.show_readme = false;
+
+    if (app.readme_lines.empty()) {
+        ImGui::Spacing();
+        ImGui::TextColored({1.f, 0.5f, 0.4f, 1.f}, "README.md no encontrado.");
+        ImGui::TextWrapped("Asegurate de que README.md esté junto al ejecutable "
+                           "o en usr/share/distool/README.md (instalación).");
+    } else {
+        ImGui::BeginChild("##readme", {-1, -1}, false,
+                          ImGuiWindowFlags_HorizontalScrollbar);
+        bool in_code = false;
+        for (const auto& line : app.readme_lines) {
+            // ── Bloques de código (``` ... ```) ──────────────────────────────
+            if (line.rfind("```", 0) == 0) {
+                in_code = !in_code;
+                continue;
+            }
+            if (in_code) {
+                ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.65f, 0.9f, 0.65f, 1.f));
+                ImGui::TextUnformatted(("  " + line).c_str());
+                ImGui::PopStyleColor();
+                continue;
+            }
+            // ── Separador horizontal ─────────────────────────────────────────
+            if (line == "---") {
+                ImGui::Spacing();
+                ImGui::Separator();
+                ImGui::Spacing();
+                continue;
+            }
+            // ── Encabezados Markdown ─────────────────────────────────────────
+            if (line.rfind("### ", 0) == 0) {
+                ImGui::Spacing();
+                ImGui::TextColored({0.75f, 0.92f, 1.f, 1.f}, "%s", line.c_str() + 4);
+                continue;
+            }
+            if (line.rfind("## ", 0) == 0) {
+                ImGui::Spacing();
+                ImGui::TextColored({0.45f, 0.82f, 1.f, 1.f}, "%s", line.c_str() + 3);
+                ImGui::Spacing();
+                continue;
+            }
+            if (line.rfind("# ", 0) == 0) {
+                ImGui::Spacing();
+                ImGui::TextColored({0.25f, 0.70f, 1.f, 1.f}, "%s", line.c_str() + 2);
+                ImGui::Separator();
+                continue;
+            }
+            // ── Línea vacía ──────────────────────────────────────────────────
+            if (line.empty()) {
+                ImGui::Spacing();
+                continue;
+            }
+            // ── Texto normal ─────────────────────────────────────────────────
+            ImGui::TextWrapped("%s", line.c_str());
+        }
+        ImGui::EndChild();
+    }
+    ImGui::End();
+}
+
 // ── Main UI window with tab bar ───────────────────────────────────────────────
 static void drawUI(App& app, Renderer& rend) {
     ImGui::SetNextWindowPos({0, 0}, ImGuiCond_Always);
@@ -1166,6 +1525,21 @@ static void drawUI(App& app, Renderer& rend) {
                  nullptr,
                  ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize |
                  ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoTitleBar);
+
+    // Botón Info alineado a la derecha
+    {
+        const char* lbl = app.show_readme ? "[ Info ]" : "  Info  ";
+        float bw = ImGui::CalcTextSize(lbl).x + ImGui::GetStyle().FramePadding.x * 2.f;
+        ImGui::SetCursorPosX(ImGui::GetWindowWidth() - bw
+                             - ImGui::GetStyle().WindowPadding.x);
+        ImGui::PushStyleColor(ImGuiCol_Button,
+            app.show_readme ? ImVec4(0.20f,0.45f,0.70f,1.f)
+                            : ImVec4(0.18f,0.18f,0.22f,1.f));
+        ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.25f,0.55f,0.85f,1.f));
+        ImGui::PushStyleColor(ImGuiCol_ButtonActive,  ImVec4(0.15f,0.35f,0.60f,1.f));
+        if (ImGui::SmallButton(lbl)) app.show_readme = !app.show_readme;
+        ImGui::PopStyleColor(3);
+    }
 
     // Tab bar
     ImGuiTabBarFlags tab_flags = ImGuiTabBarFlags_None;
@@ -1240,6 +1614,8 @@ int main(int argc, char* argv[]) {
     c[ImGuiCol_FrameBg]   = {0.18f, 0.18f, 0.22f, 1.f};
     c[ImGuiCol_SliderGrab]= {0.35f, 0.55f, 0.85f, 1.f};
 
+    loadReadme(app);
+
     rend.init();
     {
         int fbw, fbh;
@@ -1288,6 +1664,7 @@ int main(int argc, char* argv[]) {
         ImGui::NewFrame();
 
         drawUI(app, rend);
+        drawReadmeWindow(app);
 
         ImGui::Render();
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
@@ -1299,6 +1676,7 @@ int main(int argc, char* argv[]) {
                 try {
                     loadIntoViewer(app, rend, st.result_csv);
                     st.result_loaded = true;
+                    app.result_is_stale = false;
                     app.active_tab = 1;  // switch to Visualizar
                 } catch (const std::exception& e) {
                     std::cerr << "Auto-load failed: " << e.what() << "\n";

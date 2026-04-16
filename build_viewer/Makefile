@@ -57,10 +57,10 @@ RM = /usr/bin/cmake -E rm -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/viewer
+CMAKE_SOURCE_DIR = /home/santi/Documentos/DistributionTool/viewer
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/build_viewer
+CMAKE_BINARY_DIR = /home/santi/Documentos/DistributionTool/build_viewer
 
 #=============================================================================
 # Targets provided globally by CMake.
@@ -132,9 +132,9 @@ install/strip/fast: preinstall/fast
 
 # The main all target
 all: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/build_viewer/CMakeFiles /home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/build_viewer//CMakeFiles/progress.marks
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/santi/Documentos/DistributionTool/build_viewer/CMakeFiles /home/santi/Documentos/DistributionTool/build_viewer//CMakeFiles/progress.marks
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 all
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/build_viewer/CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/santi/Documentos/DistributionTool/build_viewer/CMakeFiles 0
 .PHONY : all
 
 # The main clean target

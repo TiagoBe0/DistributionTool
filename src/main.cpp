@@ -5,6 +5,7 @@
 #include "Statistics.h"
 
 #include <chrono>
+#include <cmath>
 #include <fstream>
 #include <iomanip>
 #include <iostream>
@@ -215,6 +216,10 @@ static void writeLAMMPSDump(const Frame& frame, const std::string& path) {
           << a.defect_prob << ' '
           << static_cast<int>(a.defect_type) << '\n';
     }
+    f.flush();
+    f.close();
+    if (!f.good())
+        throw std::runtime_error("Write failed (disk full?): " + path);
     std::cout << "  → analyzed dump written: " << path << '\n';
 }
 
@@ -406,14 +411,48 @@ int main(int argc, char* argv[]) {
         if (ref_reader.hasNext())
             std::cout << "  [!] Reference file has multiple frames; only the first is used.\n";
 
-        // Memory estimate warning
+        // ── Pre-flight memory check ───────────────────────────────────────────
         {
-            double dv_gb = static_cast<double>(ref_frame.size()) *
-                           soap.dvSize() * sizeof(double) / 1e9;
-            if (dv_gb > 1.0)
-                std::cout << "  [!] Estimated DV memory: "
-                          << std::fixed << std::setprecision(1) << dv_gb
-                          << " GB — consider smaller --n-max/--l-max if memory is tight\n";
+            const double dv_gb = static_cast<double>(ref_frame.size())
+                                 * soap.dvSize() * sizeof(double) / 1e9;
+
+            // Read available RAM from /proc/meminfo (Linux only)
+            long avail_mb = -1;
+            {
+                std::ifstream mi("/proc/meminfo");
+                std::string key; long val;
+                while (mi >> key >> val) {
+                    if (key == "MemAvailable:") { avail_mb = val / 1024; break; }
+                    mi.ignore(256, '\n');
+                }
+            }
+
+            std::cout << std::fixed << std::setprecision(1);
+            std::cout << "  Memory per frame: ~" << dv_gb << " GB";
+            if (avail_mb > 0)
+                std::cout << "  |  Available: ~" << avail_mb / 1024.0 << " GB";
+            std::cout << '\n';
+
+            // Abort early with a helpful message instead of crashing mid-run
+            if (avail_mb > 0 && dv_gb > avail_mb / 1024.0 * 0.75) {
+                // Suggest n_max that would fit in ~50 % of available RAM
+                int suggest_n = 4;
+                for (int n = 9; n >= 2; --n) {
+                    double gb = static_cast<double>(ref_frame.size())
+                                * (n*(n+1)/2) * (n+1) * 8.0 / 1e9;
+                    if (gb < avail_mb / 1024.0 * 0.5) { suggest_n = n; break; }
+                }
+                throw std::runtime_error(
+                    "Not enough RAM for SOAP descriptors.\n"
+                    "  Needed per frame : ~" + [&]{ std::ostringstream s;
+                        s << std::fixed << std::setprecision(1) << dv_gb;
+                        return s.str(); }() + " GB\n"
+                    "  Available        : ~" + [&]{ std::ostringstream s;
+                        s << std::fixed << std::setprecision(1) << avail_mb/1024.0;
+                        return s.str(); }() + " GB\n"
+                    "  Try: --n-max " + std::to_string(suggest_n) +
+                         " --l-max " + std::to_string(suggest_n));
+            }
         }
 
         std::cout << "[2/4] Computing SOAP descriptors for reference frame…\n";
@@ -423,6 +462,13 @@ int main(int argc, char* argv[]) {
                   << timerSec(t0) << " s\n";
 
         clf.buildReference(ref_frame.atoms);
+
+        // Liberar DVs del frame de referencia: buildReference ya extrajo todo lo
+        // necesario (media DV).  Esto libera ~N×DV×8 bytes antes de cargar el
+        // frame dañado, reduciendo el pico de RAM a un solo frame en lugar de dos.
+        for (auto& a : ref_frame.atoms)
+            std::vector<double>().swap(a.dv);
+
         const auto& ref = clf.reference();
         std::cout << "      q̄(T) built.  <d>="
                   << std::fixed << std::setprecision(4) << ref.mean_dist
@@ -477,6 +523,12 @@ int main(int argc, char* argv[]) {
         std::cout << "\n[4/4] Classifying defects…\n";
         clf.classify(dmg_frame);
 
+        // Liberar DVs del frame dañado: classify ya extrajo todo lo necesario.
+        // Los outputs (CSV, dump) sólo usan defect_type/dist_to_ref/defect_prob.
+        if (save_dv_id < 0)  // conservar si el usuario pidió --save-dv
+            for (auto& a : dmg_frame.atoms)
+                std::vector<double>().swap(a.dv);
+
         // Vacancy detection via sampling grid (FaVaD §2.3.2)
         if (vac_dist < 0.0)
             vac_dist = soap.r_cut * 0.4;   // default: ~40 % of cutoff radius
@@ -489,6 +541,42 @@ int main(int argc, char* argv[]) {
 
         auto vac_pts  = clf.findVacanciesGrid(dmg_frame, grid_spacing, vac_dist);
         auto clusters = clf.clusterVacancyPoints(vac_pts, vac_cluster_radius, dmg_frame.box);
+
+        // Post-processing: mark Unknown atoms adjacent to vacancy cluster centers
+        // as VacancyAdjacent.  These are atoms whose local environment is distorted
+        // because a first-shell neighbour is missing.  We use r_cut * 0.65 as the
+        // adjacency radius — enough to capture the first coordination shell in
+        // typical metals (e.g. BCC Fe/W/Ni at the default 5 Å cutoff gives ~3.25 Å,
+        // which is larger than any BCC/FCC nearest-neighbour distance).
+        if (!clusters.empty()) {
+            const double adj_r  = soap.r_cut * 0.65;
+            const double adj_r2 = adj_r * adj_r;
+            const double Lx = dmg_frame.box.lx();
+            const double Ly = dmg_frame.box.ly();
+            const double Lz = dmg_frame.box.lz();
+            int n_adj = 0;
+            for (auto& atom : dmg_frame.atoms) {
+                if (atom.defect_type != DefectType::Unknown) continue;
+                for (const auto& c : clusters) {
+                    double dx = atom.x - c.center[0];
+                    double dy = atom.y - c.center[1];
+                    double dz = atom.z - c.center[2];
+                    if (dmg_frame.box.periodic[0]) dx -= Lx * std::round(dx / Lx);
+                    if (dmg_frame.box.periodic[1]) dy -= Ly * std::round(dy / Ly);
+                    if (dmg_frame.box.periodic[2]) dz -= Lz * std::round(dz / Lz);
+                    if (dx*dx + dy*dy + dz*dz <= adj_r2) {
+                        atom.defect_type = DefectType::VacancyAdjacent;
+                        ++n_adj;
+                        break;
+                    }
+                }
+            }
+            if (n_adj > 0)
+                std::cout << "      " << n_adj
+                          << " Unknown atoms re-classified as VacancyAdjacent"
+                          << " (adj_r=" << std::fixed << std::setprecision(2)
+                          << adj_r << " Å)\n";
+        }
 
         printSummary(dmg_frame, vac_pts, clusters, grid_spacing);
 

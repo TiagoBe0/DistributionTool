@@ -1,0 +1,13 @@
+#!/bin/bash
+# AppRun — punto de entrada del AppImage de DistributionTool
+# Se ejecuta cuando el usuario hace doble-click en el .AppImage
+
+# Directorio donde vive este script dentro del AppImage
+HERE="$(dirname "$(readlink -f "$0")")"
+
+# Binarios empaquetados
+export PATH="${HERE}/usr/bin:${PATH}"
+export LD_LIBRARY_PATH="${HERE}/usr/lib:${LD_LIBRARY_PATH}"
+
+# Lanzar el viewer; si recibe un archivo como argumento se lo pasa directamente
+exec "${HERE}/usr/bin/distool_viewer" "$@"

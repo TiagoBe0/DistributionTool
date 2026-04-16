@@ -4,15 +4,18 @@ project(DistributionTool VERSION 1.0.0 LANGUAGES CXX)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
+# Standard GNU install paths (bin, lib, share, …)
+include(GNUInstallDirs)
+
 # Build type
 if(NOT CMAKE_BUILD_TYPE)
   set(CMAKE_BUILD_TYPE Release CACHE STRING "Build type" FORCE)
 endif()
 message(STATUS "Build type: ${CMAKE_BUILD_TYPE}")
 
-# Compiler flags
-# -march=native optimises for the build host CPU; pass -DNATIVE_MARCH=OFF to
-# produce a portable binary (e.g. for sharing the executable with other machines).
+# Compiler flags.
+# -march=native optimises for the build host CPU.
+# For distributable/AppImage builds use: cmake … -DNATIVE_MARCH=OFF
 option(NATIVE_MARCH "Optimise for the build host CPU (-march=native)" ON)
 if(NATIVE_MARCH)
   set(CMAKE_CXX_FLAGS_RELEASE "-O3 -march=native -DNDEBUG -Wall")
@@ -54,7 +57,16 @@ endif()
 # ── Main executable ───────────────────────────────────────────────────────────
 add_executable(distool src/main.cpp)
 target_link_libraries(distool PRIVATE distool_lib)
-install(TARGETS distool DESTINATION bin)
+
+# ── Install rules (Linux) ─────────────────────────────────────────────────────
+install(TARGETS distool
+        RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
+
+# Desktop integration (used by AppImage and system-wide installs)
+install(FILES packaging/distool.desktop
+        DESTINATION ${CMAKE_INSTALL_DATADIR}/applications)
+install(FILES packaging/distool.png
+        DESTINATION ${CMAKE_INSTALL_DATADIR}/icons/hicolor/256x256/apps)
 
 # ── Tests ─────────────────────────────────────────────────────────────────────
 enable_testing()

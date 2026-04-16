@@ -28,8 +28,8 @@ set_property(GLOBAL PROPERTY _CMAKE_FindGit_GIT_EXECUTABLE_VERSION
 include(ExternalProject)
 ExternalProject_Add(glad-populate
                      "UPDATE_DISCONNECTED" "False" "GIT_REPOSITORY" "https://github.com/Dav1dde/glad.git" "EXTERNALPROJECT_INTERNAL_ARGUMENT_SEPARATOR" "GIT_TAG" "v0.1.36"
-                    SOURCE_DIR          "/home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/build_viewer/_deps/glad-src"
-                    BINARY_DIR          "/home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/build_viewer/_deps/glad-build"
+                    SOURCE_DIR          "/home/santi/Documentos/DistributionTool/build_viewer/_deps/glad-src"
+                    BINARY_DIR          "/home/santi/Documentos/DistributionTool/build_viewer/_deps/glad-build"
                     CONFIGURE_COMMAND   ""
                     BUILD_COMMAND       ""
                     INSTALL_COMMAND     ""

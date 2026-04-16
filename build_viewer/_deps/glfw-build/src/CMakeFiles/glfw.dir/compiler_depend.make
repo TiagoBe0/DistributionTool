@@ -12,7 +12,6 @@ _deps/glfw-build/src/CMakeFiles/glfw.dir/context.c.o: _deps/glfw-src/src/context
   _deps/glfw-src/src/posix_poll.h \
   _deps/glfw-src/src/posix_thread.h \
   _deps/glfw-src/src/posix_time.h \
-  _deps/glfw-src/src/wl_platform.h \
   _deps/glfw-src/src/x11_platform.h \
   _deps/glfw-src/src/xkb_unicode.h \
   /usr/include/X11/X.h \
@@ -51,7 +50,6 @@ _deps/glfw-build/src/CMakeFiles/glfw.dir/context.c.o: _deps/glfw-src/src/context
   /usr/include/endian.h \
   /usr/include/features-time64.h \
   /usr/include/features.h \
-  /usr/include/inttypes.h \
   /usr/include/limits.h \
   /usr/include/linux/input-event-codes.h \
   /usr/include/linux/input.h \
@@ -60,7 +58,6 @@ _deps/glfw-build/src/CMakeFiles/glfw.dir/context.c.o: _deps/glfw-src/src/context
   /usr/include/linux/posix_types.h \
   /usr/include/linux/stddef.h \
   /usr/include/linux/types.h \
-  /usr/include/math.h \
   /usr/include/poll.h \
   /usr/include/pthread.h \
   /usr/include/regex.h \
@@ -73,9 +70,6 @@ _deps/glfw-build/src/CMakeFiles/glfw.dir/context.c.o: _deps/glfw-src/src/context
   /usr/include/strings.h \
   /usr/include/time.h \
   /usr/include/unistd.h \
-  /usr/include/wayland-client-core.h \
-  /usr/include/wayland-util.h \
-  /usr/include/wayland-version.h \
   /usr/include/x86_64-linux-gnu/asm/bitsperlong.h \
   /usr/include/x86_64-linux-gnu/asm/ioctl.h \
   /usr/include/x86_64-linux-gnu/asm/ioctls.h \
@@ -91,20 +85,13 @@ _deps/glfw-build/src/CMakeFiles/glfw.dir/context.c.o: _deps/glfw-src/src/context
   /usr/include/x86_64-linux-gnu/bits/environments.h \
   /usr/include/x86_64-linux-gnu/bits/floatn-common.h \
   /usr/include/x86_64-linux-gnu/bits/floatn.h \
-  /usr/include/x86_64-linux-gnu/bits/flt-eval-method.h \
-  /usr/include/x86_64-linux-gnu/bits/fp-fast.h \
-  /usr/include/x86_64-linux-gnu/bits/fp-logb.h \
   /usr/include/x86_64-linux-gnu/bits/getopt_core.h \
   /usr/include/x86_64-linux-gnu/bits/getopt_posix.h \
   /usr/include/x86_64-linux-gnu/bits/ioctl-types.h \
   /usr/include/x86_64-linux-gnu/bits/ioctls.h \
   /usr/include/x86_64-linux-gnu/bits/libc-header-start.h \
-  /usr/include/x86_64-linux-gnu/bits/libm-simd-decl-stubs.h \
   /usr/include/x86_64-linux-gnu/bits/local_lim.h \
   /usr/include/x86_64-linux-gnu/bits/long-double.h \
-  /usr/include/x86_64-linux-gnu/bits/math-vector.h \
-  /usr/include/x86_64-linux-gnu/bits/mathcalls-helper-functions.h \
-  /usr/include/x86_64-linux-gnu/bits/mathcalls.h \
   /usr/include/x86_64-linux-gnu/bits/poll.h \
   /usr/include/x86_64-linux-gnu/bits/poll2.h \
   /usr/include/x86_64-linux-gnu/bits/posix1_lim.h \
@@ -192,14 +179,8 @@ _deps/glfw-build/src/CMakeFiles/glfw.dir/context.c.o: _deps/glfw-src/src/context
   /usr/include/x86_64-linux-gnu/sys/ttydefaults.h \
   /usr/include/x86_64-linux-gnu/sys/types.h \
   /usr/include/x86_64-linux-gnu/sys/ucontext.h \
-  /usr/include/xkbcommon/xkbcommon-compat.h \
-  /usr/include/xkbcommon/xkbcommon-compose.h \
-  /usr/include/xkbcommon/xkbcommon-keysyms.h \
-  /usr/include/xkbcommon/xkbcommon-names.h \
-  /usr/include/xkbcommon/xkbcommon.h \
   /usr/lib/gcc/x86_64-linux-gnu/13/include/limits.h \
   /usr/lib/gcc/x86_64-linux-gnu/13/include/stdarg.h \
-  /usr/lib/gcc/x86_64-linux-gnu/13/include/stdbool.h \
   /usr/lib/gcc/x86_64-linux-gnu/13/include/stddef.h \
   /usr/lib/gcc/x86_64-linux-gnu/13/include/stdint.h \
   /usr/lib/gcc/x86_64-linux-gnu/13/include/syslimits.h
@@ -215,7 +196,6 @@ _deps/glfw-build/src/CMakeFiles/glfw.dir/egl_context.c.o: _deps/glfw-src/src/egl
   _deps/glfw-src/src/posix_poll.h \
   _deps/glfw-src/src/posix_thread.h \
   _deps/glfw-src/src/posix_time.h \
-  _deps/glfw-src/src/wl_platform.h \
   _deps/glfw-src/src/x11_platform.h \
   _deps/glfw-src/src/xkb_unicode.h \
   /usr/include/X11/X.h \
@@ -255,7 +235,6 @@ _deps/glfw-build/src/CMakeFiles/glfw.dir/egl_context.c.o: _deps/glfw-src/src/egl
   /usr/include/endian.h \
   /usr/include/features-time64.h \
   /usr/include/features.h \
-  /usr/include/inttypes.h \
   /usr/include/linux/input-event-codes.h \
   /usr/include/linux/input.h \
   /usr/include/linux/ioctl.h \
@@ -263,7 +242,6 @@ _deps/glfw-build/src/CMakeFiles/glfw.dir/egl_context.c.o: _deps/glfw-src/src/egl
   /usr/include/linux/posix_types.h \
   /usr/include/linux/stddef.h \
   /usr/include/linux/types.h \
-  /usr/include/math.h \
   /usr/include/poll.h \
   /usr/include/pthread.h \
   /usr/include/regex.h \
@@ -277,9 +255,6 @@ _deps/glfw-build/src/CMakeFiles/glfw.dir/egl_context.c.o: _deps/glfw-src/src/egl
   /usr/include/strings.h \
   /usr/include/time.h \
   /usr/include/unistd.h \
-  /usr/include/wayland-client-core.h \
-  /usr/include/wayland-util.h \
-  /usr/include/wayland-version.h \
   /usr/include/x86_64-linux-gnu/asm/bitsperlong.h \
   /usr/include/x86_64-linux-gnu/asm/ioctl.h \
   /usr/include/x86_64-linux-gnu/asm/ioctls.h \
@@ -295,19 +270,12 @@ _deps/glfw-build/src/CMakeFiles/glfw.dir/egl_context.c.o: _deps/glfw-src/src/egl
   /usr/include/x86_64-linux-gnu/bits/environments.h \
   /usr/include/x86_64-linux-gnu/bits/floatn-common.h \
   /usr/include/x86_64-linux-gnu/bits/floatn.h \
-  /usr/include/x86_64-linux-gnu/bits/flt-eval-method.h \
-  /usr/include/x86_64-linux-gnu/bits/fp-fast.h \
-  /usr/include/x86_64-linux-gnu/bits/fp-logb.h \
   /usr/include/x86_64-linux-gnu/bits/getopt_core.h \
   /usr/include/x86_64-linux-gnu/bits/getopt_posix.h \
   /usr/include/x86_64-linux-gnu/bits/ioctl-types.h \
   /usr/include/x86_64-linux-gnu/bits/ioctls.h \
   /usr/include/x86_64-linux-gnu/bits/libc-header-start.h \
-  /usr/include/x86_64-linux-gnu/bits/libm-simd-decl-stubs.h \
   /usr/include/x86_64-linux-gnu/bits/long-double.h \
-  /usr/include/x86_64-linux-gnu/bits/math-vector.h \
-  /usr/include/x86_64-linux-gnu/bits/mathcalls-helper-functions.h \
-  /usr/include/x86_64-linux-gnu/bits/mathcalls.h \
   /usr/include/x86_64-linux-gnu/bits/poll.h \
   /usr/include/x86_64-linux-gnu/bits/poll2.h \
   /usr/include/x86_64-linux-gnu/bits/posix_opt.h \
@@ -398,13 +366,7 @@ _deps/glfw-build/src/CMakeFiles/glfw.dir/egl_context.c.o: _deps/glfw-src/src/egl
   /usr/include/x86_64-linux-gnu/sys/ttydefaults.h \
   /usr/include/x86_64-linux-gnu/sys/types.h \
   /usr/include/x86_64-linux-gnu/sys/ucontext.h \
-  /usr/include/xkbcommon/xkbcommon-compat.h \
-  /usr/include/xkbcommon/xkbcommon-compose.h \
-  /usr/include/xkbcommon/xkbcommon-keysyms.h \
-  /usr/include/xkbcommon/xkbcommon-names.h \
-  /usr/include/xkbcommon/xkbcommon.h \
   /usr/lib/gcc/x86_64-linux-gnu/13/include/stdarg.h \
-  /usr/lib/gcc/x86_64-linux-gnu/13/include/stdbool.h \
   /usr/lib/gcc/x86_64-linux-gnu/13/include/stddef.h \
   /usr/lib/gcc/x86_64-linux-gnu/13/include/stdint.h
 
@@ -419,7 +381,6 @@ _deps/glfw-build/src/CMakeFiles/glfw.dir/glx_context.c.o: _deps/glfw-src/src/glx
   _deps/glfw-src/src/posix_poll.h \
   _deps/glfw-src/src/posix_thread.h \
   _deps/glfw-src/src/posix_time.h \
-  _deps/glfw-src/src/wl_platform.h \
   _deps/glfw-src/src/x11_platform.h \
   _deps/glfw-src/src/xkb_unicode.h \
   /usr/include/X11/X.h \
@@ -459,7 +420,6 @@ _deps/glfw-build/src/CMakeFiles/glfw.dir/glx_context.c.o: _deps/glfw-src/src/glx
   /usr/include/endian.h \
   /usr/include/features-time64.h \
   /usr/include/features.h \
-  /usr/include/inttypes.h \
   /usr/include/linux/input-event-codes.h \
   /usr/include/linux/input.h \
   /usr/include/linux/ioctl.h \
@@ -467,7 +427,6 @@ _deps/glfw-build/src/CMakeFiles/glfw.dir/glx_context.c.o: _deps/glfw-src/src/glx
   /usr/include/linux/posix_types.h \
   /usr/include/linux/stddef.h \
   /usr/include/linux/types.h \
-  /usr/include/math.h \
   /usr/include/poll.h \
   /usr/include/pthread.h \
   /usr/include/regex.h \
@@ -481,9 +440,6 @@ _deps/glfw-build/src/CMakeFiles/glfw.dir/glx_context.c.o: _deps/glfw-src/src/glx
   /usr/include/strings.h \
   /usr/include/time.h \
   /usr/include/unistd.h \
-  /usr/include/wayland-client-core.h \
-  /usr/include/wayland-util.h \
-  /usr/include/wayland-version.h \
   /usr/include/x86_64-linux-gnu/asm/bitsperlong.h \
   /usr/include/x86_64-linux-gnu/asm/ioctl.h \
   /usr/include/x86_64-linux-gnu/asm/ioctls.h \
@@ -499,19 +455,12 @@ _deps/glfw-build/src/CMakeFiles/glfw.dir/glx_context.c.o: _deps/glfw-src/src/glx
   /usr/include/x86_64-linux-gnu/bits/environments.h \
   /usr/include/x86_64-linux-gnu/bits/floatn-common.h \
   /usr/include/x86_64-linux-gnu/bits/floatn.h \
-  /usr/include/x86_64-linux-gnu/bits/flt-eval-method.h \
-  /usr/include/x86_64-linux-gnu/bits/fp-fast.h \
-  /usr/include/x86_64-linux-gnu/bits/fp-logb.h \
   /usr/include/x86_64-linux-gnu/bits/getopt_core.h \
   /usr/include/x86_64-linux-gnu/bits/getopt_posix.h \
   /usr/include/x86_64-linux-gnu/bits/ioctl-types.h \
   /usr/include/x86_64-linux-gnu/bits/ioctls.h \
   /usr/include/x86_64-linux-gnu/bits/libc-header-start.h \
-  /usr/include/x86_64-linux-gnu/bits/libm-simd-decl-stubs.h \
   /usr/include/x86_64-linux-gnu/bits/long-double.h \
-  /usr/include/x86_64-linux-gnu/bits/math-vector.h \
-  /usr/include/x86_64-linux-gnu/bits/mathcalls-helper-functions.h \
-  /usr/include/x86_64-linux-gnu/bits/mathcalls.h \
   /usr/include/x86_64-linux-gnu/bits/poll.h \
   /usr/include/x86_64-linux-gnu/bits/poll2.h \
   /usr/include/x86_64-linux-gnu/bits/posix_opt.h \
@@ -602,13 +551,7 @@ _deps/glfw-build/src/CMakeFiles/glfw.dir/glx_context.c.o: _deps/glfw-src/src/glx
   /usr/include/x86_64-linux-gnu/sys/ttydefaults.h \
   /usr/include/x86_64-linux-gnu/sys/types.h \
   /usr/include/x86_64-linux-gnu/sys/ucontext.h \
-  /usr/include/xkbcommon/xkbcommon-compat.h \
-  /usr/include/xkbcommon/xkbcommon-compose.h \
-  /usr/include/xkbcommon/xkbcommon-keysyms.h \
-  /usr/include/xkbcommon/xkbcommon-names.h \
-  /usr/include/xkbcommon/xkbcommon.h \
   /usr/lib/gcc/x86_64-linux-gnu/13/include/stdarg.h \
-  /usr/lib/gcc/x86_64-linux-gnu/13/include/stdbool.h \
   /usr/lib/gcc/x86_64-linux-gnu/13/include/stddef.h \
   /usr/lib/gcc/x86_64-linux-gnu/13/include/stdint.h
 
@@ -623,7 +566,6 @@ _deps/glfw-build/src/CMakeFiles/glfw.dir/init.c.o: _deps/glfw-src/src/init.c \
   _deps/glfw-src/src/posix_poll.h \
   _deps/glfw-src/src/posix_thread.h \
   _deps/glfw-src/src/posix_time.h \
-  _deps/glfw-src/src/wl_platform.h \
   _deps/glfw-src/src/x11_platform.h \
   _deps/glfw-src/src/xkb_unicode.h \
   /usr/include/X11/X.h \
@@ -663,7 +605,6 @@ _deps/glfw-build/src/CMakeFiles/glfw.dir/init.c.o: _deps/glfw-src/src/init.c \
   /usr/include/endian.h \
   /usr/include/features-time64.h \
   /usr/include/features.h \
-  /usr/include/inttypes.h \
   /usr/include/linux/input-event-codes.h \
   /usr/include/linux/input.h \
   /usr/include/linux/ioctl.h \
@@ -671,7 +612,6 @@ _deps/glfw-build/src/CMakeFiles/glfw.dir/init.c.o: _deps/glfw-src/src/init.c \
   /usr/include/linux/posix_types.h \
   /usr/include/linux/stddef.h \
   /usr/include/linux/types.h \
-  /usr/include/math.h \
   /usr/include/poll.h \
   /usr/include/pthread.h \
   /usr/include/regex.h \
@@ -685,9 +625,6 @@ _deps/glfw-build/src/CMakeFiles/glfw.dir/init.c.o: _deps/glfw-src/src/init.c \
   /usr/include/strings.h \
   /usr/include/time.h \
   /usr/include/unistd.h \
-  /usr/include/wayland-client-core.h \
-  /usr/include/wayland-util.h \
-  /usr/include/wayland-version.h \
   /usr/include/x86_64-linux-gnu/asm/bitsperlong.h \
   /usr/include/x86_64-linux-gnu/asm/ioctl.h \
   /usr/include/x86_64-linux-gnu/asm/ioctls.h \
@@ -703,19 +640,12 @@ _deps/glfw-build/src/CMakeFiles/glfw.dir/init.c.o: _deps/glfw-src/src/init.c \
   /usr/include/x86_64-linux-gnu/bits/environments.h \
   /usr/include/x86_64-linux-gnu/bits/floatn-common.h \
   /usr/include/x86_64-linux-gnu/bits/floatn.h \
-  /usr/include/x86_64-linux-gnu/bits/flt-eval-method.h \
-  /usr/include/x86_64-linux-gnu/bits/fp-fast.h \
-  /usr/include/x86_64-linux-gnu/bits/fp-logb.h \
   /usr/include/x86_64-linux-gnu/bits/getopt_core.h \
   /usr/include/x86_64-linux-gnu/bits/getopt_posix.h \
   /usr/include/x86_64-linux-gnu/bits/ioctl-types.h \
   /usr/include/x86_64-linux-gnu/bits/ioctls.h \
   /usr/include/x86_64-linux-gnu/bits/libc-header-start.h \
-  /usr/include/x86_64-linux-gnu/bits/libm-simd-decl-stubs.h \
   /usr/include/x86_64-linux-gnu/bits/long-double.h \
-  /usr/include/x86_64-linux-gnu/bits/math-vector.h \
-  /usr/include/x86_64-linux-gnu/bits/mathcalls-helper-functions.h \
-  /usr/include/x86_64-linux-gnu/bits/mathcalls.h \
   /usr/include/x86_64-linux-gnu/bits/poll.h \
   /usr/include/x86_64-linux-gnu/bits/poll2.h \
   /usr/include/x86_64-linux-gnu/bits/posix_opt.h \
@@ -806,13 +736,7 @@ _deps/glfw-build/src/CMakeFiles/glfw.dir/init.c.o: _deps/glfw-src/src/init.c \
   /usr/include/x86_64-linux-gnu/sys/ttydefaults.h \
   /usr/include/x86_64-linux-gnu/sys/types.h \
   /usr/include/x86_64-linux-gnu/sys/ucontext.h \
-  /usr/include/xkbcommon/xkbcommon-compat.h \
-  /usr/include/xkbcommon/xkbcommon-compose.h \
-  /usr/include/xkbcommon/xkbcommon-keysyms.h \
-  /usr/include/xkbcommon/xkbcommon-names.h \
-  /usr/include/xkbcommon/xkbcommon.h \
   /usr/lib/gcc/x86_64-linux-gnu/13/include/stdarg.h \
-  /usr/lib/gcc/x86_64-linux-gnu/13/include/stdbool.h \
   /usr/lib/gcc/x86_64-linux-gnu/13/include/stddef.h \
   /usr/lib/gcc/x86_64-linux-gnu/13/include/stdint.h
 
@@ -828,7 +752,6 @@ _deps/glfw-build/src/CMakeFiles/glfw.dir/input.c.o: _deps/glfw-src/src/input.c \
   _deps/glfw-src/src/posix_poll.h \
   _deps/glfw-src/src/posix_thread.h \
   _deps/glfw-src/src/posix_time.h \
-  _deps/glfw-src/src/wl_platform.h \
   _deps/glfw-src/src/x11_platform.h \
   _deps/glfw-src/src/xkb_unicode.h \
   /usr/include/X11/X.h \
@@ -868,7 +791,6 @@ _deps/glfw-build/src/CMakeFiles/glfw.dir/input.c.o: _deps/glfw-src/src/input.c \
   /usr/include/endian.h \
   /usr/include/features-time64.h \
   /usr/include/features.h \
-  /usr/include/inttypes.h \
   /usr/include/linux/input-event-codes.h \
   /usr/include/linux/input.h \
   /usr/include/linux/ioctl.h \
@@ -890,9 +812,6 @@ _deps/glfw-build/src/CMakeFiles/glfw.dir/input.c.o: _deps/glfw-src/src/input.c \
   /usr/include/strings.h \
   /usr/include/time.h \
   /usr/include/unistd.h \
-  /usr/include/wayland-client-core.h \
-  /usr/include/wayland-util.h \
-  /usr/include/wayland-version.h \
   /usr/include/x86_64-linux-gnu/asm/bitsperlong.h \
   /usr/include/x86_64-linux-gnu/asm/ioctl.h \
   /usr/include/x86_64-linux-gnu/asm/ioctls.h \
@@ -1011,14 +930,8 @@ _deps/glfw-build/src/CMakeFiles/glfw.dir/input.c.o: _deps/glfw-src/src/input.c \
   /usr/include/x86_64-linux-gnu/sys/ttydefaults.h \
   /usr/include/x86_64-linux-gnu/sys/types.h \
   /usr/include/x86_64-linux-gnu/sys/ucontext.h \
-  /usr/include/xkbcommon/xkbcommon-compat.h \
-  /usr/include/xkbcommon/xkbcommon-compose.h \
-  /usr/include/xkbcommon/xkbcommon-keysyms.h \
-  /usr/include/xkbcommon/xkbcommon-names.h \
-  /usr/include/xkbcommon/xkbcommon.h \
   /usr/lib/gcc/x86_64-linux-gnu/13/include/float.h \
   /usr/lib/gcc/x86_64-linux-gnu/13/include/stdarg.h \
-  /usr/lib/gcc/x86_64-linux-gnu/13/include/stdbool.h \
   /usr/lib/gcc/x86_64-linux-gnu/13/include/stddef.h \
   /usr/lib/gcc/x86_64-linux-gnu/13/include/stdint.h
 
@@ -1033,7 +946,6 @@ _deps/glfw-build/src/CMakeFiles/glfw.dir/linux_joystick.c.o: _deps/glfw-src/src/
   _deps/glfw-src/src/posix_poll.h \
   _deps/glfw-src/src/posix_thread.h \
   _deps/glfw-src/src/posix_time.h \
-  _deps/glfw-src/src/wl_platform.h \
   _deps/glfw-src/src/x11_platform.h \
   _deps/glfw-src/src/xkb_unicode.h \
   /usr/include/X11/X.h \
@@ -1077,7 +989,6 @@ _deps/glfw-build/src/CMakeFiles/glfw.dir/linux_joystick.c.o: _deps/glfw-src/src/
   /usr/include/fcntl.h \
   /usr/include/features-time64.h \
   /usr/include/features.h \
-  /usr/include/inttypes.h \
   /usr/include/linux/errno.h \
   /usr/include/linux/input-event-codes.h \
   /usr/include/linux/input.h \
@@ -1086,7 +997,6 @@ _deps/glfw-build/src/CMakeFiles/glfw.dir/linux_joystick.c.o: _deps/glfw-src/src/
   /usr/include/linux/posix_types.h \
   /usr/include/linux/stddef.h \
   /usr/include/linux/types.h \
-  /usr/include/math.h \
   /usr/include/poll.h \
   /usr/include/pthread.h \
   /usr/include/regex.h \
@@ -1100,9 +1010,6 @@ _deps/glfw-build/src/CMakeFiles/glfw.dir/linux_joystick.c.o: _deps/glfw-src/src/
   /usr/include/strings.h \
   /usr/include/time.h \
   /usr/include/unistd.h \
-  /usr/include/wayland-client-core.h \
-  /usr/include/wayland-util.h \
-  /usr/include/wayland-version.h \
   /usr/include/x86_64-linux-gnu/asm/bitsperlong.h \
   /usr/include/x86_64-linux-gnu/asm/errno.h \
   /usr/include/x86_64-linux-gnu/asm/ioctl.h \
@@ -1125,21 +1032,14 @@ _deps/glfw-build/src/CMakeFiles/glfw.dir/linux_joystick.c.o: _deps/glfw-src/src/
   /usr/include/x86_64-linux-gnu/bits/fcntl2.h \
   /usr/include/x86_64-linux-gnu/bits/floatn-common.h \
   /usr/include/x86_64-linux-gnu/bits/floatn.h \
-  /usr/include/x86_64-linux-gnu/bits/flt-eval-method.h \
-  /usr/include/x86_64-linux-gnu/bits/fp-fast.h \
-  /usr/include/x86_64-linux-gnu/bits/fp-logb.h \
   /usr/include/x86_64-linux-gnu/bits/getopt_core.h \
   /usr/include/x86_64-linux-gnu/bits/getopt_posix.h \
   /usr/include/x86_64-linux-gnu/bits/inotify.h \
   /usr/include/x86_64-linux-gnu/bits/ioctl-types.h \
   /usr/include/x86_64-linux-gnu/bits/ioctls.h \
   /usr/include/x86_64-linux-gnu/bits/libc-header-start.h \
-  /usr/include/x86_64-linux-gnu/bits/libm-simd-decl-stubs.h \
   /usr/include/x86_64-linux-gnu/bits/local_lim.h \
   /usr/include/x86_64-linux-gnu/bits/long-double.h \
-  /usr/include/x86_64-linux-gnu/bits/math-vector.h \
-  /usr/include/x86_64-linux-gnu/bits/mathcalls-helper-functions.h \
-  /usr/include/x86_64-linux-gnu/bits/mathcalls.h \
   /usr/include/x86_64-linux-gnu/bits/poll.h \
   /usr/include/x86_64-linux-gnu/bits/poll2.h \
   /usr/include/x86_64-linux-gnu/bits/posix1_lim.h \
@@ -1235,13 +1135,7 @@ _deps/glfw-build/src/CMakeFiles/glfw.dir/linux_joystick.c.o: _deps/glfw-src/src/
   /usr/include/x86_64-linux-gnu/sys/ttydefaults.h \
   /usr/include/x86_64-linux-gnu/sys/types.h \
   /usr/include/x86_64-linux-gnu/sys/ucontext.h \
-  /usr/include/xkbcommon/xkbcommon-compat.h \
-  /usr/include/xkbcommon/xkbcommon-compose.h \
-  /usr/include/xkbcommon/xkbcommon-keysyms.h \
-  /usr/include/xkbcommon/xkbcommon-names.h \
-  /usr/include/xkbcommon/xkbcommon.h \
   /usr/lib/gcc/x86_64-linux-gnu/13/include/stdarg.h \
-  /usr/lib/gcc/x86_64-linux-gnu/13/include/stdbool.h \
   /usr/lib/gcc/x86_64-linux-gnu/13/include/stddef.h \
   /usr/lib/gcc/x86_64-linux-gnu/13/include/stdint.h
 
@@ -1256,7 +1150,6 @@ _deps/glfw-build/src/CMakeFiles/glfw.dir/monitor.c.o: _deps/glfw-src/src/monitor
   _deps/glfw-src/src/posix_poll.h \
   _deps/glfw-src/src/posix_thread.h \
   _deps/glfw-src/src/posix_time.h \
-  _deps/glfw-src/src/wl_platform.h \
   _deps/glfw-src/src/x11_platform.h \
   _deps/glfw-src/src/xkb_unicode.h \
   /usr/include/X11/X.h \
@@ -1296,7 +1189,6 @@ _deps/glfw-build/src/CMakeFiles/glfw.dir/monitor.c.o: _deps/glfw-src/src/monitor
   /usr/include/endian.h \
   /usr/include/features-time64.h \
   /usr/include/features.h \
-  /usr/include/inttypes.h \
   /usr/include/limits.h \
   /usr/include/linux/input-event-codes.h \
   /usr/include/linux/input.h \
@@ -1319,9 +1211,6 @@ _deps/glfw-build/src/CMakeFiles/glfw.dir/monitor.c.o: _deps/glfw-src/src/monitor
   /usr/include/strings.h \
   /usr/include/time.h \
   /usr/include/unistd.h \
-  /usr/include/wayland-client-core.h \
-  /usr/include/wayland-util.h \
-  /usr/include/wayland-version.h \
   /usr/include/x86_64-linux-gnu/asm/bitsperlong.h \
   /usr/include/x86_64-linux-gnu/asm/ioctl.h \
   /usr/include/x86_64-linux-gnu/asm/ioctls.h \
@@ -1443,15 +1332,9 @@ _deps/glfw-build/src/CMakeFiles/glfw.dir/monitor.c.o: _deps/glfw-src/src/monitor
   /usr/include/x86_64-linux-gnu/sys/ttydefaults.h \
   /usr/include/x86_64-linux-gnu/sys/types.h \
   /usr/include/x86_64-linux-gnu/sys/ucontext.h \
-  /usr/include/xkbcommon/xkbcommon-compat.h \
-  /usr/include/xkbcommon/xkbcommon-compose.h \
-  /usr/include/xkbcommon/xkbcommon-keysyms.h \
-  /usr/include/xkbcommon/xkbcommon-names.h \
-  /usr/include/xkbcommon/xkbcommon.h \
   /usr/lib/gcc/x86_64-linux-gnu/13/include/float.h \
   /usr/lib/gcc/x86_64-linux-gnu/13/include/limits.h \
   /usr/lib/gcc/x86_64-linux-gnu/13/include/stdarg.h \
-  /usr/lib/gcc/x86_64-linux-gnu/13/include/stdbool.h \
   /usr/lib/gcc/x86_64-linux-gnu/13/include/stddef.h \
   /usr/lib/gcc/x86_64-linux-gnu/13/include/stdint.h \
   /usr/lib/gcc/x86_64-linux-gnu/13/include/syslimits.h
@@ -1467,7 +1350,6 @@ _deps/glfw-build/src/CMakeFiles/glfw.dir/null_init.c.o: _deps/glfw-src/src/null_
   _deps/glfw-src/src/posix_poll.h \
   _deps/glfw-src/src/posix_thread.h \
   _deps/glfw-src/src/posix_time.h \
-  _deps/glfw-src/src/wl_platform.h \
   _deps/glfw-src/src/x11_platform.h \
   _deps/glfw-src/src/xkb_unicode.h \
   /usr/include/X11/X.h \
@@ -1506,7 +1388,6 @@ _deps/glfw-build/src/CMakeFiles/glfw.dir/null_init.c.o: _deps/glfw-src/src/null_
   /usr/include/endian.h \
   /usr/include/features-time64.h \
   /usr/include/features.h \
-  /usr/include/inttypes.h \
   /usr/include/linux/input-event-codes.h \
   /usr/include/linux/input.h \
   /usr/include/linux/ioctl.h \
@@ -1514,7 +1395,6 @@ _deps/glfw-build/src/CMakeFiles/glfw.dir/null_init.c.o: _deps/glfw-src/src/null_
   /usr/include/linux/posix_types.h \
   /usr/include/linux/stddef.h \
   /usr/include/linux/types.h \
-  /usr/include/math.h \
   /usr/include/poll.h \
   /usr/include/pthread.h \
   /usr/include/regex.h \
@@ -1528,9 +1408,6 @@ _deps/glfw-build/src/CMakeFiles/glfw.dir/null_init.c.o: _deps/glfw-src/src/null_
   /usr/include/strings.h \
   /usr/include/time.h \
   /usr/include/unistd.h \
-  /usr/include/wayland-client-core.h \
-  /usr/include/wayland-util.h \
-  /usr/include/wayland-version.h \
   /usr/include/x86_64-linux-gnu/asm/bitsperlong.h \
   /usr/include/x86_64-linux-gnu/asm/ioctl.h \
   /usr/include/x86_64-linux-gnu/asm/ioctls.h \
@@ -1546,19 +1423,12 @@ _deps/glfw-build/src/CMakeFiles/glfw.dir/null_init.c.o: _deps/glfw-src/src/null_
   /usr/include/x86_64-linux-gnu/bits/environments.h \
   /usr/include/x86_64-linux-gnu/bits/floatn-common.h \
   /usr/include/x86_64-linux-gnu/bits/floatn.h \
-  /usr/include/x86_64-linux-gnu/bits/flt-eval-method.h \
-  /usr/include/x86_64-linux-gnu/bits/fp-fast.h \
-  /usr/include/x86_64-linux-gnu/bits/fp-logb.h \
   /usr/include/x86_64-linux-gnu/bits/getopt_core.h \
   /usr/include/x86_64-linux-gnu/bits/getopt_posix.h \
   /usr/include/x86_64-linux-gnu/bits/ioctl-types.h \
   /usr/include/x86_64-linux-gnu/bits/ioctls.h \
   /usr/include/x86_64-linux-gnu/bits/libc-header-start.h \
-  /usr/include/x86_64-linux-gnu/bits/libm-simd-decl-stubs.h \
   /usr/include/x86_64-linux-gnu/bits/long-double.h \
-  /usr/include/x86_64-linux-gnu/bits/math-vector.h \
-  /usr/include/x86_64-linux-gnu/bits/mathcalls-helper-functions.h \
-  /usr/include/x86_64-linux-gnu/bits/mathcalls.h \
   /usr/include/x86_64-linux-gnu/bits/poll.h \
   /usr/include/x86_64-linux-gnu/bits/poll2.h \
   /usr/include/x86_64-linux-gnu/bits/posix_opt.h \
@@ -1649,13 +1519,7 @@ _deps/glfw-build/src/CMakeFiles/glfw.dir/null_init.c.o: _deps/glfw-src/src/null_
   /usr/include/x86_64-linux-gnu/sys/ttydefaults.h \
   /usr/include/x86_64-linux-gnu/sys/types.h \
   /usr/include/x86_64-linux-gnu/sys/ucontext.h \
-  /usr/include/xkbcommon/xkbcommon-compat.h \
-  /usr/include/xkbcommon/xkbcommon-compose.h \
-  /usr/include/xkbcommon/xkbcommon-keysyms.h \
-  /usr/include/xkbcommon/xkbcommon-names.h \
-  /usr/include/xkbcommon/xkbcommon.h \
   /usr/lib/gcc/x86_64-linux-gnu/13/include/stdarg.h \
-  /usr/lib/gcc/x86_64-linux-gnu/13/include/stdbool.h \
   /usr/lib/gcc/x86_64-linux-gnu/13/include/stddef.h \
   /usr/lib/gcc/x86_64-linux-gnu/13/include/stdint.h
 
@@ -1670,7 +1534,6 @@ _deps/glfw-build/src/CMakeFiles/glfw.dir/null_joystick.c.o: _deps/glfw-src/src/n
   _deps/glfw-src/src/posix_poll.h \
   _deps/glfw-src/src/posix_thread.h \
   _deps/glfw-src/src/posix_time.h \
-  _deps/glfw-src/src/wl_platform.h \
   _deps/glfw-src/src/x11_platform.h \
   _deps/glfw-src/src/xkb_unicode.h \
   /usr/include/X11/X.h \
@@ -1708,7 +1571,6 @@ _deps/glfw-build/src/CMakeFiles/glfw.dir/null_joystick.c.o: _deps/glfw-src/src/n
   /usr/include/endian.h \
   /usr/include/features-time64.h \
   /usr/include/features.h \
-  /usr/include/inttypes.h \
   /usr/include/linux/input-event-codes.h \
   /usr/include/linux/input.h \
   /usr/include/linux/ioctl.h \
@@ -1716,7 +1578,6 @@ _deps/glfw-build/src/CMakeFiles/glfw.dir/null_joystick.c.o: _deps/glfw-src/src/n
   /usr/include/linux/posix_types.h \
   /usr/include/linux/stddef.h \
   /usr/include/linux/types.h \
-  /usr/include/math.h \
   /usr/include/poll.h \
   /usr/include/pthread.h \
   /usr/include/regex.h \
@@ -1727,9 +1588,6 @@ _deps/glfw-build/src/CMakeFiles/glfw.dir/null_joystick.c.o: _deps/glfw-src/src/n
   /usr/include/stdio.h \
   /usr/include/time.h \
   /usr/include/unistd.h \
-  /usr/include/wayland-client-core.h \
-  /usr/include/wayland-util.h \
-  /usr/include/wayland-version.h \
   /usr/include/x86_64-linux-gnu/asm/bitsperlong.h \
   /usr/include/x86_64-linux-gnu/asm/ioctl.h \
   /usr/include/x86_64-linux-gnu/asm/ioctls.h \
@@ -1745,19 +1603,12 @@ _deps/glfw-build/src/CMakeFiles/glfw.dir/null_joystick.c.o: _deps/glfw-src/src/n
   /usr/include/x86_64-linux-gnu/bits/environments.h \
   /usr/include/x86_64-linux-gnu/bits/floatn-common.h \
   /usr/include/x86_64-linux-gnu/bits/floatn.h \
-  /usr/include/x86_64-linux-gnu/bits/flt-eval-method.h \
-  /usr/include/x86_64-linux-gnu/bits/fp-fast.h \
-  /usr/include/x86_64-linux-gnu/bits/fp-logb.h \
   /usr/include/x86_64-linux-gnu/bits/getopt_core.h \
   /usr/include/x86_64-linux-gnu/bits/getopt_posix.h \
   /usr/include/x86_64-linux-gnu/bits/ioctl-types.h \
   /usr/include/x86_64-linux-gnu/bits/ioctls.h \
   /usr/include/x86_64-linux-gnu/bits/libc-header-start.h \
-  /usr/include/x86_64-linux-gnu/bits/libm-simd-decl-stubs.h \
   /usr/include/x86_64-linux-gnu/bits/long-double.h \
-  /usr/include/x86_64-linux-gnu/bits/math-vector.h \
-  /usr/include/x86_64-linux-gnu/bits/mathcalls-helper-functions.h \
-  /usr/include/x86_64-linux-gnu/bits/mathcalls.h \
   /usr/include/x86_64-linux-gnu/bits/poll.h \
   /usr/include/x86_64-linux-gnu/bits/poll2.h \
   /usr/include/x86_64-linux-gnu/bits/posix_opt.h \
@@ -1841,13 +1692,7 @@ _deps/glfw-build/src/CMakeFiles/glfw.dir/null_joystick.c.o: _deps/glfw-src/src/n
   /usr/include/x86_64-linux-gnu/sys/ttydefaults.h \
   /usr/include/x86_64-linux-gnu/sys/types.h \
   /usr/include/x86_64-linux-gnu/sys/ucontext.h \
-  /usr/include/xkbcommon/xkbcommon-compat.h \
-  /usr/include/xkbcommon/xkbcommon-compose.h \
-  /usr/include/xkbcommon/xkbcommon-keysyms.h \
-  /usr/include/xkbcommon/xkbcommon-names.h \
-  /usr/include/xkbcommon/xkbcommon.h \
   /usr/lib/gcc/x86_64-linux-gnu/13/include/stdarg.h \
-  /usr/lib/gcc/x86_64-linux-gnu/13/include/stdbool.h \
   /usr/lib/gcc/x86_64-linux-gnu/13/include/stddef.h \
   /usr/lib/gcc/x86_64-linux-gnu/13/include/stdint.h
 
@@ -1862,7 +1707,6 @@ _deps/glfw-build/src/CMakeFiles/glfw.dir/null_monitor.c.o: _deps/glfw-src/src/nu
   _deps/glfw-src/src/posix_poll.h \
   _deps/glfw-src/src/posix_thread.h \
   _deps/glfw-src/src/posix_time.h \
-  _deps/glfw-src/src/wl_platform.h \
   _deps/glfw-src/src/x11_platform.h \
   _deps/glfw-src/src/xkb_unicode.h \
   /usr/include/X11/X.h \
@@ -1901,7 +1745,6 @@ _deps/glfw-build/src/CMakeFiles/glfw.dir/null_monitor.c.o: _deps/glfw-src/src/nu
   /usr/include/endian.h \
   /usr/include/features-time64.h \
   /usr/include/features.h \
-  /usr/include/inttypes.h \
   /usr/include/linux/input-event-codes.h \
   /usr/include/linux/input.h \
   /usr/include/linux/ioctl.h \
@@ -1923,9 +1766,6 @@ _deps/glfw-build/src/CMakeFiles/glfw.dir/null_monitor.c.o: _deps/glfw-src/src/nu
   /usr/include/strings.h \
   /usr/include/time.h \
   /usr/include/unistd.h \
-  /usr/include/wayland-client-core.h \
-  /usr/include/wayland-util.h \
-  /usr/include/wayland-version.h \
   /usr/include/x86_64-linux-gnu/asm/bitsperlong.h \
   /usr/include/x86_64-linux-gnu/asm/ioctl.h \
   /usr/include/x86_64-linux-gnu/asm/ioctls.h \
@@ -2044,13 +1884,7 @@ _deps/glfw-build/src/CMakeFiles/glfw.dir/null_monitor.c.o: _deps/glfw-src/src/nu
   /usr/include/x86_64-linux-gnu/sys/ttydefaults.h \
   /usr/include/x86_64-linux-gnu/sys/types.h \
   /usr/include/x86_64-linux-gnu/sys/ucontext.h \
-  /usr/include/xkbcommon/xkbcommon-compat.h \
-  /usr/include/xkbcommon/xkbcommon-compose.h \
-  /usr/include/xkbcommon/xkbcommon-keysyms.h \
-  /usr/include/xkbcommon/xkbcommon-names.h \
-  /usr/include/xkbcommon/xkbcommon.h \
   /usr/lib/gcc/x86_64-linux-gnu/13/include/stdarg.h \
-  /usr/lib/gcc/x86_64-linux-gnu/13/include/stdbool.h \
   /usr/lib/gcc/x86_64-linux-gnu/13/include/stddef.h \
   /usr/lib/gcc/x86_64-linux-gnu/13/include/stdint.h
 
@@ -2065,7 +1899,6 @@ _deps/glfw-build/src/CMakeFiles/glfw.dir/null_window.c.o: _deps/glfw-src/src/nul
   _deps/glfw-src/src/posix_poll.h \
   _deps/glfw-src/src/posix_thread.h \
   _deps/glfw-src/src/posix_time.h \
-  _deps/glfw-src/src/wl_platform.h \
   _deps/glfw-src/src/x11_platform.h \
   _deps/glfw-src/src/xkb_unicode.h \
   /usr/include/X11/X.h \
@@ -2104,7 +1937,6 @@ _deps/glfw-build/src/CMakeFiles/glfw.dir/null_window.c.o: _deps/glfw-src/src/nul
   /usr/include/endian.h \
   /usr/include/features-time64.h \
   /usr/include/features.h \
-  /usr/include/inttypes.h \
   /usr/include/linux/input-event-codes.h \
   /usr/include/linux/input.h \
   /usr/include/linux/ioctl.h \
@@ -2112,7 +1944,6 @@ _deps/glfw-build/src/CMakeFiles/glfw.dir/null_window.c.o: _deps/glfw-src/src/nul
   /usr/include/linux/posix_types.h \
   /usr/include/linux/stddef.h \
   /usr/include/linux/types.h \
-  /usr/include/math.h \
   /usr/include/poll.h \
   /usr/include/pthread.h \
   /usr/include/regex.h \
@@ -2124,9 +1955,6 @@ _deps/glfw-build/src/CMakeFiles/glfw.dir/null_window.c.o: _deps/glfw-src/src/nul
   /usr/include/stdlib.h \
   /usr/include/time.h \
   /usr/include/unistd.h \
-  /usr/include/wayland-client-core.h \
-  /usr/include/wayland-util.h \
-  /usr/include/wayland-version.h \
   /usr/include/x86_64-linux-gnu/asm/bitsperlong.h \
   /usr/include/x86_64-linux-gnu/asm/ioctl.h \
   /usr/include/x86_64-linux-gnu/asm/ioctls.h \
@@ -2142,19 +1970,12 @@ _deps/glfw-build/src/CMakeFiles/glfw.dir/null_window.c.o: _deps/glfw-src/src/nul
   /usr/include/x86_64-linux-gnu/bits/environments.h \
   /usr/include/x86_64-linux-gnu/bits/floatn-common.h \
   /usr/include/x86_64-linux-gnu/bits/floatn.h \
-  /usr/include/x86_64-linux-gnu/bits/flt-eval-method.h \
-  /usr/include/x86_64-linux-gnu/bits/fp-fast.h \
-  /usr/include/x86_64-linux-gnu/bits/fp-logb.h \
   /usr/include/x86_64-linux-gnu/bits/getopt_core.h \
   /usr/include/x86_64-linux-gnu/bits/getopt_posix.h \
   /usr/include/x86_64-linux-gnu/bits/ioctl-types.h \
   /usr/include/x86_64-linux-gnu/bits/ioctls.h \
   /usr/include/x86_64-linux-gnu/bits/libc-header-start.h \
-  /usr/include/x86_64-linux-gnu/bits/libm-simd-decl-stubs.h \
   /usr/include/x86_64-linux-gnu/bits/long-double.h \
-  /usr/include/x86_64-linux-gnu/bits/math-vector.h \
-  /usr/include/x86_64-linux-gnu/bits/mathcalls-helper-functions.h \
-  /usr/include/x86_64-linux-gnu/bits/mathcalls.h \
   /usr/include/x86_64-linux-gnu/bits/poll.h \
   /usr/include/x86_64-linux-gnu/bits/poll2.h \
   /usr/include/x86_64-linux-gnu/bits/posix_opt.h \
@@ -2243,13 +2064,7 @@ _deps/glfw-build/src/CMakeFiles/glfw.dir/null_window.c.o: _deps/glfw-src/src/nul
   /usr/include/x86_64-linux-gnu/sys/ttydefaults.h \
   /usr/include/x86_64-linux-gnu/sys/types.h \
   /usr/include/x86_64-linux-gnu/sys/ucontext.h \
-  /usr/include/xkbcommon/xkbcommon-compat.h \
-  /usr/include/xkbcommon/xkbcommon-compose.h \
-  /usr/include/xkbcommon/xkbcommon-keysyms.h \
-  /usr/include/xkbcommon/xkbcommon-names.h \
-  /usr/include/xkbcommon/xkbcommon.h \
   /usr/lib/gcc/x86_64-linux-gnu/13/include/stdarg.h \
-  /usr/lib/gcc/x86_64-linux-gnu/13/include/stdbool.h \
   /usr/lib/gcc/x86_64-linux-gnu/13/include/stddef.h \
   /usr/lib/gcc/x86_64-linux-gnu/13/include/stdint.h
 
@@ -2264,7 +2079,6 @@ _deps/glfw-build/src/CMakeFiles/glfw.dir/osmesa_context.c.o: _deps/glfw-src/src/
   _deps/glfw-src/src/posix_poll.h \
   _deps/glfw-src/src/posix_thread.h \
   _deps/glfw-src/src/posix_time.h \
-  _deps/glfw-src/src/wl_platform.h \
   _deps/glfw-src/src/x11_platform.h \
   _deps/glfw-src/src/xkb_unicode.h \
   /usr/include/X11/X.h \
@@ -2304,7 +2118,6 @@ _deps/glfw-build/src/CMakeFiles/glfw.dir/osmesa_context.c.o: _deps/glfw-src/src/
   /usr/include/endian.h \
   /usr/include/features-time64.h \
   /usr/include/features.h \
-  /usr/include/inttypes.h \
   /usr/include/linux/input-event-codes.h \
   /usr/include/linux/input.h \
   /usr/include/linux/ioctl.h \
@@ -2312,7 +2125,6 @@ _deps/glfw-build/src/CMakeFiles/glfw.dir/osmesa_context.c.o: _deps/glfw-src/src/
   /usr/include/linux/posix_types.h \
   /usr/include/linux/stddef.h \
   /usr/include/linux/types.h \
-  /usr/include/math.h \
   /usr/include/poll.h \
   /usr/include/pthread.h \
   /usr/include/regex.h \
@@ -2326,9 +2138,6 @@ _deps/glfw-build/src/CMakeFiles/glfw.dir/osmesa_context.c.o: _deps/glfw-src/src/
   /usr/include/strings.h \
   /usr/include/time.h \
   /usr/include/unistd.h \
-  /usr/include/wayland-client-core.h \
-  /usr/include/wayland-util.h \
-  /usr/include/wayland-version.h \
   /usr/include/x86_64-linux-gnu/asm/bitsperlong.h \
   /usr/include/x86_64-linux-gnu/asm/ioctl.h \
   /usr/include/x86_64-linux-gnu/asm/ioctls.h \
@@ -2344,19 +2153,12 @@ _deps/glfw-build/src/CMakeFiles/glfw.dir/osmesa_context.c.o: _deps/glfw-src/src/
   /usr/include/x86_64-linux-gnu/bits/environments.h \
   /usr/include/x86_64-linux-gnu/bits/floatn-common.h \
   /usr/include/x86_64-linux-gnu/bits/floatn.h \
-  /usr/include/x86_64-linux-gnu/bits/flt-eval-method.h \
-  /usr/include/x86_64-linux-gnu/bits/fp-fast.h \
-  /usr/include/x86_64-linux-gnu/bits/fp-logb.h \
   /usr/include/x86_64-linux-gnu/bits/getopt_core.h \
   /usr/include/x86_64-linux-gnu/bits/getopt_posix.h \
   /usr/include/x86_64-linux-gnu/bits/ioctl-types.h \
   /usr/include/x86_64-linux-gnu/bits/ioctls.h \
   /usr/include/x86_64-linux-gnu/bits/libc-header-start.h \
-  /usr/include/x86_64-linux-gnu/bits/libm-simd-decl-stubs.h \
   /usr/include/x86_64-linux-gnu/bits/long-double.h \
-  /usr/include/x86_64-linux-gnu/bits/math-vector.h \
-  /usr/include/x86_64-linux-gnu/bits/mathcalls-helper-functions.h \
-  /usr/include/x86_64-linux-gnu/bits/mathcalls.h \
   /usr/include/x86_64-linux-gnu/bits/poll.h \
   /usr/include/x86_64-linux-gnu/bits/poll2.h \
   /usr/include/x86_64-linux-gnu/bits/posix_opt.h \
@@ -2447,13 +2249,7 @@ _deps/glfw-build/src/CMakeFiles/glfw.dir/osmesa_context.c.o: _deps/glfw-src/src/
   /usr/include/x86_64-linux-gnu/sys/ttydefaults.h \
   /usr/include/x86_64-linux-gnu/sys/types.h \
   /usr/include/x86_64-linux-gnu/sys/ucontext.h \
-  /usr/include/xkbcommon/xkbcommon-compat.h \
-  /usr/include/xkbcommon/xkbcommon-compose.h \
-  /usr/include/xkbcommon/xkbcommon-keysyms.h \
-  /usr/include/xkbcommon/xkbcommon-names.h \
-  /usr/include/xkbcommon/xkbcommon.h \
   /usr/lib/gcc/x86_64-linux-gnu/13/include/stdarg.h \
-  /usr/lib/gcc/x86_64-linux-gnu/13/include/stdbool.h \
   /usr/lib/gcc/x86_64-linux-gnu/13/include/stddef.h \
   /usr/lib/gcc/x86_64-linux-gnu/13/include/stdint.h
 
@@ -2468,7 +2264,6 @@ _deps/glfw-build/src/CMakeFiles/glfw.dir/platform.c.o: _deps/glfw-src/src/platfo
   _deps/glfw-src/src/posix_poll.h \
   _deps/glfw-src/src/posix_thread.h \
   _deps/glfw-src/src/posix_time.h \
-  _deps/glfw-src/src/wl_platform.h \
   _deps/glfw-src/src/x11_platform.h \
   _deps/glfw-src/src/xkb_unicode.h \
   /usr/include/X11/X.h \
@@ -2507,7 +2302,6 @@ _deps/glfw-build/src/CMakeFiles/glfw.dir/platform.c.o: _deps/glfw-src/src/platfo
   /usr/include/endian.h \
   /usr/include/features-time64.h \
   /usr/include/features.h \
-  /usr/include/inttypes.h \
   /usr/include/linux/input-event-codes.h \
   /usr/include/linux/input.h \
   /usr/include/linux/ioctl.h \
@@ -2515,7 +2309,6 @@ _deps/glfw-build/src/CMakeFiles/glfw.dir/platform.c.o: _deps/glfw-src/src/platfo
   /usr/include/linux/posix_types.h \
   /usr/include/linux/stddef.h \
   /usr/include/linux/types.h \
-  /usr/include/math.h \
   /usr/include/poll.h \
   /usr/include/pthread.h \
   /usr/include/regex.h \
@@ -2529,9 +2322,6 @@ _deps/glfw-build/src/CMakeFiles/glfw.dir/platform.c.o: _deps/glfw-src/src/platfo
   /usr/include/strings.h \
   /usr/include/time.h \
   /usr/include/unistd.h \
-  /usr/include/wayland-client-core.h \
-  /usr/include/wayland-util.h \
-  /usr/include/wayland-version.h \
   /usr/include/x86_64-linux-gnu/asm/bitsperlong.h \
   /usr/include/x86_64-linux-gnu/asm/ioctl.h \
   /usr/include/x86_64-linux-gnu/asm/ioctls.h \
@@ -2547,19 +2337,12 @@ _deps/glfw-build/src/CMakeFiles/glfw.dir/platform.c.o: _deps/glfw-src/src/platfo
   /usr/include/x86_64-linux-gnu/bits/environments.h \
   /usr/include/x86_64-linux-gnu/bits/floatn-common.h \
   /usr/include/x86_64-linux-gnu/bits/floatn.h \
-  /usr/include/x86_64-linux-gnu/bits/flt-eval-method.h \
-  /usr/include/x86_64-linux-gnu/bits/fp-fast.h \
-  /usr/include/x86_64-linux-gnu/bits/fp-logb.h \
   /usr/include/x86_64-linux-gnu/bits/getopt_core.h \
   /usr/include/x86_64-linux-gnu/bits/getopt_posix.h \
   /usr/include/x86_64-linux-gnu/bits/ioctl-types.h \
   /usr/include/x86_64-linux-gnu/bits/ioctls.h \
   /usr/include/x86_64-linux-gnu/bits/libc-header-start.h \
-  /usr/include/x86_64-linux-gnu/bits/libm-simd-decl-stubs.h \
   /usr/include/x86_64-linux-gnu/bits/long-double.h \
-  /usr/include/x86_64-linux-gnu/bits/math-vector.h \
-  /usr/include/x86_64-linux-gnu/bits/mathcalls-helper-functions.h \
-  /usr/include/x86_64-linux-gnu/bits/mathcalls.h \
   /usr/include/x86_64-linux-gnu/bits/poll.h \
   /usr/include/x86_64-linux-gnu/bits/poll2.h \
   /usr/include/x86_64-linux-gnu/bits/posix_opt.h \
@@ -2650,13 +2433,7 @@ _deps/glfw-build/src/CMakeFiles/glfw.dir/platform.c.o: _deps/glfw-src/src/platfo
   /usr/include/x86_64-linux-gnu/sys/ttydefaults.h \
   /usr/include/x86_64-linux-gnu/sys/types.h \
   /usr/include/x86_64-linux-gnu/sys/ucontext.h \
-  /usr/include/xkbcommon/xkbcommon-compat.h \
-  /usr/include/xkbcommon/xkbcommon-compose.h \
-  /usr/include/xkbcommon/xkbcommon-keysyms.h \
-  /usr/include/xkbcommon/xkbcommon-names.h \
-  /usr/include/xkbcommon/xkbcommon.h \
   /usr/lib/gcc/x86_64-linux-gnu/13/include/stdarg.h \
-  /usr/lib/gcc/x86_64-linux-gnu/13/include/stdbool.h \
   /usr/lib/gcc/x86_64-linux-gnu/13/include/stddef.h \
   /usr/lib/gcc/x86_64-linux-gnu/13/include/stdint.h
 
@@ -2671,7 +2448,6 @@ _deps/glfw-build/src/CMakeFiles/glfw.dir/posix_module.c.o: _deps/glfw-src/src/po
   _deps/glfw-src/src/posix_poll.h \
   _deps/glfw-src/src/posix_thread.h \
   _deps/glfw-src/src/posix_time.h \
-  _deps/glfw-src/src/wl_platform.h \
   _deps/glfw-src/src/x11_platform.h \
   _deps/glfw-src/src/xkb_unicode.h \
   /usr/include/X11/X.h \
@@ -2710,7 +2486,6 @@ _deps/glfw-build/src/CMakeFiles/glfw.dir/posix_module.c.o: _deps/glfw-src/src/po
   /usr/include/endian.h \
   /usr/include/features-time64.h \
   /usr/include/features.h \
-  /usr/include/inttypes.h \
   /usr/include/linux/input-event-codes.h \
   /usr/include/linux/input.h \
   /usr/include/linux/ioctl.h \
@@ -2718,7 +2493,6 @@ _deps/glfw-build/src/CMakeFiles/glfw.dir/posix_module.c.o: _deps/glfw-src/src/po
   /usr/include/linux/posix_types.h \
   /usr/include/linux/stddef.h \
   /usr/include/linux/types.h \
-  /usr/include/math.h \
   /usr/include/poll.h \
   /usr/include/pthread.h \
   /usr/include/regex.h \
@@ -2729,9 +2503,6 @@ _deps/glfw-build/src/CMakeFiles/glfw.dir/posix_module.c.o: _deps/glfw-src/src/po
   /usr/include/stdio.h \
   /usr/include/time.h \
   /usr/include/unistd.h \
-  /usr/include/wayland-client-core.h \
-  /usr/include/wayland-util.h \
-  /usr/include/wayland-version.h \
   /usr/include/x86_64-linux-gnu/asm/bitsperlong.h \
   /usr/include/x86_64-linux-gnu/asm/ioctl.h \
   /usr/include/x86_64-linux-gnu/asm/ioctls.h \
@@ -2748,19 +2519,12 @@ _deps/glfw-build/src/CMakeFiles/glfw.dir/posix_module.c.o: _deps/glfw-src/src/po
   /usr/include/x86_64-linux-gnu/bits/environments.h \
   /usr/include/x86_64-linux-gnu/bits/floatn-common.h \
   /usr/include/x86_64-linux-gnu/bits/floatn.h \
-  /usr/include/x86_64-linux-gnu/bits/flt-eval-method.h \
-  /usr/include/x86_64-linux-gnu/bits/fp-fast.h \
-  /usr/include/x86_64-linux-gnu/bits/fp-logb.h \
   /usr/include/x86_64-linux-gnu/bits/getopt_core.h \
   /usr/include/x86_64-linux-gnu/bits/getopt_posix.h \
   /usr/include/x86_64-linux-gnu/bits/ioctl-types.h \
   /usr/include/x86_64-linux-gnu/bits/ioctls.h \
   /usr/include/x86_64-linux-gnu/bits/libc-header-start.h \
-  /usr/include/x86_64-linux-gnu/bits/libm-simd-decl-stubs.h \
   /usr/include/x86_64-linux-gnu/bits/long-double.h \
-  /usr/include/x86_64-linux-gnu/bits/math-vector.h \
-  /usr/include/x86_64-linux-gnu/bits/mathcalls-helper-functions.h \
-  /usr/include/x86_64-linux-gnu/bits/mathcalls.h \
   /usr/include/x86_64-linux-gnu/bits/poll.h \
   /usr/include/x86_64-linux-gnu/bits/poll2.h \
   /usr/include/x86_64-linux-gnu/bits/posix_opt.h \
@@ -2844,13 +2608,7 @@ _deps/glfw-build/src/CMakeFiles/glfw.dir/posix_module.c.o: _deps/glfw-src/src/po
   /usr/include/x86_64-linux-gnu/sys/ttydefaults.h \
   /usr/include/x86_64-linux-gnu/sys/types.h \
   /usr/include/x86_64-linux-gnu/sys/ucontext.h \
-  /usr/include/xkbcommon/xkbcommon-compat.h \
-  /usr/include/xkbcommon/xkbcommon-compose.h \
-  /usr/include/xkbcommon/xkbcommon-keysyms.h \
-  /usr/include/xkbcommon/xkbcommon-names.h \
-  /usr/include/xkbcommon/xkbcommon.h \
   /usr/lib/gcc/x86_64-linux-gnu/13/include/stdarg.h \
-  /usr/lib/gcc/x86_64-linux-gnu/13/include/stdbool.h \
   /usr/lib/gcc/x86_64-linux-gnu/13/include/stddef.h \
   /usr/lib/gcc/x86_64-linux-gnu/13/include/stdint.h
 
@@ -2865,7 +2623,6 @@ _deps/glfw-build/src/CMakeFiles/glfw.dir/posix_poll.c.o: _deps/glfw-src/src/posi
   _deps/glfw-src/src/posix_poll.h \
   _deps/glfw-src/src/posix_thread.h \
   _deps/glfw-src/src/posix_time.h \
-  _deps/glfw-src/src/wl_platform.h \
   _deps/glfw-src/src/x11_platform.h \
   _deps/glfw-src/src/xkb_unicode.h \
   /usr/include/X11/X.h \
@@ -2906,7 +2663,6 @@ _deps/glfw-build/src/CMakeFiles/glfw.dir/posix_poll.c.o: _deps/glfw-src/src/posi
   /usr/include/errno.h \
   /usr/include/features-time64.h \
   /usr/include/features.h \
-  /usr/include/inttypes.h \
   /usr/include/linux/close_range.h \
   /usr/include/linux/errno.h \
   /usr/include/linux/input-event-codes.h \
@@ -2916,7 +2672,6 @@ _deps/glfw-build/src/CMakeFiles/glfw.dir/posix_poll.c.o: _deps/glfw-src/src/posi
   /usr/include/linux/posix_types.h \
   /usr/include/linux/stddef.h \
   /usr/include/linux/types.h \
-  /usr/include/math.h \
   /usr/include/poll.h \
   /usr/include/pthread.h \
   /usr/include/regex.h \
@@ -2927,9 +2682,6 @@ _deps/glfw-build/src/CMakeFiles/glfw.dir/posix_poll.c.o: _deps/glfw-src/src/posi
   /usr/include/stdio.h \
   /usr/include/time.h \
   /usr/include/unistd.h \
-  /usr/include/wayland-client-core.h \
-  /usr/include/wayland-util.h \
-  /usr/include/wayland-version.h \
   /usr/include/x86_64-linux-gnu/asm/bitsperlong.h \
   /usr/include/x86_64-linux-gnu/asm/errno.h \
   /usr/include/x86_64-linux-gnu/asm/ioctl.h \
@@ -2947,21 +2699,12 @@ _deps/glfw-build/src/CMakeFiles/glfw.dir/posix_poll.c.o: _deps/glfw-src/src/posi
   /usr/include/x86_64-linux-gnu/bits/errno.h \
   /usr/include/x86_64-linux-gnu/bits/floatn-common.h \
   /usr/include/x86_64-linux-gnu/bits/floatn.h \
-  /usr/include/x86_64-linux-gnu/bits/flt-eval-method.h \
-  /usr/include/x86_64-linux-gnu/bits/fp-fast.h \
-  /usr/include/x86_64-linux-gnu/bits/fp-logb.h \
   /usr/include/x86_64-linux-gnu/bits/getopt_core.h \
   /usr/include/x86_64-linux-gnu/bits/getopt_posix.h \
   /usr/include/x86_64-linux-gnu/bits/ioctl-types.h \
   /usr/include/x86_64-linux-gnu/bits/ioctls.h \
-  /usr/include/x86_64-linux-gnu/bits/iscanonical.h \
   /usr/include/x86_64-linux-gnu/bits/libc-header-start.h \
-  /usr/include/x86_64-linux-gnu/bits/libm-simd-decl-stubs.h \
   /usr/include/x86_64-linux-gnu/bits/long-double.h \
-  /usr/include/x86_64-linux-gnu/bits/math-vector.h \
-  /usr/include/x86_64-linux-gnu/bits/mathcalls-helper-functions.h \
-  /usr/include/x86_64-linux-gnu/bits/mathcalls-narrow.h \
-  /usr/include/x86_64-linux-gnu/bits/mathcalls.h \
   /usr/include/x86_64-linux-gnu/bits/poll.h \
   /usr/include/x86_64-linux-gnu/bits/poll2.h \
   /usr/include/x86_64-linux-gnu/bits/posix_opt.h \
@@ -3047,13 +2790,7 @@ _deps/glfw-build/src/CMakeFiles/glfw.dir/posix_poll.c.o: _deps/glfw-src/src/posi
   /usr/include/x86_64-linux-gnu/sys/ttydefaults.h \
   /usr/include/x86_64-linux-gnu/sys/types.h \
   /usr/include/x86_64-linux-gnu/sys/ucontext.h \
-  /usr/include/xkbcommon/xkbcommon-compat.h \
-  /usr/include/xkbcommon/xkbcommon-compose.h \
-  /usr/include/xkbcommon/xkbcommon-keysyms.h \
-  /usr/include/xkbcommon/xkbcommon-names.h \
-  /usr/include/xkbcommon/xkbcommon.h \
   /usr/lib/gcc/x86_64-linux-gnu/13/include/stdarg.h \
-  /usr/lib/gcc/x86_64-linux-gnu/13/include/stdbool.h \
   /usr/lib/gcc/x86_64-linux-gnu/13/include/stddef.h \
   /usr/lib/gcc/x86_64-linux-gnu/13/include/stdint.h
 
@@ -3068,7 +2805,6 @@ _deps/glfw-build/src/CMakeFiles/glfw.dir/posix_thread.c.o: _deps/glfw-src/src/po
   _deps/glfw-src/src/posix_poll.h \
   _deps/glfw-src/src/posix_thread.h \
   _deps/glfw-src/src/posix_time.h \
-  _deps/glfw-src/src/wl_platform.h \
   _deps/glfw-src/src/x11_platform.h \
   _deps/glfw-src/src/xkb_unicode.h \
   /usr/include/X11/X.h \
@@ -3107,7 +2843,6 @@ _deps/glfw-build/src/CMakeFiles/glfw.dir/posix_thread.c.o: _deps/glfw-src/src/po
   /usr/include/endian.h \
   /usr/include/features-time64.h \
   /usr/include/features.h \
-  /usr/include/inttypes.h \
   /usr/include/linux/input-event-codes.h \
   /usr/include/linux/input.h \
   /usr/include/linux/ioctl.h \
@@ -3115,7 +2850,6 @@ _deps/glfw-build/src/CMakeFiles/glfw.dir/posix_thread.c.o: _deps/glfw-src/src/po
   /usr/include/linux/posix_types.h \
   /usr/include/linux/stddef.h \
   /usr/include/linux/types.h \
-  /usr/include/math.h \
   /usr/include/poll.h \
   /usr/include/pthread.h \
   /usr/include/regex.h \
@@ -3128,9 +2862,6 @@ _deps/glfw-build/src/CMakeFiles/glfw.dir/posix_thread.c.o: _deps/glfw-src/src/po
   /usr/include/strings.h \
   /usr/include/time.h \
   /usr/include/unistd.h \
-  /usr/include/wayland-client-core.h \
-  /usr/include/wayland-util.h \
-  /usr/include/wayland-version.h \
   /usr/include/x86_64-linux-gnu/asm/bitsperlong.h \
   /usr/include/x86_64-linux-gnu/asm/ioctl.h \
   /usr/include/x86_64-linux-gnu/asm/ioctls.h \
@@ -3146,19 +2877,12 @@ _deps/glfw-build/src/CMakeFiles/glfw.dir/posix_thread.c.o: _deps/glfw-src/src/po
   /usr/include/x86_64-linux-gnu/bits/environments.h \
   /usr/include/x86_64-linux-gnu/bits/floatn-common.h \
   /usr/include/x86_64-linux-gnu/bits/floatn.h \
-  /usr/include/x86_64-linux-gnu/bits/flt-eval-method.h \
-  /usr/include/x86_64-linux-gnu/bits/fp-fast.h \
-  /usr/include/x86_64-linux-gnu/bits/fp-logb.h \
   /usr/include/x86_64-linux-gnu/bits/getopt_core.h \
   /usr/include/x86_64-linux-gnu/bits/getopt_posix.h \
   /usr/include/x86_64-linux-gnu/bits/ioctl-types.h \
   /usr/include/x86_64-linux-gnu/bits/ioctls.h \
   /usr/include/x86_64-linux-gnu/bits/libc-header-start.h \
-  /usr/include/x86_64-linux-gnu/bits/libm-simd-decl-stubs.h \
   /usr/include/x86_64-linux-gnu/bits/long-double.h \
-  /usr/include/x86_64-linux-gnu/bits/math-vector.h \
-  /usr/include/x86_64-linux-gnu/bits/mathcalls-helper-functions.h \
-  /usr/include/x86_64-linux-gnu/bits/mathcalls.h \
   /usr/include/x86_64-linux-gnu/bits/poll.h \
   /usr/include/x86_64-linux-gnu/bits/poll2.h \
   /usr/include/x86_64-linux-gnu/bits/posix_opt.h \
@@ -3244,13 +2968,7 @@ _deps/glfw-build/src/CMakeFiles/glfw.dir/posix_thread.c.o: _deps/glfw-src/src/po
   /usr/include/x86_64-linux-gnu/sys/ttydefaults.h \
   /usr/include/x86_64-linux-gnu/sys/types.h \
   /usr/include/x86_64-linux-gnu/sys/ucontext.h \
-  /usr/include/xkbcommon/xkbcommon-compat.h \
-  /usr/include/xkbcommon/xkbcommon-compose.h \
-  /usr/include/xkbcommon/xkbcommon-keysyms.h \
-  /usr/include/xkbcommon/xkbcommon-names.h \
-  /usr/include/xkbcommon/xkbcommon.h \
   /usr/lib/gcc/x86_64-linux-gnu/13/include/stdarg.h \
-  /usr/lib/gcc/x86_64-linux-gnu/13/include/stdbool.h \
   /usr/lib/gcc/x86_64-linux-gnu/13/include/stddef.h \
   /usr/lib/gcc/x86_64-linux-gnu/13/include/stdint.h
 
@@ -3265,7 +2983,6 @@ _deps/glfw-build/src/CMakeFiles/glfw.dir/posix_time.c.o: _deps/glfw-src/src/posi
   _deps/glfw-src/src/posix_poll.h \
   _deps/glfw-src/src/posix_thread.h \
   _deps/glfw-src/src/posix_time.h \
-  _deps/glfw-src/src/wl_platform.h \
   _deps/glfw-src/src/x11_platform.h \
   _deps/glfw-src/src/xkb_unicode.h \
   /usr/include/X11/X.h \
@@ -3303,7 +3020,6 @@ _deps/glfw-build/src/CMakeFiles/glfw.dir/posix_time.c.o: _deps/glfw-src/src/posi
   /usr/include/endian.h \
   /usr/include/features-time64.h \
   /usr/include/features.h \
-  /usr/include/inttypes.h \
   /usr/include/linux/input-event-codes.h \
   /usr/include/linux/input.h \
   /usr/include/linux/ioctl.h \
@@ -3311,7 +3027,6 @@ _deps/glfw-build/src/CMakeFiles/glfw.dir/posix_time.c.o: _deps/glfw-src/src/posi
   /usr/include/linux/posix_types.h \
   /usr/include/linux/stddef.h \
   /usr/include/linux/types.h \
-  /usr/include/math.h \
   /usr/include/poll.h \
   /usr/include/pthread.h \
   /usr/include/regex.h \
@@ -3322,9 +3037,6 @@ _deps/glfw-build/src/CMakeFiles/glfw.dir/posix_time.c.o: _deps/glfw-src/src/posi
   /usr/include/stdio.h \
   /usr/include/time.h \
   /usr/include/unistd.h \
-  /usr/include/wayland-client-core.h \
-  /usr/include/wayland-util.h \
-  /usr/include/wayland-version.h \
   /usr/include/x86_64-linux-gnu/asm/bitsperlong.h \
   /usr/include/x86_64-linux-gnu/asm/ioctl.h \
   /usr/include/x86_64-linux-gnu/asm/ioctls.h \
@@ -3340,19 +3052,12 @@ _deps/glfw-build/src/CMakeFiles/glfw.dir/posix_time.c.o: _deps/glfw-src/src/posi
   /usr/include/x86_64-linux-gnu/bits/environments.h \
   /usr/include/x86_64-linux-gnu/bits/floatn-common.h \
   /usr/include/x86_64-linux-gnu/bits/floatn.h \
-  /usr/include/x86_64-linux-gnu/bits/flt-eval-method.h \
-  /usr/include/x86_64-linux-gnu/bits/fp-fast.h \
-  /usr/include/x86_64-linux-gnu/bits/fp-logb.h \
   /usr/include/x86_64-linux-gnu/bits/getopt_core.h \
   /usr/include/x86_64-linux-gnu/bits/getopt_posix.h \
   /usr/include/x86_64-linux-gnu/bits/ioctl-types.h \
   /usr/include/x86_64-linux-gnu/bits/ioctls.h \
   /usr/include/x86_64-linux-gnu/bits/libc-header-start.h \
-  /usr/include/x86_64-linux-gnu/bits/libm-simd-decl-stubs.h \
   /usr/include/x86_64-linux-gnu/bits/long-double.h \
-  /usr/include/x86_64-linux-gnu/bits/math-vector.h \
-  /usr/include/x86_64-linux-gnu/bits/mathcalls-helper-functions.h \
-  /usr/include/x86_64-linux-gnu/bits/mathcalls.h \
   /usr/include/x86_64-linux-gnu/bits/poll.h \
   /usr/include/x86_64-linux-gnu/bits/poll2.h \
   /usr/include/x86_64-linux-gnu/bits/posix_opt.h \
@@ -3436,13 +3141,7 @@ _deps/glfw-build/src/CMakeFiles/glfw.dir/posix_time.c.o: _deps/glfw-src/src/posi
   /usr/include/x86_64-linux-gnu/sys/ttydefaults.h \
   /usr/include/x86_64-linux-gnu/sys/types.h \
   /usr/include/x86_64-linux-gnu/sys/ucontext.h \
-  /usr/include/xkbcommon/xkbcommon-compat.h \
-  /usr/include/xkbcommon/xkbcommon-compose.h \
-  /usr/include/xkbcommon/xkbcommon-keysyms.h \
-  /usr/include/xkbcommon/xkbcommon-names.h \
-  /usr/include/xkbcommon/xkbcommon.h \
   /usr/lib/gcc/x86_64-linux-gnu/13/include/stdarg.h \
-  /usr/lib/gcc/x86_64-linux-gnu/13/include/stdbool.h \
   /usr/lib/gcc/x86_64-linux-gnu/13/include/stddef.h \
   /usr/lib/gcc/x86_64-linux-gnu/13/include/stdint.h
 
@@ -3457,7 +3156,6 @@ _deps/glfw-build/src/CMakeFiles/glfw.dir/vulkan.c.o: _deps/glfw-src/src/vulkan.c
   _deps/glfw-src/src/posix_poll.h \
   _deps/glfw-src/src/posix_thread.h \
   _deps/glfw-src/src/posix_time.h \
-  _deps/glfw-src/src/wl_platform.h \
   _deps/glfw-src/src/x11_platform.h \
   _deps/glfw-src/src/xkb_unicode.h \
   /usr/include/X11/X.h \
@@ -3497,7 +3195,6 @@ _deps/glfw-build/src/CMakeFiles/glfw.dir/vulkan.c.o: _deps/glfw-src/src/vulkan.c
   /usr/include/endian.h \
   /usr/include/features-time64.h \
   /usr/include/features.h \
-  /usr/include/inttypes.h \
   /usr/include/linux/input-event-codes.h \
   /usr/include/linux/input.h \
   /usr/include/linux/ioctl.h \
@@ -3505,7 +3202,6 @@ _deps/glfw-build/src/CMakeFiles/glfw.dir/vulkan.c.o: _deps/glfw-src/src/vulkan.c
   /usr/include/linux/posix_types.h \
   /usr/include/linux/stddef.h \
   /usr/include/linux/types.h \
-  /usr/include/math.h \
   /usr/include/poll.h \
   /usr/include/pthread.h \
   /usr/include/regex.h \
@@ -3519,9 +3215,6 @@ _deps/glfw-build/src/CMakeFiles/glfw.dir/vulkan.c.o: _deps/glfw-src/src/vulkan.c
   /usr/include/strings.h \
   /usr/include/time.h \
   /usr/include/unistd.h \
-  /usr/include/wayland-client-core.h \
-  /usr/include/wayland-util.h \
-  /usr/include/wayland-version.h \
   /usr/include/x86_64-linux-gnu/asm/bitsperlong.h \
   /usr/include/x86_64-linux-gnu/asm/ioctl.h \
   /usr/include/x86_64-linux-gnu/asm/ioctls.h \
@@ -3537,19 +3230,12 @@ _deps/glfw-build/src/CMakeFiles/glfw.dir/vulkan.c.o: _deps/glfw-src/src/vulkan.c
   /usr/include/x86_64-linux-gnu/bits/environments.h \
   /usr/include/x86_64-linux-gnu/bits/floatn-common.h \
   /usr/include/x86_64-linux-gnu/bits/floatn.h \
-  /usr/include/x86_64-linux-gnu/bits/flt-eval-method.h \
-  /usr/include/x86_64-linux-gnu/bits/fp-fast.h \
-  /usr/include/x86_64-linux-gnu/bits/fp-logb.h \
   /usr/include/x86_64-linux-gnu/bits/getopt_core.h \
   /usr/include/x86_64-linux-gnu/bits/getopt_posix.h \
   /usr/include/x86_64-linux-gnu/bits/ioctl-types.h \
   /usr/include/x86_64-linux-gnu/bits/ioctls.h \
   /usr/include/x86_64-linux-gnu/bits/libc-header-start.h \
-  /usr/include/x86_64-linux-gnu/bits/libm-simd-decl-stubs.h \
   /usr/include/x86_64-linux-gnu/bits/long-double.h \
-  /usr/include/x86_64-linux-gnu/bits/math-vector.h \
-  /usr/include/x86_64-linux-gnu/bits/mathcalls-helper-functions.h \
-  /usr/include/x86_64-linux-gnu/bits/mathcalls.h \
   /usr/include/x86_64-linux-gnu/bits/poll.h \
   /usr/include/x86_64-linux-gnu/bits/poll2.h \
   /usr/include/x86_64-linux-gnu/bits/posix_opt.h \
@@ -3640,13 +3326,7 @@ _deps/glfw-build/src/CMakeFiles/glfw.dir/vulkan.c.o: _deps/glfw-src/src/vulkan.c
   /usr/include/x86_64-linux-gnu/sys/ttydefaults.h \
   /usr/include/x86_64-linux-gnu/sys/types.h \
   /usr/include/x86_64-linux-gnu/sys/ucontext.h \
-  /usr/include/xkbcommon/xkbcommon-compat.h \
-  /usr/include/xkbcommon/xkbcommon-compose.h \
-  /usr/include/xkbcommon/xkbcommon-keysyms.h \
-  /usr/include/xkbcommon/xkbcommon-names.h \
-  /usr/include/xkbcommon/xkbcommon.h \
   /usr/lib/gcc/x86_64-linux-gnu/13/include/stdarg.h \
-  /usr/lib/gcc/x86_64-linux-gnu/13/include/stdbool.h \
   /usr/lib/gcc/x86_64-linux-gnu/13/include/stddef.h \
   /usr/lib/gcc/x86_64-linux-gnu/13/include/stdint.h
 
@@ -3661,7 +3341,6 @@ _deps/glfw-build/src/CMakeFiles/glfw.dir/window.c.o: _deps/glfw-src/src/window.c
   _deps/glfw-src/src/posix_poll.h \
   _deps/glfw-src/src/posix_thread.h \
   _deps/glfw-src/src/posix_time.h \
-  _deps/glfw-src/src/wl_platform.h \
   _deps/glfw-src/src/x11_platform.h \
   _deps/glfw-src/src/xkb_unicode.h \
   /usr/include/X11/X.h \
@@ -3701,7 +3380,6 @@ _deps/glfw-build/src/CMakeFiles/glfw.dir/window.c.o: _deps/glfw-src/src/window.c
   /usr/include/endian.h \
   /usr/include/features-time64.h \
   /usr/include/features.h \
-  /usr/include/inttypes.h \
   /usr/include/linux/input-event-codes.h \
   /usr/include/linux/input.h \
   /usr/include/linux/ioctl.h \
@@ -3709,7 +3387,6 @@ _deps/glfw-build/src/CMakeFiles/glfw.dir/window.c.o: _deps/glfw-src/src/window.c
   /usr/include/linux/posix_types.h \
   /usr/include/linux/stddef.h \
   /usr/include/linux/types.h \
-  /usr/include/math.h \
   /usr/include/poll.h \
   /usr/include/pthread.h \
   /usr/include/regex.h \
@@ -3723,9 +3400,6 @@ _deps/glfw-build/src/CMakeFiles/glfw.dir/window.c.o: _deps/glfw-src/src/window.c
   /usr/include/strings.h \
   /usr/include/time.h \
   /usr/include/unistd.h \
-  /usr/include/wayland-client-core.h \
-  /usr/include/wayland-util.h \
-  /usr/include/wayland-version.h \
   /usr/include/x86_64-linux-gnu/asm/bitsperlong.h \
   /usr/include/x86_64-linux-gnu/asm/ioctl.h \
   /usr/include/x86_64-linux-gnu/asm/ioctls.h \
@@ -3741,19 +3415,12 @@ _deps/glfw-build/src/CMakeFiles/glfw.dir/window.c.o: _deps/glfw-src/src/window.c
   /usr/include/x86_64-linux-gnu/bits/environments.h \
   /usr/include/x86_64-linux-gnu/bits/floatn-common.h \
   /usr/include/x86_64-linux-gnu/bits/floatn.h \
-  /usr/include/x86_64-linux-gnu/bits/flt-eval-method.h \
-  /usr/include/x86_64-linux-gnu/bits/fp-fast.h \
-  /usr/include/x86_64-linux-gnu/bits/fp-logb.h \
   /usr/include/x86_64-linux-gnu/bits/getopt_core.h \
   /usr/include/x86_64-linux-gnu/bits/getopt_posix.h \
   /usr/include/x86_64-linux-gnu/bits/ioctl-types.h \
   /usr/include/x86_64-linux-gnu/bits/ioctls.h \
   /usr/include/x86_64-linux-gnu/bits/libc-header-start.h \
-  /usr/include/x86_64-linux-gnu/bits/libm-simd-decl-stubs.h \
   /usr/include/x86_64-linux-gnu/bits/long-double.h \
-  /usr/include/x86_64-linux-gnu/bits/math-vector.h \
-  /usr/include/x86_64-linux-gnu/bits/mathcalls-helper-functions.h \
-  /usr/include/x86_64-linux-gnu/bits/mathcalls.h \
   /usr/include/x86_64-linux-gnu/bits/poll.h \
   /usr/include/x86_64-linux-gnu/bits/poll2.h \
   /usr/include/x86_64-linux-gnu/bits/posix_opt.h \
@@ -3844,712 +3511,8 @@ _deps/glfw-build/src/CMakeFiles/glfw.dir/window.c.o: _deps/glfw-src/src/window.c
   /usr/include/x86_64-linux-gnu/sys/ttydefaults.h \
   /usr/include/x86_64-linux-gnu/sys/types.h \
   /usr/include/x86_64-linux-gnu/sys/ucontext.h \
-  /usr/include/xkbcommon/xkbcommon-compat.h \
-  /usr/include/xkbcommon/xkbcommon-compose.h \
-  /usr/include/xkbcommon/xkbcommon-keysyms.h \
-  /usr/include/xkbcommon/xkbcommon-names.h \
-  /usr/include/xkbcommon/xkbcommon.h \
   /usr/lib/gcc/x86_64-linux-gnu/13/include/float.h \
   /usr/lib/gcc/x86_64-linux-gnu/13/include/stdarg.h \
-  /usr/lib/gcc/x86_64-linux-gnu/13/include/stdbool.h \
-  /usr/lib/gcc/x86_64-linux-gnu/13/include/stddef.h \
-  /usr/lib/gcc/x86_64-linux-gnu/13/include/stdint.h
-
-_deps/glfw-build/src/CMakeFiles/glfw.dir/wl_init.c.o: _deps/glfw-src/src/wl_init.c \
-  _deps/glfw-build/src/fractional-scale-v1-client-protocol-code.h \
-  _deps/glfw-build/src/fractional-scale-v1-client-protocol.h \
-  _deps/glfw-build/src/idle-inhibit-unstable-v1-client-protocol-code.h \
-  _deps/glfw-build/src/idle-inhibit-unstable-v1-client-protocol.h \
-  _deps/glfw-build/src/pointer-constraints-unstable-v1-client-protocol-code.h \
-  _deps/glfw-build/src/pointer-constraints-unstable-v1-client-protocol.h \
-  _deps/glfw-build/src/relative-pointer-unstable-v1-client-protocol-code.h \
-  _deps/glfw-build/src/relative-pointer-unstable-v1-client-protocol.h \
-  _deps/glfw-build/src/viewporter-client-protocol-code.h \
-  _deps/glfw-build/src/viewporter-client-protocol.h \
-  _deps/glfw-build/src/wayland-client-protocol-code.h \
-  _deps/glfw-build/src/wayland-client-protocol.h \
-  _deps/glfw-build/src/xdg-activation-v1-client-protocol-code.h \
-  _deps/glfw-build/src/xdg-activation-v1-client-protocol.h \
-  _deps/glfw-build/src/xdg-decoration-unstable-v1-client-protocol-code.h \
-  _deps/glfw-build/src/xdg-decoration-unstable-v1-client-protocol.h \
-  _deps/glfw-build/src/xdg-shell-client-protocol-code.h \
-  _deps/glfw-build/src/xdg-shell-client-protocol.h \
-  _deps/glfw-src/include/GLFW/glfw3.h \
-  _deps/glfw-src/include/GLFW/glfw3native.h \
-  _deps/glfw-src/src/internal.h \
-  _deps/glfw-src/src/linux_joystick.h \
-  _deps/glfw-src/src/null_joystick.h \
-  _deps/glfw-src/src/null_platform.h \
-  _deps/glfw-src/src/platform.h \
-  _deps/glfw-src/src/posix_poll.h \
-  _deps/glfw-src/src/posix_thread.h \
-  _deps/glfw-src/src/posix_time.h \
-  _deps/glfw-src/src/wl_platform.h \
-  _deps/glfw-src/src/x11_platform.h \
-  _deps/glfw-src/src/xkb_unicode.h \
-  /usr/include/X11/X.h \
-  /usr/include/X11/XKBlib.h \
-  /usr/include/X11/Xatom.h \
-  /usr/include/X11/Xcursor/Xcursor.h \
-  /usr/include/X11/Xdefs.h \
-  /usr/include/X11/Xfuncproto.h \
-  /usr/include/X11/Xlib.h \
-  /usr/include/X11/Xosdefs.h \
-  /usr/include/X11/Xresource.h \
-  /usr/include/X11/Xutil.h \
-  /usr/include/X11/extensions/XI2.h \
-  /usr/include/X11/extensions/XInput2.h \
-  /usr/include/X11/extensions/XKB.h \
-  /usr/include/X11/extensions/XKBstr.h \
-  /usr/include/X11/extensions/Xfixes.h \
-  /usr/include/X11/extensions/Xge.h \
-  /usr/include/X11/extensions/Xinerama.h \
-  /usr/include/X11/extensions/Xrandr.h \
-  /usr/include/X11/extensions/Xrender.h \
-  /usr/include/X11/extensions/randr.h \
-  /usr/include/X11/extensions/render.h \
-  /usr/include/X11/extensions/shape.h \
-  /usr/include/X11/extensions/shapeconst.h \
-  /usr/include/X11/extensions/xfixeswire.h \
-  /usr/include/X11/keysym.h \
-  /usr/include/X11/keysymdef.h \
-  /usr/include/alloca.h \
-  /usr/include/asm-generic/bitsperlong.h \
-  /usr/include/asm-generic/errno-base.h \
-  /usr/include/asm-generic/errno.h \
-  /usr/include/asm-generic/int-ll64.h \
-  /usr/include/asm-generic/ioctl.h \
-  /usr/include/asm-generic/ioctls.h \
-  /usr/include/asm-generic/posix_types.h \
-  /usr/include/asm-generic/types.h \
-  /usr/include/assert.h \
-  /usr/include/endian.h \
-  /usr/include/errno.h \
-  /usr/include/features-time64.h \
-  /usr/include/features.h \
-  /usr/include/inttypes.h \
-  /usr/include/limits.h \
-  /usr/include/linux/errno.h \
-  /usr/include/linux/input-event-codes.h \
-  /usr/include/linux/input.h \
-  /usr/include/linux/ioctl.h \
-  /usr/include/linux/limits.h \
-  /usr/include/linux/posix_types.h \
-  /usr/include/linux/stddef.h \
-  /usr/include/linux/types.h \
-  /usr/include/math.h \
-  /usr/include/poll.h \
-  /usr/include/pthread.h \
-  /usr/include/regex.h \
-  /usr/include/sched.h \
-  /usr/include/signal.h \
-  /usr/include/stdc-predef.h \
-  /usr/include/stdint.h \
-  /usr/include/stdio.h \
-  /usr/include/stdlib.h \
-  /usr/include/string.h \
-  /usr/include/strings.h \
-  /usr/include/time.h \
-  /usr/include/unistd.h \
-  /usr/include/wayland-client-core.h \
-  /usr/include/wayland-client-protocol.h \
-  /usr/include/wayland-client.h \
-  /usr/include/wayland-util.h \
-  /usr/include/wayland-version.h \
-  /usr/include/x86_64-linux-gnu/asm/bitsperlong.h \
-  /usr/include/x86_64-linux-gnu/asm/errno.h \
-  /usr/include/x86_64-linux-gnu/asm/ioctl.h \
-  /usr/include/x86_64-linux-gnu/asm/ioctls.h \
-  /usr/include/x86_64-linux-gnu/asm/posix_types.h \
-  /usr/include/x86_64-linux-gnu/asm/posix_types_64.h \
-  /usr/include/x86_64-linux-gnu/asm/types.h \
-  /usr/include/x86_64-linux-gnu/bits/atomic_wide_counter.h \
-  /usr/include/x86_64-linux-gnu/bits/byteswap.h \
-  /usr/include/x86_64-linux-gnu/bits/confname.h \
-  /usr/include/x86_64-linux-gnu/bits/cpu-set.h \
-  /usr/include/x86_64-linux-gnu/bits/endian.h \
-  /usr/include/x86_64-linux-gnu/bits/endianness.h \
-  /usr/include/x86_64-linux-gnu/bits/environments.h \
-  /usr/include/x86_64-linux-gnu/bits/errno.h \
-  /usr/include/x86_64-linux-gnu/bits/floatn-common.h \
-  /usr/include/x86_64-linux-gnu/bits/floatn.h \
-  /usr/include/x86_64-linux-gnu/bits/flt-eval-method.h \
-  /usr/include/x86_64-linux-gnu/bits/fp-fast.h \
-  /usr/include/x86_64-linux-gnu/bits/fp-logb.h \
-  /usr/include/x86_64-linux-gnu/bits/getopt_core.h \
-  /usr/include/x86_64-linux-gnu/bits/getopt_posix.h \
-  /usr/include/x86_64-linux-gnu/bits/ioctl-types.h \
-  /usr/include/x86_64-linux-gnu/bits/ioctls.h \
-  /usr/include/x86_64-linux-gnu/bits/libc-header-start.h \
-  /usr/include/x86_64-linux-gnu/bits/libm-simd-decl-stubs.h \
-  /usr/include/x86_64-linux-gnu/bits/local_lim.h \
-  /usr/include/x86_64-linux-gnu/bits/long-double.h \
-  /usr/include/x86_64-linux-gnu/bits/math-vector.h \
-  /usr/include/x86_64-linux-gnu/bits/mathcalls-helper-functions.h \
-  /usr/include/x86_64-linux-gnu/bits/mathcalls.h \
-  /usr/include/x86_64-linux-gnu/bits/mman-linux.h \
-  /usr/include/x86_64-linux-gnu/bits/mman-map-flags-generic.h \
-  /usr/include/x86_64-linux-gnu/bits/mman-shared.h \
-  /usr/include/x86_64-linux-gnu/bits/mman.h \
-  /usr/include/x86_64-linux-gnu/bits/mman_ext.h \
-  /usr/include/x86_64-linux-gnu/bits/poll.h \
-  /usr/include/x86_64-linux-gnu/bits/poll2.h \
-  /usr/include/x86_64-linux-gnu/bits/posix1_lim.h \
-  /usr/include/x86_64-linux-gnu/bits/posix2_lim.h \
-  /usr/include/x86_64-linux-gnu/bits/posix_opt.h \
-  /usr/include/x86_64-linux-gnu/bits/pthread_stack_min-dynamic.h \
-  /usr/include/x86_64-linux-gnu/bits/pthread_stack_min.h \
-  /usr/include/x86_64-linux-gnu/bits/pthreadtypes-arch.h \
-  /usr/include/x86_64-linux-gnu/bits/pthreadtypes.h \
-  /usr/include/x86_64-linux-gnu/bits/sched.h \
-  /usr/include/x86_64-linux-gnu/bits/select-decl.h \
-  /usr/include/x86_64-linux-gnu/bits/select.h \
-  /usr/include/x86_64-linux-gnu/bits/select2.h \
-  /usr/include/x86_64-linux-gnu/bits/setjmp.h \
-  /usr/include/x86_64-linux-gnu/bits/sigaction.h \
-  /usr/include/x86_64-linux-gnu/bits/sigcontext.h \
-  /usr/include/x86_64-linux-gnu/bits/sigevent-consts.h \
-  /usr/include/x86_64-linux-gnu/bits/siginfo-arch.h \
-  /usr/include/x86_64-linux-gnu/bits/siginfo-consts.h \
-  /usr/include/x86_64-linux-gnu/bits/signal_ext.h \
-  /usr/include/x86_64-linux-gnu/bits/signum-arch.h \
-  /usr/include/x86_64-linux-gnu/bits/signum-generic.h \
-  /usr/include/x86_64-linux-gnu/bits/sigstack.h \
-  /usr/include/x86_64-linux-gnu/bits/sigstksz.h \
-  /usr/include/x86_64-linux-gnu/bits/sigthread.h \
-  /usr/include/x86_64-linux-gnu/bits/ss_flags.h \
-  /usr/include/x86_64-linux-gnu/bits/stdint-intn.h \
-  /usr/include/x86_64-linux-gnu/bits/stdint-least.h \
-  /usr/include/x86_64-linux-gnu/bits/stdint-uintn.h \
-  /usr/include/x86_64-linux-gnu/bits/stdio.h \
-  /usr/include/x86_64-linux-gnu/bits/stdio2-decl.h \
-  /usr/include/x86_64-linux-gnu/bits/stdio2.h \
-  /usr/include/x86_64-linux-gnu/bits/stdio_lim.h \
-  /usr/include/x86_64-linux-gnu/bits/stdlib-bsearch.h \
-  /usr/include/x86_64-linux-gnu/bits/stdlib-float.h \
-  /usr/include/x86_64-linux-gnu/bits/stdlib.h \
-  /usr/include/x86_64-linux-gnu/bits/string_fortified.h \
-  /usr/include/x86_64-linux-gnu/bits/strings_fortified.h \
-  /usr/include/x86_64-linux-gnu/bits/struct_mutex.h \
-  /usr/include/x86_64-linux-gnu/bits/struct_rwlock.h \
-  /usr/include/x86_64-linux-gnu/bits/thread-shared-types.h \
-  /usr/include/x86_64-linux-gnu/bits/time.h \
-  /usr/include/x86_64-linux-gnu/bits/time64.h \
-  /usr/include/x86_64-linux-gnu/bits/timerfd.h \
-  /usr/include/x86_64-linux-gnu/bits/timesize.h \
-  /usr/include/x86_64-linux-gnu/bits/types.h \
-  /usr/include/x86_64-linux-gnu/bits/types/FILE.h \
-  /usr/include/x86_64-linux-gnu/bits/types/__FILE.h \
-  /usr/include/x86_64-linux-gnu/bits/types/__fpos64_t.h \
-  /usr/include/x86_64-linux-gnu/bits/types/__fpos_t.h \
-  /usr/include/x86_64-linux-gnu/bits/types/__locale_t.h \
-  /usr/include/x86_64-linux-gnu/bits/types/__mbstate_t.h \
-  /usr/include/x86_64-linux-gnu/bits/types/__sigset_t.h \
-  /usr/include/x86_64-linux-gnu/bits/types/__sigval_t.h \
-  /usr/include/x86_64-linux-gnu/bits/types/clock_t.h \
-  /usr/include/x86_64-linux-gnu/bits/types/clockid_t.h \
-  /usr/include/x86_64-linux-gnu/bits/types/cookie_io_functions_t.h \
-  /usr/include/x86_64-linux-gnu/bits/types/locale_t.h \
-  /usr/include/x86_64-linux-gnu/bits/types/sig_atomic_t.h \
-  /usr/include/x86_64-linux-gnu/bits/types/sigevent_t.h \
-  /usr/include/x86_64-linux-gnu/bits/types/siginfo_t.h \
-  /usr/include/x86_64-linux-gnu/bits/types/sigset_t.h \
-  /usr/include/x86_64-linux-gnu/bits/types/sigval_t.h \
-  /usr/include/x86_64-linux-gnu/bits/types/stack_t.h \
-  /usr/include/x86_64-linux-gnu/bits/types/struct_FILE.h \
-  /usr/include/x86_64-linux-gnu/bits/types/struct___jmp_buf_tag.h \
-  /usr/include/x86_64-linux-gnu/bits/types/struct_itimerspec.h \
-  /usr/include/x86_64-linux-gnu/bits/types/struct_sched_param.h \
-  /usr/include/x86_64-linux-gnu/bits/types/struct_sigstack.h \
-  /usr/include/x86_64-linux-gnu/bits/types/struct_timespec.h \
-  /usr/include/x86_64-linux-gnu/bits/types/struct_timeval.h \
-  /usr/include/x86_64-linux-gnu/bits/types/struct_tm.h \
-  /usr/include/x86_64-linux-gnu/bits/types/time_t.h \
-  /usr/include/x86_64-linux-gnu/bits/types/timer_t.h \
-  /usr/include/x86_64-linux-gnu/bits/typesizes.h \
-  /usr/include/x86_64-linux-gnu/bits/uintn-identity.h \
-  /usr/include/x86_64-linux-gnu/bits/unistd-decl.h \
-  /usr/include/x86_64-linux-gnu/bits/unistd.h \
-  /usr/include/x86_64-linux-gnu/bits/unistd_ext.h \
-  /usr/include/x86_64-linux-gnu/bits/waitflags.h \
-  /usr/include/x86_64-linux-gnu/bits/waitstatus.h \
-  /usr/include/x86_64-linux-gnu/bits/wchar.h \
-  /usr/include/x86_64-linux-gnu/bits/wordsize.h \
-  /usr/include/x86_64-linux-gnu/gnu/stubs-64.h \
-  /usr/include/x86_64-linux-gnu/gnu/stubs.h \
-  /usr/include/x86_64-linux-gnu/sys/cdefs.h \
-  /usr/include/x86_64-linux-gnu/sys/ioctl.h \
-  /usr/include/x86_64-linux-gnu/sys/mman.h \
-  /usr/include/x86_64-linux-gnu/sys/poll.h \
-  /usr/include/x86_64-linux-gnu/sys/select.h \
-  /usr/include/x86_64-linux-gnu/sys/time.h \
-  /usr/include/x86_64-linux-gnu/sys/timerfd.h \
-  /usr/include/x86_64-linux-gnu/sys/ttydefaults.h \
-  /usr/include/x86_64-linux-gnu/sys/types.h \
-  /usr/include/x86_64-linux-gnu/sys/ucontext.h \
-  /usr/include/xkbcommon/xkbcommon-compat.h \
-  /usr/include/xkbcommon/xkbcommon-compose.h \
-  /usr/include/xkbcommon/xkbcommon-keysyms.h \
-  /usr/include/xkbcommon/xkbcommon-names.h \
-  /usr/include/xkbcommon/xkbcommon.h \
-  /usr/lib/gcc/x86_64-linux-gnu/13/include/limits.h \
-  /usr/lib/gcc/x86_64-linux-gnu/13/include/stdarg.h \
-  /usr/lib/gcc/x86_64-linux-gnu/13/include/stdbool.h \
-  /usr/lib/gcc/x86_64-linux-gnu/13/include/stddef.h \
-  /usr/lib/gcc/x86_64-linux-gnu/13/include/stdint.h \
-  /usr/lib/gcc/x86_64-linux-gnu/13/include/syslimits.h
-
-_deps/glfw-build/src/CMakeFiles/glfw.dir/wl_monitor.c.o: _deps/glfw-src/src/wl_monitor.c \
-  _deps/glfw-build/src/wayland-client-protocol.h \
-  _deps/glfw-src/include/GLFW/glfw3.h \
-  _deps/glfw-src/include/GLFW/glfw3native.h \
-  _deps/glfw-src/src/internal.h \
-  _deps/glfw-src/src/linux_joystick.h \
-  _deps/glfw-src/src/null_joystick.h \
-  _deps/glfw-src/src/null_platform.h \
-  _deps/glfw-src/src/platform.h \
-  _deps/glfw-src/src/posix_poll.h \
-  _deps/glfw-src/src/posix_thread.h \
-  _deps/glfw-src/src/posix_time.h \
-  _deps/glfw-src/src/wl_platform.h \
-  _deps/glfw-src/src/x11_platform.h \
-  _deps/glfw-src/src/xkb_unicode.h \
-  /usr/include/X11/X.h \
-  /usr/include/X11/XKBlib.h \
-  /usr/include/X11/Xatom.h \
-  /usr/include/X11/Xcursor/Xcursor.h \
-  /usr/include/X11/Xdefs.h \
-  /usr/include/X11/Xfuncproto.h \
-  /usr/include/X11/Xlib.h \
-  /usr/include/X11/Xosdefs.h \
-  /usr/include/X11/Xresource.h \
-  /usr/include/X11/Xutil.h \
-  /usr/include/X11/extensions/XI2.h \
-  /usr/include/X11/extensions/XInput2.h \
-  /usr/include/X11/extensions/XKB.h \
-  /usr/include/X11/extensions/XKBstr.h \
-  /usr/include/X11/extensions/Xfixes.h \
-  /usr/include/X11/extensions/Xge.h \
-  /usr/include/X11/extensions/Xinerama.h \
-  /usr/include/X11/extensions/Xrandr.h \
-  /usr/include/X11/extensions/Xrender.h \
-  /usr/include/X11/extensions/randr.h \
-  /usr/include/X11/extensions/render.h \
-  /usr/include/X11/extensions/shape.h \
-  /usr/include/X11/extensions/shapeconst.h \
-  /usr/include/X11/extensions/xfixeswire.h \
-  /usr/include/X11/keysym.h \
-  /usr/include/X11/keysymdef.h \
-  /usr/include/alloca.h \
-  /usr/include/asm-generic/bitsperlong.h \
-  /usr/include/asm-generic/errno-base.h \
-  /usr/include/asm-generic/errno.h \
-  /usr/include/asm-generic/int-ll64.h \
-  /usr/include/asm-generic/ioctl.h \
-  /usr/include/asm-generic/ioctls.h \
-  /usr/include/asm-generic/posix_types.h \
-  /usr/include/asm-generic/types.h \
-  /usr/include/endian.h \
-  /usr/include/errno.h \
-  /usr/include/features-time64.h \
-  /usr/include/features.h \
-  /usr/include/inttypes.h \
-  /usr/include/linux/errno.h \
-  /usr/include/linux/input-event-codes.h \
-  /usr/include/linux/input.h \
-  /usr/include/linux/ioctl.h \
-  /usr/include/linux/limits.h \
-  /usr/include/linux/posix_types.h \
-  /usr/include/linux/stddef.h \
-  /usr/include/linux/types.h \
-  /usr/include/math.h \
-  /usr/include/poll.h \
-  /usr/include/pthread.h \
-  /usr/include/regex.h \
-  /usr/include/sched.h \
-  /usr/include/signal.h \
-  /usr/include/stdc-predef.h \
-  /usr/include/stdint.h \
-  /usr/include/stdio.h \
-  /usr/include/stdlib.h \
-  /usr/include/string.h \
-  /usr/include/strings.h \
-  /usr/include/time.h \
-  /usr/include/unistd.h \
-  /usr/include/wayland-client-core.h \
-  /usr/include/wayland-client-protocol.h \
-  /usr/include/wayland-client.h \
-  /usr/include/wayland-util.h \
-  /usr/include/wayland-version.h \
-  /usr/include/x86_64-linux-gnu/asm/bitsperlong.h \
-  /usr/include/x86_64-linux-gnu/asm/errno.h \
-  /usr/include/x86_64-linux-gnu/asm/ioctl.h \
-  /usr/include/x86_64-linux-gnu/asm/ioctls.h \
-  /usr/include/x86_64-linux-gnu/asm/posix_types.h \
-  /usr/include/x86_64-linux-gnu/asm/posix_types_64.h \
-  /usr/include/x86_64-linux-gnu/asm/types.h \
-  /usr/include/x86_64-linux-gnu/bits/atomic_wide_counter.h \
-  /usr/include/x86_64-linux-gnu/bits/byteswap.h \
-  /usr/include/x86_64-linux-gnu/bits/confname.h \
-  /usr/include/x86_64-linux-gnu/bits/cpu-set.h \
-  /usr/include/x86_64-linux-gnu/bits/endian.h \
-  /usr/include/x86_64-linux-gnu/bits/endianness.h \
-  /usr/include/x86_64-linux-gnu/bits/environments.h \
-  /usr/include/x86_64-linux-gnu/bits/errno.h \
-  /usr/include/x86_64-linux-gnu/bits/floatn-common.h \
-  /usr/include/x86_64-linux-gnu/bits/floatn.h \
-  /usr/include/x86_64-linux-gnu/bits/flt-eval-method.h \
-  /usr/include/x86_64-linux-gnu/bits/fp-fast.h \
-  /usr/include/x86_64-linux-gnu/bits/fp-logb.h \
-  /usr/include/x86_64-linux-gnu/bits/getopt_core.h \
-  /usr/include/x86_64-linux-gnu/bits/getopt_posix.h \
-  /usr/include/x86_64-linux-gnu/bits/ioctl-types.h \
-  /usr/include/x86_64-linux-gnu/bits/ioctls.h \
-  /usr/include/x86_64-linux-gnu/bits/libc-header-start.h \
-  /usr/include/x86_64-linux-gnu/bits/libm-simd-decl-stubs.h \
-  /usr/include/x86_64-linux-gnu/bits/long-double.h \
-  /usr/include/x86_64-linux-gnu/bits/math-vector.h \
-  /usr/include/x86_64-linux-gnu/bits/mathcalls-helper-functions.h \
-  /usr/include/x86_64-linux-gnu/bits/mathcalls.h \
-  /usr/include/x86_64-linux-gnu/bits/poll.h \
-  /usr/include/x86_64-linux-gnu/bits/poll2.h \
-  /usr/include/x86_64-linux-gnu/bits/posix_opt.h \
-  /usr/include/x86_64-linux-gnu/bits/pthread_stack_min-dynamic.h \
-  /usr/include/x86_64-linux-gnu/bits/pthread_stack_min.h \
-  /usr/include/x86_64-linux-gnu/bits/pthreadtypes-arch.h \
-  /usr/include/x86_64-linux-gnu/bits/pthreadtypes.h \
-  /usr/include/x86_64-linux-gnu/bits/sched.h \
-  /usr/include/x86_64-linux-gnu/bits/select-decl.h \
-  /usr/include/x86_64-linux-gnu/bits/select.h \
-  /usr/include/x86_64-linux-gnu/bits/select2.h \
-  /usr/include/x86_64-linux-gnu/bits/setjmp.h \
-  /usr/include/x86_64-linux-gnu/bits/sigaction.h \
-  /usr/include/x86_64-linux-gnu/bits/sigcontext.h \
-  /usr/include/x86_64-linux-gnu/bits/sigevent-consts.h \
-  /usr/include/x86_64-linux-gnu/bits/siginfo-arch.h \
-  /usr/include/x86_64-linux-gnu/bits/siginfo-consts.h \
-  /usr/include/x86_64-linux-gnu/bits/signal_ext.h \
-  /usr/include/x86_64-linux-gnu/bits/signum-arch.h \
-  /usr/include/x86_64-linux-gnu/bits/signum-generic.h \
-  /usr/include/x86_64-linux-gnu/bits/sigstack.h \
-  /usr/include/x86_64-linux-gnu/bits/sigstksz.h \
-  /usr/include/x86_64-linux-gnu/bits/sigthread.h \
-  /usr/include/x86_64-linux-gnu/bits/ss_flags.h \
-  /usr/include/x86_64-linux-gnu/bits/stdint-intn.h \
-  /usr/include/x86_64-linux-gnu/bits/stdint-least.h \
-  /usr/include/x86_64-linux-gnu/bits/stdint-uintn.h \
-  /usr/include/x86_64-linux-gnu/bits/stdio.h \
-  /usr/include/x86_64-linux-gnu/bits/stdio2-decl.h \
-  /usr/include/x86_64-linux-gnu/bits/stdio2.h \
-  /usr/include/x86_64-linux-gnu/bits/stdio_lim.h \
-  /usr/include/x86_64-linux-gnu/bits/stdlib-bsearch.h \
-  /usr/include/x86_64-linux-gnu/bits/stdlib-float.h \
-  /usr/include/x86_64-linux-gnu/bits/stdlib.h \
-  /usr/include/x86_64-linux-gnu/bits/string_fortified.h \
-  /usr/include/x86_64-linux-gnu/bits/strings_fortified.h \
-  /usr/include/x86_64-linux-gnu/bits/struct_mutex.h \
-  /usr/include/x86_64-linux-gnu/bits/struct_rwlock.h \
-  /usr/include/x86_64-linux-gnu/bits/thread-shared-types.h \
-  /usr/include/x86_64-linux-gnu/bits/time.h \
-  /usr/include/x86_64-linux-gnu/bits/time64.h \
-  /usr/include/x86_64-linux-gnu/bits/timesize.h \
-  /usr/include/x86_64-linux-gnu/bits/types.h \
-  /usr/include/x86_64-linux-gnu/bits/types/FILE.h \
-  /usr/include/x86_64-linux-gnu/bits/types/__FILE.h \
-  /usr/include/x86_64-linux-gnu/bits/types/__fpos64_t.h \
-  /usr/include/x86_64-linux-gnu/bits/types/__fpos_t.h \
-  /usr/include/x86_64-linux-gnu/bits/types/__locale_t.h \
-  /usr/include/x86_64-linux-gnu/bits/types/__mbstate_t.h \
-  /usr/include/x86_64-linux-gnu/bits/types/__sigset_t.h \
-  /usr/include/x86_64-linux-gnu/bits/types/__sigval_t.h \
-  /usr/include/x86_64-linux-gnu/bits/types/clock_t.h \
-  /usr/include/x86_64-linux-gnu/bits/types/clockid_t.h \
-  /usr/include/x86_64-linux-gnu/bits/types/cookie_io_functions_t.h \
-  /usr/include/x86_64-linux-gnu/bits/types/locale_t.h \
-  /usr/include/x86_64-linux-gnu/bits/types/sig_atomic_t.h \
-  /usr/include/x86_64-linux-gnu/bits/types/sigevent_t.h \
-  /usr/include/x86_64-linux-gnu/bits/types/siginfo_t.h \
-  /usr/include/x86_64-linux-gnu/bits/types/sigset_t.h \
-  /usr/include/x86_64-linux-gnu/bits/types/sigval_t.h \
-  /usr/include/x86_64-linux-gnu/bits/types/stack_t.h \
-  /usr/include/x86_64-linux-gnu/bits/types/struct_FILE.h \
-  /usr/include/x86_64-linux-gnu/bits/types/struct___jmp_buf_tag.h \
-  /usr/include/x86_64-linux-gnu/bits/types/struct_itimerspec.h \
-  /usr/include/x86_64-linux-gnu/bits/types/struct_sched_param.h \
-  /usr/include/x86_64-linux-gnu/bits/types/struct_sigstack.h \
-  /usr/include/x86_64-linux-gnu/bits/types/struct_timespec.h \
-  /usr/include/x86_64-linux-gnu/bits/types/struct_timeval.h \
-  /usr/include/x86_64-linux-gnu/bits/types/struct_tm.h \
-  /usr/include/x86_64-linux-gnu/bits/types/time_t.h \
-  /usr/include/x86_64-linux-gnu/bits/types/timer_t.h \
-  /usr/include/x86_64-linux-gnu/bits/typesizes.h \
-  /usr/include/x86_64-linux-gnu/bits/uintn-identity.h \
-  /usr/include/x86_64-linux-gnu/bits/unistd-decl.h \
-  /usr/include/x86_64-linux-gnu/bits/unistd.h \
-  /usr/include/x86_64-linux-gnu/bits/unistd_ext.h \
-  /usr/include/x86_64-linux-gnu/bits/waitflags.h \
-  /usr/include/x86_64-linux-gnu/bits/waitstatus.h \
-  /usr/include/x86_64-linux-gnu/bits/wchar.h \
-  /usr/include/x86_64-linux-gnu/bits/wordsize.h \
-  /usr/include/x86_64-linux-gnu/gnu/stubs-64.h \
-  /usr/include/x86_64-linux-gnu/gnu/stubs.h \
-  /usr/include/x86_64-linux-gnu/sys/cdefs.h \
-  /usr/include/x86_64-linux-gnu/sys/ioctl.h \
-  /usr/include/x86_64-linux-gnu/sys/poll.h \
-  /usr/include/x86_64-linux-gnu/sys/select.h \
-  /usr/include/x86_64-linux-gnu/sys/time.h \
-  /usr/include/x86_64-linux-gnu/sys/ttydefaults.h \
-  /usr/include/x86_64-linux-gnu/sys/types.h \
-  /usr/include/x86_64-linux-gnu/sys/ucontext.h \
-  /usr/include/xkbcommon/xkbcommon-compat.h \
-  /usr/include/xkbcommon/xkbcommon-compose.h \
-  /usr/include/xkbcommon/xkbcommon-keysyms.h \
-  /usr/include/xkbcommon/xkbcommon-names.h \
-  /usr/include/xkbcommon/xkbcommon.h \
-  /usr/lib/gcc/x86_64-linux-gnu/13/include/stdarg.h \
-  /usr/lib/gcc/x86_64-linux-gnu/13/include/stdbool.h \
-  /usr/lib/gcc/x86_64-linux-gnu/13/include/stddef.h \
-  /usr/lib/gcc/x86_64-linux-gnu/13/include/stdint.h
-
-_deps/glfw-build/src/CMakeFiles/glfw.dir/wl_window.c.o: _deps/glfw-src/src/wl_window.c \
-  _deps/glfw-build/src/fractional-scale-v1-client-protocol.h \
-  _deps/glfw-build/src/idle-inhibit-unstable-v1-client-protocol.h \
-  _deps/glfw-build/src/pointer-constraints-unstable-v1-client-protocol.h \
-  _deps/glfw-build/src/relative-pointer-unstable-v1-client-protocol.h \
-  _deps/glfw-build/src/viewporter-client-protocol.h \
-  _deps/glfw-build/src/wayland-client-protocol.h \
-  _deps/glfw-build/src/xdg-activation-v1-client-protocol.h \
-  _deps/glfw-build/src/xdg-decoration-unstable-v1-client-protocol.h \
-  _deps/glfw-build/src/xdg-shell-client-protocol.h \
-  _deps/glfw-src/include/GLFW/glfw3.h \
-  _deps/glfw-src/include/GLFW/glfw3native.h \
-  _deps/glfw-src/src/internal.h \
-  _deps/glfw-src/src/linux_joystick.h \
-  _deps/glfw-src/src/null_joystick.h \
-  _deps/glfw-src/src/null_platform.h \
-  _deps/glfw-src/src/platform.h \
-  _deps/glfw-src/src/posix_poll.h \
-  _deps/glfw-src/src/posix_thread.h \
-  _deps/glfw-src/src/posix_time.h \
-  _deps/glfw-src/src/wl_platform.h \
-  _deps/glfw-src/src/x11_platform.h \
-  _deps/glfw-src/src/xkb_unicode.h \
-  /usr/include/X11/X.h \
-  /usr/include/X11/XKBlib.h \
-  /usr/include/X11/Xatom.h \
-  /usr/include/X11/Xcursor/Xcursor.h \
-  /usr/include/X11/Xdefs.h \
-  /usr/include/X11/Xfuncproto.h \
-  /usr/include/X11/Xlib.h \
-  /usr/include/X11/Xosdefs.h \
-  /usr/include/X11/Xresource.h \
-  /usr/include/X11/Xutil.h \
-  /usr/include/X11/extensions/XI2.h \
-  /usr/include/X11/extensions/XInput2.h \
-  /usr/include/X11/extensions/XKB.h \
-  /usr/include/X11/extensions/XKBstr.h \
-  /usr/include/X11/extensions/Xfixes.h \
-  /usr/include/X11/extensions/Xge.h \
-  /usr/include/X11/extensions/Xinerama.h \
-  /usr/include/X11/extensions/Xrandr.h \
-  /usr/include/X11/extensions/Xrender.h \
-  /usr/include/X11/extensions/randr.h \
-  /usr/include/X11/extensions/render.h \
-  /usr/include/X11/extensions/shape.h \
-  /usr/include/X11/extensions/shapeconst.h \
-  /usr/include/X11/extensions/xfixeswire.h \
-  /usr/include/X11/keysym.h \
-  /usr/include/X11/keysymdef.h \
-  /usr/include/alloca.h \
-  /usr/include/asm-generic/bitsperlong.h \
-  /usr/include/asm-generic/errno-base.h \
-  /usr/include/asm-generic/errno.h \
-  /usr/include/asm-generic/int-ll64.h \
-  /usr/include/asm-generic/ioctl.h \
-  /usr/include/asm-generic/ioctls.h \
-  /usr/include/asm-generic/posix_types.h \
-  /usr/include/asm-generic/types.h \
-  /usr/include/assert.h \
-  /usr/include/endian.h \
-  /usr/include/errno.h \
-  /usr/include/fcntl.h \
-  /usr/include/features-time64.h \
-  /usr/include/features.h \
-  /usr/include/inttypes.h \
-  /usr/include/linux/close_range.h \
-  /usr/include/linux/errno.h \
-  /usr/include/linux/falloc.h \
-  /usr/include/linux/input-event-codes.h \
-  /usr/include/linux/input.h \
-  /usr/include/linux/ioctl.h \
-  /usr/include/linux/limits.h \
-  /usr/include/linux/posix_types.h \
-  /usr/include/linux/stddef.h \
-  /usr/include/linux/types.h \
-  /usr/include/math.h \
-  /usr/include/poll.h \
-  /usr/include/pthread.h \
-  /usr/include/regex.h \
-  /usr/include/sched.h \
-  /usr/include/signal.h \
-  /usr/include/stdc-predef.h \
-  /usr/include/stdint.h \
-  /usr/include/stdio.h \
-  /usr/include/stdlib.h \
-  /usr/include/string.h \
-  /usr/include/strings.h \
-  /usr/include/time.h \
-  /usr/include/unistd.h \
-  /usr/include/wayland-client-core.h \
-  /usr/include/wayland-client-protocol.h \
-  /usr/include/wayland-client.h \
-  /usr/include/wayland-util.h \
-  /usr/include/wayland-version.h \
-  /usr/include/x86_64-linux-gnu/asm/bitsperlong.h \
-  /usr/include/x86_64-linux-gnu/asm/errno.h \
-  /usr/include/x86_64-linux-gnu/asm/ioctl.h \
-  /usr/include/x86_64-linux-gnu/asm/ioctls.h \
-  /usr/include/x86_64-linux-gnu/asm/posix_types.h \
-  /usr/include/x86_64-linux-gnu/asm/posix_types_64.h \
-  /usr/include/x86_64-linux-gnu/asm/types.h \
-  /usr/include/x86_64-linux-gnu/bits/atomic_wide_counter.h \
-  /usr/include/x86_64-linux-gnu/bits/byteswap.h \
-  /usr/include/x86_64-linux-gnu/bits/confname.h \
-  /usr/include/x86_64-linux-gnu/bits/cpu-set.h \
-  /usr/include/x86_64-linux-gnu/bits/endian.h \
-  /usr/include/x86_64-linux-gnu/bits/endianness.h \
-  /usr/include/x86_64-linux-gnu/bits/environments.h \
-  /usr/include/x86_64-linux-gnu/bits/errno.h \
-  /usr/include/x86_64-linux-gnu/bits/fcntl-linux.h \
-  /usr/include/x86_64-linux-gnu/bits/fcntl.h \
-  /usr/include/x86_64-linux-gnu/bits/fcntl2.h \
-  /usr/include/x86_64-linux-gnu/bits/floatn-common.h \
-  /usr/include/x86_64-linux-gnu/bits/floatn.h \
-  /usr/include/x86_64-linux-gnu/bits/flt-eval-method.h \
-  /usr/include/x86_64-linux-gnu/bits/fp-fast.h \
-  /usr/include/x86_64-linux-gnu/bits/fp-logb.h \
-  /usr/include/x86_64-linux-gnu/bits/getopt_core.h \
-  /usr/include/x86_64-linux-gnu/bits/getopt_posix.h \
-  /usr/include/x86_64-linux-gnu/bits/ioctl-types.h \
-  /usr/include/x86_64-linux-gnu/bits/ioctls.h \
-  /usr/include/x86_64-linux-gnu/bits/iscanonical.h \
-  /usr/include/x86_64-linux-gnu/bits/libc-header-start.h \
-  /usr/include/x86_64-linux-gnu/bits/libm-simd-decl-stubs.h \
-  /usr/include/x86_64-linux-gnu/bits/long-double.h \
-  /usr/include/x86_64-linux-gnu/bits/math-vector.h \
-  /usr/include/x86_64-linux-gnu/bits/mathcalls-helper-functions.h \
-  /usr/include/x86_64-linux-gnu/bits/mathcalls-narrow.h \
-  /usr/include/x86_64-linux-gnu/bits/mathcalls.h \
-  /usr/include/x86_64-linux-gnu/bits/mman-linux.h \
-  /usr/include/x86_64-linux-gnu/bits/mman-map-flags-generic.h \
-  /usr/include/x86_64-linux-gnu/bits/mman-shared.h \
-  /usr/include/x86_64-linux-gnu/bits/mman.h \
-  /usr/include/x86_64-linux-gnu/bits/mman_ext.h \
-  /usr/include/x86_64-linux-gnu/bits/poll.h \
-  /usr/include/x86_64-linux-gnu/bits/poll2.h \
-  /usr/include/x86_64-linux-gnu/bits/posix_opt.h \
-  /usr/include/x86_64-linux-gnu/bits/pthread_stack_min-dynamic.h \
-  /usr/include/x86_64-linux-gnu/bits/pthreadtypes-arch.h \
-  /usr/include/x86_64-linux-gnu/bits/pthreadtypes.h \
-  /usr/include/x86_64-linux-gnu/bits/sched.h \
-  /usr/include/x86_64-linux-gnu/bits/select-decl.h \
-  /usr/include/x86_64-linux-gnu/bits/select.h \
-  /usr/include/x86_64-linux-gnu/bits/select2.h \
-  /usr/include/x86_64-linux-gnu/bits/setjmp.h \
-  /usr/include/x86_64-linux-gnu/bits/sigaction.h \
-  /usr/include/x86_64-linux-gnu/bits/sigcontext.h \
-  /usr/include/x86_64-linux-gnu/bits/sigevent-consts.h \
-  /usr/include/x86_64-linux-gnu/bits/siginfo-arch.h \
-  /usr/include/x86_64-linux-gnu/bits/siginfo-consts-arch.h \
-  /usr/include/x86_64-linux-gnu/bits/siginfo-consts.h \
-  /usr/include/x86_64-linux-gnu/bits/signal_ext.h \
-  /usr/include/x86_64-linux-gnu/bits/signum-arch.h \
-  /usr/include/x86_64-linux-gnu/bits/signum-generic.h \
-  /usr/include/x86_64-linux-gnu/bits/sigstack.h \
-  /usr/include/x86_64-linux-gnu/bits/sigstksz.h \
-  /usr/include/x86_64-linux-gnu/bits/sigthread.h \
-  /usr/include/x86_64-linux-gnu/bits/ss_flags.h \
-  /usr/include/x86_64-linux-gnu/bits/stat.h \
-  /usr/include/x86_64-linux-gnu/bits/stdint-intn.h \
-  /usr/include/x86_64-linux-gnu/bits/stdint-least.h \
-  /usr/include/x86_64-linux-gnu/bits/stdint-uintn.h \
-  /usr/include/x86_64-linux-gnu/bits/stdio.h \
-  /usr/include/x86_64-linux-gnu/bits/stdio2-decl.h \
-  /usr/include/x86_64-linux-gnu/bits/stdio2.h \
-  /usr/include/x86_64-linux-gnu/bits/stdio_lim.h \
-  /usr/include/x86_64-linux-gnu/bits/stdlib-bsearch.h \
-  /usr/include/x86_64-linux-gnu/bits/stdlib-float.h \
-  /usr/include/x86_64-linux-gnu/bits/stdlib.h \
-  /usr/include/x86_64-linux-gnu/bits/string_fortified.h \
-  /usr/include/x86_64-linux-gnu/bits/strings_fortified.h \
-  /usr/include/x86_64-linux-gnu/bits/struct_mutex.h \
-  /usr/include/x86_64-linux-gnu/bits/struct_rwlock.h \
-  /usr/include/x86_64-linux-gnu/bits/struct_stat.h \
-  /usr/include/x86_64-linux-gnu/bits/thread-shared-types.h \
-  /usr/include/x86_64-linux-gnu/bits/time.h \
-  /usr/include/x86_64-linux-gnu/bits/time64.h \
-  /usr/include/x86_64-linux-gnu/bits/timerfd.h \
-  /usr/include/x86_64-linux-gnu/bits/timesize.h \
-  /usr/include/x86_64-linux-gnu/bits/timex.h \
-  /usr/include/x86_64-linux-gnu/bits/types.h \
-  /usr/include/x86_64-linux-gnu/bits/types/FILE.h \
-  /usr/include/x86_64-linux-gnu/bits/types/__FILE.h \
-  /usr/include/x86_64-linux-gnu/bits/types/__fpos64_t.h \
-  /usr/include/x86_64-linux-gnu/bits/types/__fpos_t.h \
-  /usr/include/x86_64-linux-gnu/bits/types/__locale_t.h \
-  /usr/include/x86_64-linux-gnu/bits/types/__mbstate_t.h \
-  /usr/include/x86_64-linux-gnu/bits/types/__sigset_t.h \
-  /usr/include/x86_64-linux-gnu/bits/types/__sigval_t.h \
-  /usr/include/x86_64-linux-gnu/bits/types/clock_t.h \
-  /usr/include/x86_64-linux-gnu/bits/types/clockid_t.h \
-  /usr/include/x86_64-linux-gnu/bits/types/cookie_io_functions_t.h \
-  /usr/include/x86_64-linux-gnu/bits/types/error_t.h \
-  /usr/include/x86_64-linux-gnu/bits/types/locale_t.h \
-  /usr/include/x86_64-linux-gnu/bits/types/sig_atomic_t.h \
-  /usr/include/x86_64-linux-gnu/bits/types/sigevent_t.h \
-  /usr/include/x86_64-linux-gnu/bits/types/siginfo_t.h \
-  /usr/include/x86_64-linux-gnu/bits/types/sigset_t.h \
-  /usr/include/x86_64-linux-gnu/bits/types/sigval_t.h \
-  /usr/include/x86_64-linux-gnu/bits/types/stack_t.h \
-  /usr/include/x86_64-linux-gnu/bits/types/struct_FILE.h \
-  /usr/include/x86_64-linux-gnu/bits/types/struct___jmp_buf_tag.h \
-  /usr/include/x86_64-linux-gnu/bits/types/struct_iovec.h \
-  /usr/include/x86_64-linux-gnu/bits/types/struct_itimerspec.h \
-  /usr/include/x86_64-linux-gnu/bits/types/struct_sched_param.h \
-  /usr/include/x86_64-linux-gnu/bits/types/struct_sigstack.h \
-  /usr/include/x86_64-linux-gnu/bits/types/struct_timespec.h \
-  /usr/include/x86_64-linux-gnu/bits/types/struct_timeval.h \
-  /usr/include/x86_64-linux-gnu/bits/types/struct_tm.h \
-  /usr/include/x86_64-linux-gnu/bits/types/time_t.h \
-  /usr/include/x86_64-linux-gnu/bits/types/timer_t.h \
-  /usr/include/x86_64-linux-gnu/bits/typesizes.h \
-  /usr/include/x86_64-linux-gnu/bits/uintn-identity.h \
-  /usr/include/x86_64-linux-gnu/bits/unistd-decl.h \
-  /usr/include/x86_64-linux-gnu/bits/unistd.h \
-  /usr/include/x86_64-linux-gnu/bits/unistd_ext.h \
-  /usr/include/x86_64-linux-gnu/bits/waitflags.h \
-  /usr/include/x86_64-linux-gnu/bits/waitstatus.h \
-  /usr/include/x86_64-linux-gnu/bits/wchar.h \
-  /usr/include/x86_64-linux-gnu/bits/wordsize.h \
-  /usr/include/x86_64-linux-gnu/gnu/stubs-64.h \
-  /usr/include/x86_64-linux-gnu/gnu/stubs.h \
-  /usr/include/x86_64-linux-gnu/sys/cdefs.h \
-  /usr/include/x86_64-linux-gnu/sys/ioctl.h \
-  /usr/include/x86_64-linux-gnu/sys/mman.h \
-  /usr/include/x86_64-linux-gnu/sys/poll.h \
-  /usr/include/x86_64-linux-gnu/sys/select.h \
-  /usr/include/x86_64-linux-gnu/sys/time.h \
-  /usr/include/x86_64-linux-gnu/sys/timerfd.h \
-  /usr/include/x86_64-linux-gnu/sys/ttydefaults.h \
-  /usr/include/x86_64-linux-gnu/sys/types.h \
-  /usr/include/x86_64-linux-gnu/sys/ucontext.h \
-  /usr/include/xkbcommon/xkbcommon-compat.h \
-  /usr/include/xkbcommon/xkbcommon-compose.h \
-  /usr/include/xkbcommon/xkbcommon-keysyms.h \
-  /usr/include/xkbcommon/xkbcommon-names.h \
-  /usr/include/xkbcommon/xkbcommon.h \
-  /usr/lib/gcc/x86_64-linux-gnu/13/include/stdarg.h \
-  /usr/lib/gcc/x86_64-linux-gnu/13/include/stdbool.h \
   /usr/lib/gcc/x86_64-linux-gnu/13/include/stddef.h \
   /usr/lib/gcc/x86_64-linux-gnu/13/include/stdint.h
 
@@ -4564,7 +3527,6 @@ _deps/glfw-build/src/CMakeFiles/glfw.dir/x11_init.c.o: _deps/glfw-src/src/x11_in
   _deps/glfw-src/src/posix_poll.h \
   _deps/glfw-src/src/posix_thread.h \
   _deps/glfw-src/src/posix_time.h \
-  _deps/glfw-src/src/wl_platform.h \
   _deps/glfw-src/src/x11_platform.h \
   _deps/glfw-src/src/xkb_unicode.h \
   /usr/include/X11/X.h \
@@ -4608,7 +3570,6 @@ _deps/glfw-build/src/CMakeFiles/glfw.dir/x11_init.c.o: _deps/glfw-src/src/x11_in
   /usr/include/fcntl.h \
   /usr/include/features-time64.h \
   /usr/include/features.h \
-  /usr/include/inttypes.h \
   /usr/include/limits.h \
   /usr/include/linux/errno.h \
   /usr/include/linux/input-event-codes.h \
@@ -4619,7 +3580,6 @@ _deps/glfw-build/src/CMakeFiles/glfw.dir/x11_init.c.o: _deps/glfw-src/src/x11_in
   /usr/include/linux/stddef.h \
   /usr/include/linux/types.h \
   /usr/include/locale.h \
-  /usr/include/math.h \
   /usr/include/poll.h \
   /usr/include/pthread.h \
   /usr/include/regex.h \
@@ -4633,9 +3593,6 @@ _deps/glfw-build/src/CMakeFiles/glfw.dir/x11_init.c.o: _deps/glfw-src/src/x11_in
   /usr/include/strings.h \
   /usr/include/time.h \
   /usr/include/unistd.h \
-  /usr/include/wayland-client-core.h \
-  /usr/include/wayland-util.h \
-  /usr/include/wayland-version.h \
   /usr/include/x86_64-linux-gnu/asm/bitsperlong.h \
   /usr/include/x86_64-linux-gnu/asm/errno.h \
   /usr/include/x86_64-linux-gnu/asm/ioctl.h \
@@ -4656,21 +3613,14 @@ _deps/glfw-build/src/CMakeFiles/glfw.dir/x11_init.c.o: _deps/glfw-src/src/x11_in
   /usr/include/x86_64-linux-gnu/bits/fcntl2.h \
   /usr/include/x86_64-linux-gnu/bits/floatn-common.h \
   /usr/include/x86_64-linux-gnu/bits/floatn.h \
-  /usr/include/x86_64-linux-gnu/bits/flt-eval-method.h \
-  /usr/include/x86_64-linux-gnu/bits/fp-fast.h \
-  /usr/include/x86_64-linux-gnu/bits/fp-logb.h \
   /usr/include/x86_64-linux-gnu/bits/getopt_core.h \
   /usr/include/x86_64-linux-gnu/bits/getopt_posix.h \
   /usr/include/x86_64-linux-gnu/bits/ioctl-types.h \
   /usr/include/x86_64-linux-gnu/bits/ioctls.h \
   /usr/include/x86_64-linux-gnu/bits/libc-header-start.h \
-  /usr/include/x86_64-linux-gnu/bits/libm-simd-decl-stubs.h \
   /usr/include/x86_64-linux-gnu/bits/local_lim.h \
   /usr/include/x86_64-linux-gnu/bits/locale.h \
   /usr/include/x86_64-linux-gnu/bits/long-double.h \
-  /usr/include/x86_64-linux-gnu/bits/math-vector.h \
-  /usr/include/x86_64-linux-gnu/bits/mathcalls-helper-functions.h \
-  /usr/include/x86_64-linux-gnu/bits/mathcalls.h \
   /usr/include/x86_64-linux-gnu/bits/poll.h \
   /usr/include/x86_64-linux-gnu/bits/poll2.h \
   /usr/include/x86_64-linux-gnu/bits/posix1_lim.h \
@@ -4765,14 +3715,8 @@ _deps/glfw-build/src/CMakeFiles/glfw.dir/x11_init.c.o: _deps/glfw-src/src/x11_in
   /usr/include/x86_64-linux-gnu/sys/ttydefaults.h \
   /usr/include/x86_64-linux-gnu/sys/types.h \
   /usr/include/x86_64-linux-gnu/sys/ucontext.h \
-  /usr/include/xkbcommon/xkbcommon-compat.h \
-  /usr/include/xkbcommon/xkbcommon-compose.h \
-  /usr/include/xkbcommon/xkbcommon-keysyms.h \
-  /usr/include/xkbcommon/xkbcommon-names.h \
-  /usr/include/xkbcommon/xkbcommon.h \
   /usr/lib/gcc/x86_64-linux-gnu/13/include/limits.h \
   /usr/lib/gcc/x86_64-linux-gnu/13/include/stdarg.h \
-  /usr/lib/gcc/x86_64-linux-gnu/13/include/stdbool.h \
   /usr/lib/gcc/x86_64-linux-gnu/13/include/stddef.h \
   /usr/lib/gcc/x86_64-linux-gnu/13/include/stdint.h \
   /usr/lib/gcc/x86_64-linux-gnu/13/include/syslimits.h
@@ -4788,7 +3732,6 @@ _deps/glfw-build/src/CMakeFiles/glfw.dir/x11_monitor.c.o: _deps/glfw-src/src/x11
   _deps/glfw-src/src/posix_poll.h \
   _deps/glfw-src/src/posix_thread.h \
   _deps/glfw-src/src/posix_time.h \
-  _deps/glfw-src/src/wl_platform.h \
   _deps/glfw-src/src/x11_platform.h \
   _deps/glfw-src/src/xkb_unicode.h \
   /usr/include/X11/X.h \
@@ -4827,7 +3770,6 @@ _deps/glfw-build/src/CMakeFiles/glfw.dir/x11_monitor.c.o: _deps/glfw-src/src/x11
   /usr/include/endian.h \
   /usr/include/features-time64.h \
   /usr/include/features.h \
-  /usr/include/inttypes.h \
   /usr/include/limits.h \
   /usr/include/linux/input-event-codes.h \
   /usr/include/linux/input.h \
@@ -4850,9 +3792,6 @@ _deps/glfw-build/src/CMakeFiles/glfw.dir/x11_monitor.c.o: _deps/glfw-src/src/x11
   /usr/include/strings.h \
   /usr/include/time.h \
   /usr/include/unistd.h \
-  /usr/include/wayland-client-core.h \
-  /usr/include/wayland-util.h \
-  /usr/include/wayland-version.h \
   /usr/include/x86_64-linux-gnu/asm/bitsperlong.h \
   /usr/include/x86_64-linux-gnu/asm/ioctl.h \
   /usr/include/x86_64-linux-gnu/asm/ioctls.h \
@@ -4974,14 +3913,8 @@ _deps/glfw-build/src/CMakeFiles/glfw.dir/x11_monitor.c.o: _deps/glfw-src/src/x11
   /usr/include/x86_64-linux-gnu/sys/ttydefaults.h \
   /usr/include/x86_64-linux-gnu/sys/types.h \
   /usr/include/x86_64-linux-gnu/sys/ucontext.h \
-  /usr/include/xkbcommon/xkbcommon-compat.h \
-  /usr/include/xkbcommon/xkbcommon-compose.h \
-  /usr/include/xkbcommon/xkbcommon-keysyms.h \
-  /usr/include/xkbcommon/xkbcommon-names.h \
-  /usr/include/xkbcommon/xkbcommon.h \
   /usr/lib/gcc/x86_64-linux-gnu/13/include/limits.h \
   /usr/lib/gcc/x86_64-linux-gnu/13/include/stdarg.h \
-  /usr/lib/gcc/x86_64-linux-gnu/13/include/stdbool.h \
   /usr/lib/gcc/x86_64-linux-gnu/13/include/stddef.h \
   /usr/lib/gcc/x86_64-linux-gnu/13/include/stdint.h \
   /usr/lib/gcc/x86_64-linux-gnu/13/include/syslimits.h
@@ -4997,7 +3930,6 @@ _deps/glfw-build/src/CMakeFiles/glfw.dir/x11_window.c.o: _deps/glfw-src/src/x11_
   _deps/glfw-src/src/posix_poll.h \
   _deps/glfw-src/src/posix_thread.h \
   _deps/glfw-src/src/posix_time.h \
-  _deps/glfw-src/src/wl_platform.h \
   _deps/glfw-src/src/x11_platform.h \
   _deps/glfw-src/src/xkb_unicode.h \
   /usr/include/X11/X.h \
@@ -5042,7 +3974,6 @@ _deps/glfw-build/src/CMakeFiles/glfw.dir/x11_window.c.o: _deps/glfw-src/src/x11_
   /usr/include/errno.h \
   /usr/include/features-time64.h \
   /usr/include/features.h \
-  /usr/include/inttypes.h \
   /usr/include/limits.h \
   /usr/include/linux/errno.h \
   /usr/include/linux/input-event-codes.h \
@@ -5052,7 +3983,6 @@ _deps/glfw-build/src/CMakeFiles/glfw.dir/x11_window.c.o: _deps/glfw-src/src/x11_
   /usr/include/linux/posix_types.h \
   /usr/include/linux/stddef.h \
   /usr/include/linux/types.h \
-  /usr/include/math.h \
   /usr/include/poll.h \
   /usr/include/pthread.h \
   /usr/include/regex.h \
@@ -5066,9 +3996,6 @@ _deps/glfw-build/src/CMakeFiles/glfw.dir/x11_window.c.o: _deps/glfw-src/src/x11_
   /usr/include/strings.h \
   /usr/include/time.h \
   /usr/include/unistd.h \
-  /usr/include/wayland-client-core.h \
-  /usr/include/wayland-util.h \
-  /usr/include/wayland-version.h \
   /usr/include/x86_64-linux-gnu/asm/bitsperlong.h \
   /usr/include/x86_64-linux-gnu/asm/errno.h \
   /usr/include/x86_64-linux-gnu/asm/ioctl.h \
@@ -5086,20 +4013,13 @@ _deps/glfw-build/src/CMakeFiles/glfw.dir/x11_window.c.o: _deps/glfw-src/src/x11_
   /usr/include/x86_64-linux-gnu/bits/errno.h \
   /usr/include/x86_64-linux-gnu/bits/floatn-common.h \
   /usr/include/x86_64-linux-gnu/bits/floatn.h \
-  /usr/include/x86_64-linux-gnu/bits/flt-eval-method.h \
-  /usr/include/x86_64-linux-gnu/bits/fp-fast.h \
-  /usr/include/x86_64-linux-gnu/bits/fp-logb.h \
   /usr/include/x86_64-linux-gnu/bits/getopt_core.h \
   /usr/include/x86_64-linux-gnu/bits/getopt_posix.h \
   /usr/include/x86_64-linux-gnu/bits/ioctl-types.h \
   /usr/include/x86_64-linux-gnu/bits/ioctls.h \
   /usr/include/x86_64-linux-gnu/bits/libc-header-start.h \
-  /usr/include/x86_64-linux-gnu/bits/libm-simd-decl-stubs.h \
   /usr/include/x86_64-linux-gnu/bits/local_lim.h \
   /usr/include/x86_64-linux-gnu/bits/long-double.h \
-  /usr/include/x86_64-linux-gnu/bits/math-vector.h \
-  /usr/include/x86_64-linux-gnu/bits/mathcalls-helper-functions.h \
-  /usr/include/x86_64-linux-gnu/bits/mathcalls.h \
   /usr/include/x86_64-linux-gnu/bits/poll.h \
   /usr/include/x86_64-linux-gnu/bits/poll2.h \
   /usr/include/x86_64-linux-gnu/bits/posix1_lim.h \
@@ -5192,14 +4112,8 @@ _deps/glfw-build/src/CMakeFiles/glfw.dir/x11_window.c.o: _deps/glfw-src/src/x11_
   /usr/include/x86_64-linux-gnu/sys/ttydefaults.h \
   /usr/include/x86_64-linux-gnu/sys/types.h \
   /usr/include/x86_64-linux-gnu/sys/ucontext.h \
-  /usr/include/xkbcommon/xkbcommon-compat.h \
-  /usr/include/xkbcommon/xkbcommon-compose.h \
-  /usr/include/xkbcommon/xkbcommon-keysyms.h \
-  /usr/include/xkbcommon/xkbcommon-names.h \
-  /usr/include/xkbcommon/xkbcommon.h \
   /usr/lib/gcc/x86_64-linux-gnu/13/include/limits.h \
   /usr/lib/gcc/x86_64-linux-gnu/13/include/stdarg.h \
-  /usr/lib/gcc/x86_64-linux-gnu/13/include/stdbool.h \
   /usr/lib/gcc/x86_64-linux-gnu/13/include/stddef.h \
   /usr/lib/gcc/x86_64-linux-gnu/13/include/stdint.h \
   /usr/lib/gcc/x86_64-linux-gnu/13/include/syslimits.h
@@ -5215,7 +4129,6 @@ _deps/glfw-build/src/CMakeFiles/glfw.dir/xkb_unicode.c.o: _deps/glfw-src/src/xkb
   _deps/glfw-src/src/posix_poll.h \
   _deps/glfw-src/src/posix_thread.h \
   _deps/glfw-src/src/posix_time.h \
-  _deps/glfw-src/src/wl_platform.h \
   _deps/glfw-src/src/x11_platform.h \
   _deps/glfw-src/src/xkb_unicode.h \
   /usr/include/X11/X.h \
@@ -5253,7 +4166,6 @@ _deps/glfw-build/src/CMakeFiles/glfw.dir/xkb_unicode.c.o: _deps/glfw-src/src/xkb
   /usr/include/endian.h \
   /usr/include/features-time64.h \
   /usr/include/features.h \
-  /usr/include/inttypes.h \
   /usr/include/linux/input-event-codes.h \
   /usr/include/linux/input.h \
   /usr/include/linux/ioctl.h \
@@ -5261,7 +4173,6 @@ _deps/glfw-build/src/CMakeFiles/glfw.dir/xkb_unicode.c.o: _deps/glfw-src/src/xkb
   /usr/include/linux/posix_types.h \
   /usr/include/linux/stddef.h \
   /usr/include/linux/types.h \
-  /usr/include/math.h \
   /usr/include/poll.h \
   /usr/include/pthread.h \
   /usr/include/regex.h \
@@ -5272,9 +4183,6 @@ _deps/glfw-build/src/CMakeFiles/glfw.dir/xkb_unicode.c.o: _deps/glfw-src/src/xkb
   /usr/include/stdio.h \
   /usr/include/time.h \
   /usr/include/unistd.h \
-  /usr/include/wayland-client-core.h \
-  /usr/include/wayland-util.h \
-  /usr/include/wayland-version.h \
   /usr/include/x86_64-linux-gnu/asm/bitsperlong.h \
   /usr/include/x86_64-linux-gnu/asm/ioctl.h \
   /usr/include/x86_64-linux-gnu/asm/ioctls.h \
@@ -5290,19 +4198,12 @@ _deps/glfw-build/src/CMakeFiles/glfw.dir/xkb_unicode.c.o: _deps/glfw-src/src/xkb
   /usr/include/x86_64-linux-gnu/bits/environments.h \
   /usr/include/x86_64-linux-gnu/bits/floatn-common.h \
   /usr/include/x86_64-linux-gnu/bits/floatn.h \
-  /usr/include/x86_64-linux-gnu/bits/flt-eval-method.h \
-  /usr/include/x86_64-linux-gnu/bits/fp-fast.h \
-  /usr/include/x86_64-linux-gnu/bits/fp-logb.h \
   /usr/include/x86_64-linux-gnu/bits/getopt_core.h \
   /usr/include/x86_64-linux-gnu/bits/getopt_posix.h \
   /usr/include/x86_64-linux-gnu/bits/ioctl-types.h \
   /usr/include/x86_64-linux-gnu/bits/ioctls.h \
   /usr/include/x86_64-linux-gnu/bits/libc-header-start.h \
-  /usr/include/x86_64-linux-gnu/bits/libm-simd-decl-stubs.h \
   /usr/include/x86_64-linux-gnu/bits/long-double.h \
-  /usr/include/x86_64-linux-gnu/bits/math-vector.h \
-  /usr/include/x86_64-linux-gnu/bits/mathcalls-helper-functions.h \
-  /usr/include/x86_64-linux-gnu/bits/mathcalls.h \
   /usr/include/x86_64-linux-gnu/bits/poll.h \
   /usr/include/x86_64-linux-gnu/bits/poll2.h \
   /usr/include/x86_64-linux-gnu/bits/posix_opt.h \
@@ -5386,605 +4287,507 @@ _deps/glfw-build/src/CMakeFiles/glfw.dir/xkb_unicode.c.o: _deps/glfw-src/src/xkb
   /usr/include/x86_64-linux-gnu/sys/ttydefaults.h \
   /usr/include/x86_64-linux-gnu/sys/types.h \
   /usr/include/x86_64-linux-gnu/sys/ucontext.h \
-  /usr/include/xkbcommon/xkbcommon-compat.h \
-  /usr/include/xkbcommon/xkbcommon-compose.h \
-  /usr/include/xkbcommon/xkbcommon-keysyms.h \
-  /usr/include/xkbcommon/xkbcommon-names.h \
-  /usr/include/xkbcommon/xkbcommon.h \
   /usr/lib/gcc/x86_64-linux-gnu/13/include/stdarg.h \
-  /usr/lib/gcc/x86_64-linux-gnu/13/include/stdbool.h \
   /usr/lib/gcc/x86_64-linux-gnu/13/include/stddef.h \
   /usr/lib/gcc/x86_64-linux-gnu/13/include/stdint.h
 
 
-_deps/glfw-src/src/xkb_unicode.c:
-
 /usr/include/X11/cursorfont.h:
 
-_deps/glfw-src/src/x11_monitor.c:
+_deps/glfw-src/src/x11_window.c:
 
 /usr/include/x86_64-linux-gnu/bits/locale.h:
 
-/usr/include/locale.h:
+_deps/glfw-src/src/x11_init.c:
 
-/usr/include/x86_64-linux-gnu/bits/types/struct_iovec.h:
+/usr/include/linux/close_range.h:
 
-_deps/glfw-src/src/wl_monitor.c:
+_deps/glfw-src/src/posix_poll.c:
 
-/usr/include/x86_64-linux-gnu/sys/mman.h:
+/usr/include/x86_64-linux-gnu/bits/dlfcn.h:
 
-/usr/include/x86_64-linux-gnu/bits/mman_ext.h:
+/usr/include/dlfcn.h:
 
-/usr/include/x86_64-linux-gnu/bits/mman-shared.h:
+_deps/glfw-src/src/null_window.c:
 
-/usr/include/x86_64-linux-gnu/bits/mman-map-flags-generic.h:
+_deps/glfw-src/src/null_monitor.c:
 
-/usr/include/x86_64-linux-gnu/bits/mman-linux.h:
+_deps/glfw-src/src/null_joystick.c:
 
-_deps/glfw-build/src/xdg-shell-client-protocol.h:
+/usr/include/x86_64-linux-gnu/bits/fcntl.h:
 
-_deps/glfw-build/src/xdg-activation-v1-client-protocol-code.h:
+/usr/include/x86_64-linux-gnu/bits/timex.h:
 
-_deps/glfw-build/src/viewporter-client-protocol.h:
+/usr/include/x86_64-linux-gnu/bits/fcntl-linux.h:
 
-_deps/glfw-build/src/relative-pointer-unstable-v1-client-protocol.h:
+/usr/include/x86_64-linux-gnu/bits/errno.h:
 
-_deps/glfw-build/src/relative-pointer-unstable-v1-client-protocol-code.h:
+/usr/include/x86_64-linux-gnu/bits/dirent_ext.h:
 
-_deps/glfw-build/src/pointer-constraints-unstable-v1-client-protocol.h:
+/usr/include/x86_64-linux-gnu/bits/dirent.h:
 
-_deps/glfw-build/src/pointer-constraints-unstable-v1-client-protocol-code.h:
+_deps/glfw-src/src/platform.c:
 
-_deps/glfw-build/src/wayland-client-protocol.h:
+/usr/include/fcntl.h:
 
-_deps/glfw-build/src/idle-inhibit-unstable-v1-client-protocol.h:
+/usr/include/dirent.h:
 
-_deps/glfw-build/src/idle-inhibit-unstable-v1-client-protocol-code.h:
+/usr/include/asm-generic/errno.h:
 
-_deps/glfw-build/src/fractional-scale-v1-client-protocol.h:
+_deps/glfw-src/src/linux_joystick.c:
 
-/usr/include/x86_64-linux-gnu/bits/sigstack.h:
+/usr/include/x86_64-linux-gnu/bits/types/error_t.h:
 
-/usr/include/x86_64-linux-gnu/bits/sigaction.h:
+/usr/include/x86_64-linux-gnu/bits/mathcalls-helper-functions.h:
 
-/usr/include/x86_64-linux-gnu/bits/select2.h:
+/usr/include/x86_64-linux-gnu/bits/libm-simd-decl-stubs.h:
 
-/usr/include/linux/types.h:
+_deps/glfw-src/src/posix_thread.c:
 
-/usr/include/x86_64-linux-gnu/bits/sched.h:
+/usr/include/x86_64-linux-gnu/bits/fcntl2.h:
 
-/usr/include/x86_64-linux-gnu/bits/pthreadtypes-arch.h:
+/usr/include/x86_64-linux-gnu/bits/fp-logb.h:
 
-/usr/include/x86_64-linux-gnu/asm/bitsperlong.h:
+/usr/include/x86_64-linux-gnu/bits/fp-fast.h:
 
-/usr/include/X11/Xresource.h:
+/usr/include/math.h:
 
-/usr/include/x86_64-linux-gnu/bits/pthread_stack_min.h:
+_deps/glfw-src/src/mappings.h:
+
+_deps/glfw-src/src/init.c:
 
 /usr/include/x86_64-linux-gnu/bits/mathcalls.h:
 
 _deps/glfw-src/src/glx_context.c:
 
-_deps/glfw-src/src/monitor.c:
+/usr/include/x86_64-linux-gnu/bits/waitflags.h:
 
-/usr/include/x86_64-linux-gnu/bits/mathcalls-helper-functions.h:
+_deps/glfw-src/src/null_init.c:
 
-/usr/include/x86_64-linux-gnu/bits/types/error_t.h:
+/usr/include/alloca.h:
 
 /usr/include/x86_64-linux-gnu/bits/math-vector.h:
 
 _deps/glfw-src/src/egl_context.c:
 
-/usr/include/x86_64-linux-gnu/bits/types/cookie_io_functions_t.h:
-
-/usr/include/x86_64-linux-gnu/bits/libc-header-start.h:
-
-/usr/include/x86_64-linux-gnu/bits/mman.h:
-
-/usr/include/x86_64-linux-gnu/bits/ioctl-types.h:
-
-/usr/include/x86_64-linux-gnu/bits/getopt_core.h:
-
-/usr/include/x86_64-linux-gnu/bits/floatn.h:
-
-/usr/include/x86_64-linux-gnu/bits/types/struct_itimerspec.h:
-
-/usr/include/x86_64-linux-gnu/bits/floatn-common.h:
-
-/usr/include/x86_64-linux-gnu/bits/atomic_wide_counter.h:
-
-/usr/include/x86_64-linux-gnu/bits/cpu-set.h:
-
-/usr/include/x86_64-linux-gnu/asm/posix_types_64.h:
-
-/usr/include/asm-generic/errno-base.h:
-
-/usr/include/x86_64-linux-gnu/asm/posix_types.h:
-
-/usr/include/x86_64-linux-gnu/bits/confname.h:
-
-/usr/include/wayland-client-core.h:
-
-/usr/include/asm-generic/ioctls.h:
-
-/usr/include/x86_64-linux-gnu/sys/select.h:
-
-/usr/include/x86_64-linux-gnu/bits/flt-eval-method.h:
-
-_deps/glfw-build/src/xdg-decoration-unstable-v1-client-protocol-code.h:
-
-/usr/include/x86_64-linux-gnu/bits/types/__fpos64_t.h:
-
-_deps/glfw-src/src/null_platform.h:
-
-/usr/include/x86_64-linux-gnu/bits/struct_rwlock.h:
-
-/usr/include/x86_64-linux-gnu/bits/setjmp.h:
-
-/usr/include/time.h:
-
-/usr/include/x86_64-linux-gnu/bits/getopt_posix.h:
-
-/usr/include/stdc-predef.h:
-
-/usr/include/asm-generic/posix_types.h:
-
-/usr/include/strings.h:
-
-/usr/include/signal.h:
-
-/usr/include/x86_64-linux-gnu/bits/types/FILE.h:
-
-/usr/include/sched.h:
-
-/usr/include/x86_64-linux-gnu/bits/sigevent-consts.h:
-
-/usr/include/x86_64-linux-gnu/bits/posix_opt.h:
-
-_deps/glfw-src/src/osmesa_context.c:
-
-/usr/include/features-time64.h:
-
-/usr/include/X11/extensions/Xfixes.h:
-
-/usr/include/x86_64-linux-gnu/sys/timerfd.h:
-
-/usr/include/x86_64-linux-gnu/bits/stdio2.h:
-
-/usr/include/x86_64-linux-gnu/bits/fp-logb.h:
-
-/usr/include/x86_64-linux-gnu/bits/long-double.h:
-
-/usr/include/x86_64-linux-gnu/bits/byteswap.h:
-
-/usr/include/x86_64-linux-gnu/bits/siginfo-consts-arch.h:
-
-_deps/glfw-src/src/posix_time.h:
-
-/usr/include/x86_64-linux-gnu/asm/ioctls.h:
-
-/usr/include/features.h:
-
-/usr/include/wayland-version.h:
-
-/usr/include/linux/stddef.h:
-
-/usr/include/X11/Xatom.h:
-
-/usr/include/xkbcommon/xkbcommon-compat.h:
-
-/usr/include/stdlib.h:
-
-/usr/include/x86_64-linux-gnu/bits/siginfo-arch.h:
-
-/usr/include/X11/Xlib.h:
-
-_deps/glfw-src/src/posix_thread.h:
-
-/usr/include/x86_64-linux-gnu/bits/poll2.h:
-
-/usr/include/x86_64-linux-gnu/bits/posix2_lim.h:
-
-/usr/include/endian.h:
-
-/usr/include/stdint.h:
-
-/usr/include/linux/limits.h:
-
-_deps/glfw-src/src/posix_time.c:
-
-/usr/include/X11/extensions/XInput2.h:
-
-/usr/include/x86_64-linux-gnu/bits/wchar.h:
-
-/usr/include/X11/extensions/Xrandr.h:
-
-/usr/include/wayland-util.h:
-
-/usr/include/X11/keysymdef.h:
-
-/usr/include/stdio.h:
-
-/usr/lib/gcc/x86_64-linux-gnu/13/include/stdbool.h:
-
-/usr/include/unistd.h:
-
-/usr/include/X11/extensions/XI2.h:
-
-_deps/glfw-src/src/wl_platform.h:
-
-/usr/include/X11/extensions/xfixeswire.h:
-
-_deps/glfw-src/src/linux_joystick.h:
-
-/usr/include/x86_64-linux-gnu/bits/stat.h:
-
-/usr/include/x86_64-linux-gnu/bits/sigstksz.h:
-
-_deps/glfw-src/src/context.c:
-
-/usr/include/x86_64-linux-gnu/bits/fp-fast.h:
-
-/usr/include/X11/Xosdefs.h:
-
-/usr/include/X11/Xcursor/Xcursor.h:
-
-/usr/include/x86_64-linux-gnu/bits/waitstatus.h:
-
-/usr/include/regex.h:
-
-/usr/include/X11/XKBlib.h:
-
-_deps/glfw-build/src/xdg-activation-v1-client-protocol.h:
-
-_deps/glfw-build/src/wayland-client-protocol-code.h:
-
-/usr/include/x86_64-linux-gnu/bits/types/__mbstate_t.h:
-
-/usr/include/x86_64-linux-gnu/bits/timerfd.h:
-
-/usr/include/X11/Xfuncproto.h:
-
-/usr/include/xkbcommon/xkbcommon-keysyms.h:
-
-/usr/include/x86_64-linux-gnu/bits/endian.h:
-
-/usr/include/x86_64-linux-gnu/gnu/stubs.h:
-
-/usr/include/string.h:
-
-/usr/include/x86_64-linux-gnu/bits/stdio.h:
-
-_deps/glfw-src/src/x11_platform.h:
-
-/usr/include/x86_64-linux-gnu/bits/struct_stat.h:
-
-_deps/glfw-src/src/vulkan.c:
-
-/usr/include/x86_64-linux-gnu/bits/endianness.h:
-
-/usr/include/X11/extensions/Xinerama.h:
-
-/usr/include/math.h:
-
-/usr/include/x86_64-linux-gnu/bits/types/__FILE.h:
-
-/usr/include/X11/X.h:
-
-/usr/include/X11/extensions/Xge.h:
-
-_deps/glfw-src/include/GLFW/glfw3.h:
-
-/usr/include/x86_64-linux-gnu/bits/poll.h:
-
-/usr/include/X11/extensions/shape.h:
-
-/usr/include/x86_64-linux-gnu/bits/stdint-least.h:
-
-/usr/include/x86_64-linux-gnu/bits/strings_fortified.h:
-
-/usr/include/X11/extensions/randr.h:
-
-/usr/include/x86_64-linux-gnu/bits/inotify.h:
-
-/usr/include/x86_64-linux-gnu/bits/select-decl.h:
-
-/usr/include/x86_64-linux-gnu/bits/signal_ext.h:
-
-_deps/glfw-src/src/window.c:
-
-/usr/include/X11/keysym.h:
-
-/usr/include/x86_64-linux-gnu/sys/types.h:
-
-/usr/include/x86_64-linux-gnu/bits/signum-generic.h:
-
-/usr/include/x86_64-linux-gnu/bits/types/timer_t.h:
-
-/usr/include/x86_64-linux-gnu/bits/unistd-decl.h:
-
-/usr/include/x86_64-linux-gnu/bits/sigcontext.h:
-
-_deps/glfw-build/src/xdg-decoration-unstable-v1-client-protocol.h:
-
-/usr/include/x86_64-linux-gnu/bits/thread-shared-types.h:
-
-/usr/include/x86_64-linux-gnu/sys/poll.h:
-
-/usr/include/X11/extensions/shapeconst.h:
-
-/usr/include/asm-generic/ioctl.h:
-
-/usr/include/x86_64-linux-gnu/asm/types.h:
-
-/usr/include/pthread.h:
-
-/usr/include/assert.h:
-
-_deps/glfw-build/src/viewporter-client-protocol-code.h:
-
-/usr/include/x86_64-linux-gnu/bits/pthread_stack_min-dynamic.h:
-
-/usr/include/x86_64-linux-gnu/bits/posix1_lim.h:
-
-/usr/include/inttypes.h:
-
-/usr/include/x86_64-linux-gnu/bits/pthreadtypes.h:
-
-/usr/include/X11/extensions/XKBstr.h:
-
-/usr/include/x86_64-linux-gnu/sys/inotify.h:
-
-_deps/glfw-src/src/wl_init.c:
-
-/usr/include/limits.h:
-
-/usr/include/X11/extensions/XKB.h:
-
-/usr/include/linux/errno.h:
-
-/usr/include/linux/input-event-codes.h:
-
-_deps/glfw-src/src/xkb_unicode.h:
-
-/usr/include/asm-generic/int-ll64.h:
-
-/usr/include/x86_64-linux-gnu/bits/types/__sigset_t.h:
-
-/usr/include/X11/extensions/render.h:
-
-/usr/include/X11/Xdefs.h:
-
-/usr/include/x86_64-linux-gnu/bits/unistd_ext.h:
-
-/usr/include/x86_64-linux-gnu/bits/sigthread.h:
-
-/usr/include/X11/Xutil.h:
-
-_deps/glfw-src/src/platform.h:
-
-/usr/include/x86_64-linux-gnu/bits/uintn-identity.h:
-
-/usr/include/x86_64-linux-gnu/bits/stdlib-float.h:
-
-_deps/glfw-src/src/x11_init.c:
-
-/usr/include/x86_64-linux-gnu/bits/stdint-intn.h:
-
-/usr/include/x86_64-linux-gnu/bits/types.h:
-
-/usr/include/linux/posix_types.h:
-
-_deps/glfw-src/src/posix_thread.c:
-
-/usr/include/x86_64-linux-gnu/bits/stdio2-decl.h:
-
-/usr/include/x86_64-linux-gnu/bits/string_fortified.h:
-
-/usr/include/x86_64-linux-gnu/bits/struct_mutex.h:
-
-_deps/glfw-src/src/null_joystick.h:
-
-/usr/include/x86_64-linux-gnu/bits/select.h:
-
-/usr/include/x86_64-linux-gnu/bits/time.h:
-
-/usr/include/x86_64-linux-gnu/bits/time64.h:
-
-/usr/include/x86_64-linux-gnu/bits/types/__fpos_t.h:
-
-/usr/include/x86_64-linux-gnu/asm/ioctl.h:
-
-/usr/include/x86_64-linux-gnu/bits/types/__sigval_t.h:
-
-/usr/include/errno.h:
-
-/usr/include/x86_64-linux-gnu/bits/types/struct___jmp_buf_tag.h:
-
-/usr/include/x86_64-linux-gnu/bits/stdlib-bsearch.h:
-
-/usr/include/x86_64-linux-gnu/bits/types/clockid_t.h:
-
-/usr/include/x86_64-linux-gnu/bits/types/locale_t.h:
-
-/usr/include/x86_64-linux-gnu/bits/ss_flags.h:
-
-/usr/include/x86_64-linux-gnu/bits/types/sig_atomic_t.h:
-
-_deps/glfw-src/src/posix_module.c:
-
-/usr/include/x86_64-linux-gnu/bits/types/sigevent_t.h:
-
-/usr/include/x86_64-linux-gnu/bits/ioctls.h:
-
-/usr/include/x86_64-linux-gnu/bits/types/siginfo_t.h:
-
-/usr/include/x86_64-linux-gnu/bits/environments.h:
-
-/usr/lib/gcc/x86_64-linux-gnu/13/include/stddef.h:
-
-/usr/include/asm-generic/types.h:
-
-/usr/include/asm-generic/bitsperlong.h:
-
-/usr/include/x86_64-linux-gnu/bits/types/sigset_t.h:
-
-/usr/include/x86_64-linux-gnu/bits/types/sigval_t.h:
-
-/usr/include/x86_64-linux-gnu/bits/types/stack_t.h:
-
-/usr/include/x86_64-linux-gnu/bits/types/__locale_t.h:
-
-/usr/include/x86_64-linux-gnu/bits/types/struct_sigstack.h:
-
-/usr/include/wayland-client.h:
-
-/usr/include/x86_64-linux-gnu/bits/stdint-uintn.h:
-
-/usr/include/x86_64-linux-gnu/bits/types/struct_timespec.h:
-
-/usr/include/poll.h:
-
-/usr/include/x86_64-linux-gnu/bits/types/struct_timeval.h:
-
-/usr/include/x86_64-linux-gnu/bits/stdlib.h:
-
-/usr/include/x86_64-linux-gnu/asm/errno.h:
-
-/usr/include/x86_64-linux-gnu/bits/types/struct_tm.h:
-
-/usr/include/x86_64-linux-gnu/bits/types/time_t.h:
-
-/usr/include/x86_64-linux-gnu/bits/typesizes.h:
-
-/usr/include/X11/Xmd.h:
-
-/usr/lib/gcc/x86_64-linux-gnu/13/include/limits.h:
-
-/usr/include/x86_64-linux-gnu/bits/unistd.h:
-
-/usr/include/xkbcommon/xkbcommon.h:
-
-/usr/include/x86_64-linux-gnu/bits/wordsize.h:
-
-/usr/include/x86_64-linux-gnu/gnu/stubs-64.h:
-
-/usr/include/x86_64-linux-gnu/sys/stat.h:
-
-/usr/include/x86_64-linux-gnu/sys/cdefs.h:
-
-/usr/include/x86_64-linux-gnu/sys/ioctl.h:
-
-/usr/include/x86_64-linux-gnu/sys/time.h:
-
-/usr/include/x86_64-linux-gnu/bits/libm-simd-decl-stubs.h:
-
-/usr/include/x86_64-linux-gnu/bits/types/struct_FILE.h:
-
-/usr/include/x86_64-linux-gnu/sys/ttydefaults.h:
-
-/usr/include/x86_64-linux-gnu/sys/ucontext.h:
-
-_deps/glfw-src/src/input.c:
-
-/usr/include/xkbcommon/xkbcommon-names.h:
-
-/usr/include/x86_64-linux-gnu/bits/siginfo-consts.h:
-
-/usr/lib/gcc/x86_64-linux-gnu/13/include/stdarg.h:
-
-/usr/include/x86_64-linux-gnu/bits/types/clock_t.h:
+/usr/lib/gcc/x86_64-linux-gnu/13/include/stdint.h:
 
 /usr/lib/gcc/x86_64-linux-gnu/13/include/syslimits.h:
 
-/usr/lib/gcc/x86_64-linux-gnu/13/include/stdint.h:
+/usr/lib/gcc/x86_64-linux-gnu/13/include/stdarg.h:
 
-/usr/include/alloca.h:
+_deps/glfw-src/src/input.c:
 
-_deps/glfw-src/src/x11_window.c:
+/usr/include/x86_64-linux-gnu/sys/ucontext.h:
 
-_deps/glfw-src/src/null_init.c:
+/usr/include/x86_64-linux-gnu/sys/ttydefaults.h:
 
-/usr/include/x86_64-linux-gnu/bits/waitflags.h:
+/usr/include/x86_64-linux-gnu/sys/time.h:
 
-_deps/glfw-src/src/init.c:
+/usr/include/x86_64-linux-gnu/sys/ioctl.h:
 
-_deps/glfw-src/src/mappings.h:
+/usr/include/x86_64-linux-gnu/sys/cdefs.h:
 
-/usr/lib/gcc/x86_64-linux-gnu/13/include/float.h:
+/usr/include/x86_64-linux-gnu/sys/stat.h:
 
-_deps/glfw-src/src/linux_joystick.c:
+/usr/include/x86_64-linux-gnu/gnu/stubs-64.h:
 
-_deps/glfw-src/include/GLFW/glfw3native.h:
+/usr/include/x86_64-linux-gnu/bits/wordsize.h:
+
+/usr/include/x86_64-linux-gnu/bits/unistd.h:
+
+/usr/lib/gcc/x86_64-linux-gnu/13/include/limits.h:
+
+/usr/include/x86_64-linux-gnu/bits/typesizes.h:
+
+/usr/include/x86_64-linux-gnu/bits/types/time_t.h:
+
+/usr/include/x86_64-linux-gnu/bits/types/struct_tm.h:
+
+/usr/include/x86_64-linux-gnu/asm/errno.h:
+
+/usr/include/x86_64-linux-gnu/bits/stdlib.h:
+
+/usr/include/x86_64-linux-gnu/bits/types/struct_timeval.h:
+
+/usr/include/x86_64-linux-gnu/bits/types/struct_timespec.h:
+
+/usr/include/x86_64-linux-gnu/bits/types/struct_sigstack.h:
 
 /usr/include/x86_64-linux-gnu/bits/types/struct_sched_param.h:
 
-/usr/include/asm-generic/errno.h:
+/usr/include/x86_64-linux-gnu/bits/types/stack_t.h:
 
-/usr/include/dirent.h:
+/usr/include/x86_64-linux-gnu/bits/types/sigval_t.h:
 
-/usr/include/fcntl.h:
+/usr/include/x86_64-linux-gnu/bits/types/sigset_t.h:
 
-/usr/include/x86_64-linux-gnu/bits/fcntl2.h:
+/usr/lib/gcc/x86_64-linux-gnu/13/include/stddef.h:
+
+/usr/include/x86_64-linux-gnu/bits/types/siginfo_t.h:
+
+/usr/include/x86_64-linux-gnu/bits/types/sigevent_t.h:
+
+_deps/glfw-src/src/posix_module.c:
+
+/usr/include/x86_64-linux-gnu/bits/types/sig_atomic_t.h:
+
+/usr/include/x86_64-linux-gnu/bits/types/locale_t.h:
+
+/usr/include/x86_64-linux-gnu/bits/types/clockid_t.h:
+
+/usr/include/errno.h:
+
+/usr/include/x86_64-linux-gnu/bits/types/__sigval_t.h:
+
+/usr/include/x86_64-linux-gnu/bits/types/__fpos_t.h:
+
+/usr/include/X11/Xmd.h:
+
+_deps/glfw-src/src/x11_monitor.c:
 
 /usr/include/x86_64-linux-gnu/bits/timesize.h:
 
-_deps/glfw-src/src/platform.c:
+/usr/include/x86_64-linux-gnu/bits/time64.h:
 
-/usr/include/x86_64-linux-gnu/bits/dirent.h:
+/usr/include/x86_64-linux-gnu/bits/time.h:
 
-/usr/include/x86_64-linux-gnu/bits/local_lim.h:
+/usr/include/x86_64-linux-gnu/asm/ioctl.h:
 
-/usr/include/X11/extensions/Xrender.h:
+_deps/glfw-src/src/osmesa_context.c:
 
-/usr/include/x86_64-linux-gnu/bits/dirent_ext.h:
+/usr/include/x86_64-linux-gnu/bits/types/struct_FILE.h:
 
-/usr/include/x86_64-linux-gnu/bits/signum-arch.h:
+/usr/include/x86_64-linux-gnu/bits/sigevent-consts.h:
 
-/usr/include/x86_64-linux-gnu/bits/errno.h:
+/usr/include/x86_64-linux-gnu/bits/sigthread.h:
 
-_deps/glfw-src/src/internal.h:
+/usr/include/linux/stddef.h:
 
-/usr/include/x86_64-linux-gnu/bits/fcntl-linux.h:
+/usr/include/x86_64-linux-gnu/bits/unistd_ext.h:
 
-/usr/include/x86_64-linux-gnu/bits/stdio_lim.h:
+/usr/include/X11/Xdefs.h:
 
-/usr/include/x86_64-linux-gnu/bits/timex.h:
+/usr/include/X11/extensions/render.h:
 
-/usr/include/x86_64-linux-gnu/bits/fcntl.h:
+/usr/include/x86_64-linux-gnu/bits/types/__sigset_t.h:
 
-_deps/glfw-src/src/wl_window.c:
+_deps/glfw-src/src/platform.h:
 
-_deps/glfw-src/src/null_joystick.c:
+/usr/include/asm-generic/int-ll64.h:
 
-_deps/glfw-src/src/null_monitor.c:
+/usr/include/linux/input-event-codes.h:
 
-/usr/include/xkbcommon/xkbcommon-compose.h:
+/usr/include/X11/extensions/XKB.h:
 
-_deps/glfw-src/src/null_window.c:
+/usr/include/limits.h:
 
-/usr/include/linux/input.h:
+/usr/include/x86_64-linux-gnu/sys/inotify.h:
+
+/usr/include/x86_64-linux-gnu/bits/pthreadtypes.h:
+
+/usr/include/poll.h:
+
+/usr/include/features-time64.h:
+
+/usr/include/linux/errno.h:
+
+/usr/include/x86_64-linux-gnu/bits/pthread_stack_min-dynamic.h:
+
+/usr/include/assert.h:
+
+/usr/include/pthread.h:
+
+/usr/include/x86_64-linux-gnu/bits/stdlib-bsearch.h:
+
+/usr/include/x86_64-linux-gnu/asm/types.h:
+
+/usr/include/asm-generic/ioctls.h:
+
+/usr/include/asm-generic/ioctl.h:
+
+/usr/include/x86_64-linux-gnu/bits/stdlib-float.h:
+
+/usr/include/x86_64-linux-gnu/bits/uintn-identity.h:
+
+/usr/include/x86_64-linux-gnu/bits/ss_flags.h:
+
+/usr/include/X11/extensions/shapeconst.h:
+
+/usr/include/x86_64-linux-gnu/sys/poll.h:
+
+/usr/include/x86_64-linux-gnu/bits/thread-shared-types.h:
+
+/usr/include/x86_64-linux-gnu/bits/sigcontext.h:
+
+/usr/include/x86_64-linux-gnu/bits/unistd-decl.h:
+
+/usr/include/x86_64-linux-gnu/bits/types/timer_t.h:
+
+/usr/include/x86_64-linux-gnu/bits/signum-generic.h:
+
+/usr/include/x86_64-linux-gnu/sys/types.h:
+
+/usr/include/X11/keysym.h:
+
+_deps/glfw-src/src/window.c:
+
+/usr/include/x86_64-linux-gnu/bits/select-decl.h:
+
+/usr/include/x86_64-linux-gnu/bits/poll.h:
+
+/usr/lib/gcc/x86_64-linux-gnu/13/include/float.h:
+
+/usr/include/x86_64-linux-gnu/bits/posix1_lim.h:
+
+/usr/include/asm-generic/bitsperlong.h:
+
+/usr/include/x86_64-linux-gnu/bits/types/__FILE.h:
+
+/usr/include/X11/extensions/Xinerama.h:
+
+_deps/glfw-src/src/vulkan.c:
+
+/usr/include/x86_64-linux-gnu/bits/struct_stat.h:
+
+/usr/include/x86_64-linux-gnu/bits/select.h:
+
+_deps/glfw-src/src/x11_platform.h:
+
+/usr/include/x86_64-linux-gnu/bits/stdio.h:
+
+/usr/include/string.h:
+
+/usr/include/x86_64-linux-gnu/gnu/stubs.h:
+
+/usr/include/x86_64-linux-gnu/bits/endian.h:
+
+/usr/include/x86_64-linux-gnu/bits/types/__mbstate_t.h:
+
+/usr/include/X11/XKBlib.h:
+
+/usr/include/regex.h:
+
+/usr/include/x86_64-linux-gnu/bits/waitstatus.h:
+
+/usr/include/X11/Xcursor/Xcursor.h:
 
 _deps/glfw-src/src/posix_poll.h:
 
-/usr/include/dlfcn.h:
+/usr/include/X11/Xosdefs.h:
 
-/usr/include/x86_64-linux-gnu/bits/dlfcn.h:
+/usr/include/x86_64-linux-gnu/bits/types/struct___jmp_buf_tag.h:
 
-_deps/glfw-src/src/posix_poll.c:
+/usr/include/X11/extensions/Xrender.h:
 
-/usr/include/wayland-client-protocol.h:
+/usr/include/X11/extensions/Xge.h:
 
-/usr/include/linux/close_range.h:
+/usr/include/X11/extensions/Xrandr.h:
 
-/usr/include/x86_64-linux-gnu/bits/iscanonical.h:
+_deps/glfw-src/src/xkb_unicode.h:
 
-/usr/include/linux/falloc.h:
+_deps/glfw-src/src/context.c:
 
-/usr/include/x86_64-linux-gnu/bits/mathcalls-narrow.h:
+/usr/include/x86_64-linux-gnu/bits/flt-eval-method.h:
 
-_deps/glfw-build/src/xdg-shell-client-protocol-code.h:
+/usr/include/linux/posix_types.h:
+
+_deps/glfw-src/src/null_platform.h:
+
+_deps/glfw-src/include/GLFW/glfw3native.h:
+
+/usr/include/x86_64-linux-gnu/bits/types/__locale_t.h:
+
+_deps/glfw-src/src/linux_joystick.h:
+
+/usr/include/x86_64-linux-gnu/bits/string_fortified.h:
+
+_deps/glfw-src/include/GLFW/glfw3.h:
+
+/usr/include/x86_64-linux-gnu/bits/ioctls.h:
+
+/usr/include/X11/extensions/xfixeswire.h:
+
+/usr/include/X11/extensions/XI2.h:
+
+_deps/glfw-src/src/internal.h:
+
+/usr/include/x86_64-linux-gnu/bits/types/clock_t.h:
+
+/usr/include/X11/keysymdef.h:
+
+/usr/include/x86_64-linux-gnu/bits/stat.h:
+
+/usr/include/x86_64-linux-gnu/bits/siginfo-consts.h:
+
+/usr/include/X11/X.h:
+
+/usr/include/X11/extensions/XInput2.h:
+
+/usr/include/linux/limits.h:
+
+/usr/include/stdint.h:
+
+/usr/include/x86_64-linux-gnu/bits/posix2_lim.h:
+
+_deps/glfw-src/src/posix_thread.h:
+
+/usr/include/X11/Xlib.h:
+
+/usr/include/stdlib.h:
+
+/usr/include/linux/input.h:
+
+/usr/include/X11/Xatom.h:
+
+/usr/include/endian.h:
+
+/usr/include/features.h:
+
+/usr/include/x86_64-linux-gnu/asm/ioctls.h:
+
+/usr/include/X11/Xutil.h:
+
+_deps/glfw-src/src/posix_time.h:
+
+/usr/include/x86_64-linux-gnu/bits/siginfo-consts-arch.h:
+
+/usr/include/x86_64-linux-gnu/bits/byteswap.h:
+
+/usr/include/x86_64-linux-gnu/bits/long-double.h:
+
+/usr/include/x86_64-linux-gnu/bits/stdio2.h:
+
+/usr/include/X11/extensions/Xfixes.h:
+
+_deps/glfw-src/src/posix_time.c:
+
+/usr/include/sched.h:
+
+/usr/include/x86_64-linux-gnu/bits/types/FILE.h:
+
+/usr/include/x86_64-linux-gnu/bits/stdio_lim.h:
+
+/usr/include/signal.h:
+
+/usr/include/x86_64-linux-gnu/bits/environments.h:
+
+/usr/include/asm-generic/posix_types.h:
+
+/usr/include/stdc-predef.h:
+
+/usr/include/X11/Xfuncproto.h:
+
+/usr/include/stdio.h:
+
+/usr/include/x86_64-linux-gnu/bits/getopt_posix.h:
+
+/usr/include/x86_64-linux-gnu/bits/struct_rwlock.h:
+
+/usr/include/strings.h:
+
+/usr/include/time.h:
+
+/usr/include/x86_64-linux-gnu/bits/signum-arch.h:
+
+/usr/include/x86_64-linux-gnu/asm/posix_types.h:
+
+/usr/include/asm-generic/errno-base.h:
+
+/usr/include/asm-generic/types.h:
+
+/usr/include/x86_64-linux-gnu/asm/posix_types_64.h:
+
+/usr/include/X11/extensions/XKBstr.h:
+
+/usr/include/x86_64-linux-gnu/bits/cpu-set.h:
+
+/usr/include/x86_64-linux-gnu/bits/atomic_wide_counter.h:
+
+/usr/include/x86_64-linux-gnu/bits/siginfo-arch.h:
+
+/usr/include/x86_64-linux-gnu/bits/confname.h:
+
+/usr/include/x86_64-linux-gnu/bits/endianness.h:
+
+/usr/include/x86_64-linux-gnu/bits/floatn-common.h:
+
+/usr/include/x86_64-linux-gnu/bits/types/struct_itimerspec.h:
+
+/usr/include/x86_64-linux-gnu/bits/floatn.h:
+
+/usr/include/X11/extensions/randr.h:
+
+/usr/include/x86_64-linux-gnu/bits/getopt_core.h:
+
+/usr/include/x86_64-linux-gnu/bits/ioctl-types.h:
+
+/usr/include/x86_64-linux-gnu/bits/libc-header-start.h:
+
+/usr/include/x86_64-linux-gnu/bits/wchar.h:
+
+/usr/include/x86_64-linux-gnu/bits/types/cookie_io_functions_t.h:
+
+/usr/include/x86_64-linux-gnu/bits/local_lim.h:
+
+/usr/include/x86_64-linux-gnu/bits/poll2.h:
+
+/usr/include/x86_64-linux-gnu/bits/posix_opt.h:
+
+/usr/include/x86_64-linux-gnu/bits/pthread_stack_min.h:
+
+/usr/include/locale.h:
+
+/usr/include/X11/Xresource.h:
+
+/usr/include/x86_64-linux-gnu/asm/bitsperlong.h:
+
+/usr/include/x86_64-linux-gnu/bits/pthreadtypes-arch.h:
+
+/usr/include/x86_64-linux-gnu/bits/sched.h:
+
+_deps/glfw-src/src/xkb_unicode.c:
+
+/usr/include/linux/types.h:
 
 /usr/include/linux/ioctl.h:
 
-_deps/glfw-build/src/fractional-scale-v1-client-protocol-code.h:
+/usr/include/x86_64-linux-gnu/bits/select2.h:
+
+_deps/glfw-src/src/monitor.c:
+
+/usr/include/x86_64-linux-gnu/bits/types/__fpos64_t.h:
+
+/usr/include/x86_64-linux-gnu/bits/setjmp.h:
+
+/usr/include/x86_64-linux-gnu/bits/sigaction.h:
+
+/usr/include/x86_64-linux-gnu/bits/signal_ext.h:
+
+/usr/include/x86_64-linux-gnu/bits/sigstack.h:
+
+_deps/glfw-src/src/null_joystick.h:
+
+/usr/include/x86_64-linux-gnu/bits/sigstksz.h:
+
+/usr/include/x86_64-linux-gnu/bits/types.h:
+
+/usr/include/x86_64-linux-gnu/bits/stdint-intn.h:
+
+/usr/include/x86_64-linux-gnu/sys/select.h:
+
+/usr/include/unistd.h:
+
+/usr/include/x86_64-linux-gnu/bits/stdint-uintn.h:
+
+/usr/include/x86_64-linux-gnu/bits/stdio2-decl.h:
+
+/usr/include/x86_64-linux-gnu/bits/inotify.h:
+
+/usr/include/x86_64-linux-gnu/bits/stdint-least.h:
+
+/usr/include/X11/extensions/shape.h:
+
+/usr/include/x86_64-linux-gnu/bits/strings_fortified.h:
+
+/usr/include/x86_64-linux-gnu/bits/struct_mutex.h:

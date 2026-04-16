@@ -1,0 +1,14 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=DistributionTool
+GenericName=Defect Analyzer
+Comment=SOAP-based defect classifier for crystalline materials (MD simulations)
+Exec=distool_viewer %f
+Icon=distool
+Terminal=false
+Categories=Science;Physics;Education;
+MimeType=application/x-lammps-dump;text/csv;
+Keywords=SOAP;defect;crystal;MD;LAMMPS;vacancy;interstitial;nanoparticle;
+StartupNotify=true
+StartupWMClass=distool_viewer

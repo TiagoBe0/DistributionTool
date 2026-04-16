@@ -53,10 +53,10 @@ RM = /usr/bin/cmake -E rm -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/viewer
+CMAKE_SOURCE_DIR = /home/santi/Documentos/DistributionTool/viewer
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/build_viewer
+CMAKE_BINARY_DIR = /home/santi/Documentos/DistributionTool/build_viewer
 
 # Include any dependencies generated for this target.
 include _deps/glad-build/CMakeFiles/glad.dir/depend.make
@@ -70,8 +70,8 @@ include _deps/glad-build/CMakeFiles/glad.dir/progress.make
 include _deps/glad-build/CMakeFiles/glad.dir/flags.make
 
 _deps/glad-build/include/glad/glad.h:
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --blue --bold --progress-dir=/home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/build_viewer/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Generating GLAD"
-	cd /home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/build_viewer/_deps/glad-src && /home/santi-simaf/miniconda3/bin/python3 -m glad --profile=core --out-path=/home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/build_viewer/_deps/glad-build --api=gl=3.3 --generator=c --extensions= --spec=gl
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --blue --bold --progress-dir=/home/santi/Documentos/DistributionTool/build_viewer/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Generating GLAD"
+	cd /home/santi/Documentos/DistributionTool/build_viewer/_deps/glad-src && /usr/bin/python3 -m glad --profile=core --out-path=/home/santi/Documentos/DistributionTool/build_viewer/_deps/glad-build --api=gl=3.3 --generator=c --extensions= --spec=gl
 
 _deps/glad-build/src/glad.c: _deps/glad-build/include/glad/glad.h
 	@$(CMAKE_COMMAND) -E touch_nocreate _deps/glad-build/src/glad.c
@@ -79,16 +79,16 @@ _deps/glad-build/src/glad.c: _deps/glad-build/include/glad/glad.h
 _deps/glad-build/CMakeFiles/glad.dir/src/glad.c.o: _deps/glad-build/CMakeFiles/glad.dir/flags.make
 _deps/glad-build/CMakeFiles/glad.dir/src/glad.c.o: _deps/glad-build/src/glad.c
 _deps/glad-build/CMakeFiles/glad.dir/src/glad.c.o: _deps/glad-build/CMakeFiles/glad.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/build_viewer/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building C object _deps/glad-build/CMakeFiles/glad.dir/src/glad.c.o"
-	cd /home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/build_viewer/_deps/glad-build && /usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT _deps/glad-build/CMakeFiles/glad.dir/src/glad.c.o -MF CMakeFiles/glad.dir/src/glad.c.o.d -o CMakeFiles/glad.dir/src/glad.c.o -c /home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/build_viewer/_deps/glad-build/src/glad.c
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/santi/Documentos/DistributionTool/build_viewer/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building C object _deps/glad-build/CMakeFiles/glad.dir/src/glad.c.o"
+	cd /home/santi/Documentos/DistributionTool/build_viewer/_deps/glad-build && /usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT _deps/glad-build/CMakeFiles/glad.dir/src/glad.c.o -MF CMakeFiles/glad.dir/src/glad.c.o.d -o CMakeFiles/glad.dir/src/glad.c.o -c /home/santi/Documentos/DistributionTool/build_viewer/_deps/glad-build/src/glad.c
 
 _deps/glad-build/CMakeFiles/glad.dir/src/glad.c.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing C source to CMakeFiles/glad.dir/src/glad.c.i"
-	cd /home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/build_viewer/_deps/glad-build && /usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/build_viewer/_deps/glad-build/src/glad.c > CMakeFiles/glad.dir/src/glad.c.i
+	cd /home/santi/Documentos/DistributionTool/build_viewer/_deps/glad-build && /usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /home/santi/Documentos/DistributionTool/build_viewer/_deps/glad-build/src/glad.c > CMakeFiles/glad.dir/src/glad.c.i
 
 _deps/glad-build/CMakeFiles/glad.dir/src/glad.c.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling C source to assembly CMakeFiles/glad.dir/src/glad.c.s"
-	cd /home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/build_viewer/_deps/glad-build && /usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/build_viewer/_deps/glad-build/src/glad.c -o CMakeFiles/glad.dir/src/glad.c.s
+	cd /home/santi/Documentos/DistributionTool/build_viewer/_deps/glad-build && /usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/santi/Documentos/DistributionTool/build_viewer/_deps/glad-build/src/glad.c -o CMakeFiles/glad.dir/src/glad.c.s
 
 # Object files for target glad
 glad_OBJECTS = \
@@ -100,20 +100,20 @@ glad_EXTERNAL_OBJECTS =
 _deps/glad-build/libglad.a: _deps/glad-build/CMakeFiles/glad.dir/src/glad.c.o
 _deps/glad-build/libglad.a: _deps/glad-build/CMakeFiles/glad.dir/build.make
 _deps/glad-build/libglad.a: _deps/glad-build/CMakeFiles/glad.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=/home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/build_viewer/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Linking C static library libglad.a"
-	cd /home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/build_viewer/_deps/glad-build && $(CMAKE_COMMAND) -P CMakeFiles/glad.dir/cmake_clean_target.cmake
-	cd /home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/build_viewer/_deps/glad-build && $(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/glad.dir/link.txt --verbose=$(VERBOSE)
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=/home/santi/Documentos/DistributionTool/build_viewer/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Linking C static library libglad.a"
+	cd /home/santi/Documentos/DistributionTool/build_viewer/_deps/glad-build && $(CMAKE_COMMAND) -P CMakeFiles/glad.dir/cmake_clean_target.cmake
+	cd /home/santi/Documentos/DistributionTool/build_viewer/_deps/glad-build && $(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/glad.dir/link.txt --verbose=$(VERBOSE)
 
 # Rule to build all files generated by this target.
 _deps/glad-build/CMakeFiles/glad.dir/build: _deps/glad-build/libglad.a
 .PHONY : _deps/glad-build/CMakeFiles/glad.dir/build
 
 _deps/glad-build/CMakeFiles/glad.dir/clean:
-	cd /home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/build_viewer/_deps/glad-build && $(CMAKE_COMMAND) -P CMakeFiles/glad.dir/cmake_clean.cmake
+	cd /home/santi/Documentos/DistributionTool/build_viewer/_deps/glad-build && $(CMAKE_COMMAND) -P CMakeFiles/glad.dir/cmake_clean.cmake
 .PHONY : _deps/glad-build/CMakeFiles/glad.dir/clean
 
 _deps/glad-build/CMakeFiles/glad.dir/depend: _deps/glad-build/include/glad/glad.h
 _deps/glad-build/CMakeFiles/glad.dir/depend: _deps/glad-build/src/glad.c
-	cd /home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/build_viewer && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/viewer /home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/build_viewer/_deps/glad-src /home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/build_viewer /home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/build_viewer/_deps/glad-build /home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/build_viewer/_deps/glad-build/CMakeFiles/glad.dir/DependInfo.cmake "--color=$(COLOR)"
+	cd /home/santi/Documentos/DistributionTool/build_viewer && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/santi/Documentos/DistributionTool/viewer /home/santi/Documentos/DistributionTool/build_viewer/_deps/glad-src /home/santi/Documentos/DistributionTool/build_viewer /home/santi/Documentos/DistributionTool/build_viewer/_deps/glad-build /home/santi/Documentos/DistributionTool/build_viewer/_deps/glad-build/CMakeFiles/glad.dir/DependInfo.cmake "--color=$(COLOR)"
 .PHONY : _deps/glad-build/CMakeFiles/glad.dir/depend
 

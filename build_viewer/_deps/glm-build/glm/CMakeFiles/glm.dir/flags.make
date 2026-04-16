@@ -4,7 +4,7 @@
 # compile CXX with /usr/bin/c++
 CXX_DEFINES = 
 
-CXX_INCLUDES = -I/home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/build_viewer/_deps/glm-src
+CXX_INCLUDES = -I/home/santi/Documentos/DistributionTool/build_viewer/_deps/glm-src
 
 CXX_FLAGS = -O3 -DNDEBUG -std=c++17
 

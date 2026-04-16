@@ -1,4 +1,4 @@
-# Install script for directory: /home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/build_viewer/_deps/glm-src/glm
+# Install script for directory: /home/santi/Documentos/DistributionTool/build_viewer/_deps/glm-src/glm
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)

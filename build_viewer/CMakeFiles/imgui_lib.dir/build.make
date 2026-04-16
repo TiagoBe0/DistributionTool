@@ -53,10 +53,10 @@ RM = /usr/bin/cmake -E rm -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/viewer
+CMAKE_SOURCE_DIR = /home/santi/Documentos/DistributionTool/viewer
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/build_viewer
+CMAKE_BINARY_DIR = /home/santi/Documentos/DistributionTool/build_viewer
 
 # Include any dependencies generated for this target.
 include CMakeFiles/imgui_lib.dir/depend.make
@@ -72,86 +72,86 @@ include CMakeFiles/imgui_lib.dir/flags.make
 CMakeFiles/imgui_lib.dir/_deps/imgui-src/imgui.cpp.o: CMakeFiles/imgui_lib.dir/flags.make
 CMakeFiles/imgui_lib.dir/_deps/imgui-src/imgui.cpp.o: _deps/imgui-src/imgui.cpp
 CMakeFiles/imgui_lib.dir/_deps/imgui-src/imgui.cpp.o: CMakeFiles/imgui_lib.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/build_viewer/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object CMakeFiles/imgui_lib.dir/_deps/imgui-src/imgui.cpp.o"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/imgui_lib.dir/_deps/imgui-src/imgui.cpp.o -MF CMakeFiles/imgui_lib.dir/_deps/imgui-src/imgui.cpp.o.d -o CMakeFiles/imgui_lib.dir/_deps/imgui-src/imgui.cpp.o -c /home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/build_viewer/_deps/imgui-src/imgui.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/santi/Documentos/DistributionTool/build_viewer/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object CMakeFiles/imgui_lib.dir/_deps/imgui-src/imgui.cpp.o"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/imgui_lib.dir/_deps/imgui-src/imgui.cpp.o -MF CMakeFiles/imgui_lib.dir/_deps/imgui-src/imgui.cpp.o.d -o CMakeFiles/imgui_lib.dir/_deps/imgui-src/imgui.cpp.o -c /home/santi/Documentos/DistributionTool/build_viewer/_deps/imgui-src/imgui.cpp
 
 CMakeFiles/imgui_lib.dir/_deps/imgui-src/imgui.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/imgui_lib.dir/_deps/imgui-src/imgui.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/build_viewer/_deps/imgui-src/imgui.cpp > CMakeFiles/imgui_lib.dir/_deps/imgui-src/imgui.cpp.i
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/santi/Documentos/DistributionTool/build_viewer/_deps/imgui-src/imgui.cpp > CMakeFiles/imgui_lib.dir/_deps/imgui-src/imgui.cpp.i
 
 CMakeFiles/imgui_lib.dir/_deps/imgui-src/imgui.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/imgui_lib.dir/_deps/imgui-src/imgui.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/build_viewer/_deps/imgui-src/imgui.cpp -o CMakeFiles/imgui_lib.dir/_deps/imgui-src/imgui.cpp.s
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/santi/Documentos/DistributionTool/build_viewer/_deps/imgui-src/imgui.cpp -o CMakeFiles/imgui_lib.dir/_deps/imgui-src/imgui.cpp.s
 
 CMakeFiles/imgui_lib.dir/_deps/imgui-src/imgui_draw.cpp.o: CMakeFiles/imgui_lib.dir/flags.make
 CMakeFiles/imgui_lib.dir/_deps/imgui-src/imgui_draw.cpp.o: _deps/imgui-src/imgui_draw.cpp
 CMakeFiles/imgui_lib.dir/_deps/imgui-src/imgui_draw.cpp.o: CMakeFiles/imgui_lib.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/build_viewer/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building CXX object CMakeFiles/imgui_lib.dir/_deps/imgui-src/imgui_draw.cpp.o"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/imgui_lib.dir/_deps/imgui-src/imgui_draw.cpp.o -MF CMakeFiles/imgui_lib.dir/_deps/imgui-src/imgui_draw.cpp.o.d -o CMakeFiles/imgui_lib.dir/_deps/imgui-src/imgui_draw.cpp.o -c /home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/build_viewer/_deps/imgui-src/imgui_draw.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/santi/Documentos/DistributionTool/build_viewer/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building CXX object CMakeFiles/imgui_lib.dir/_deps/imgui-src/imgui_draw.cpp.o"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/imgui_lib.dir/_deps/imgui-src/imgui_draw.cpp.o -MF CMakeFiles/imgui_lib.dir/_deps/imgui-src/imgui_draw.cpp.o.d -o CMakeFiles/imgui_lib.dir/_deps/imgui-src/imgui_draw.cpp.o -c /home/santi/Documentos/DistributionTool/build_viewer/_deps/imgui-src/imgui_draw.cpp
 
 CMakeFiles/imgui_lib.dir/_deps/imgui-src/imgui_draw.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/imgui_lib.dir/_deps/imgui-src/imgui_draw.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/build_viewer/_deps/imgui-src/imgui_draw.cpp > CMakeFiles/imgui_lib.dir/_deps/imgui-src/imgui_draw.cpp.i
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/santi/Documentos/DistributionTool/build_viewer/_deps/imgui-src/imgui_draw.cpp > CMakeFiles/imgui_lib.dir/_deps/imgui-src/imgui_draw.cpp.i
 
 CMakeFiles/imgui_lib.dir/_deps/imgui-src/imgui_draw.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/imgui_lib.dir/_deps/imgui-src/imgui_draw.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/build_viewer/_deps/imgui-src/imgui_draw.cpp -o CMakeFiles/imgui_lib.dir/_deps/imgui-src/imgui_draw.cpp.s
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/santi/Documentos/DistributionTool/build_viewer/_deps/imgui-src/imgui_draw.cpp -o CMakeFiles/imgui_lib.dir/_deps/imgui-src/imgui_draw.cpp.s
 
 CMakeFiles/imgui_lib.dir/_deps/imgui-src/imgui_tables.cpp.o: CMakeFiles/imgui_lib.dir/flags.make
 CMakeFiles/imgui_lib.dir/_deps/imgui-src/imgui_tables.cpp.o: _deps/imgui-src/imgui_tables.cpp
 CMakeFiles/imgui_lib.dir/_deps/imgui-src/imgui_tables.cpp.o: CMakeFiles/imgui_lib.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/build_viewer/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building CXX object CMakeFiles/imgui_lib.dir/_deps/imgui-src/imgui_tables.cpp.o"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/imgui_lib.dir/_deps/imgui-src/imgui_tables.cpp.o -MF CMakeFiles/imgui_lib.dir/_deps/imgui-src/imgui_tables.cpp.o.d -o CMakeFiles/imgui_lib.dir/_deps/imgui-src/imgui_tables.cpp.o -c /home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/build_viewer/_deps/imgui-src/imgui_tables.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/santi/Documentos/DistributionTool/build_viewer/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building CXX object CMakeFiles/imgui_lib.dir/_deps/imgui-src/imgui_tables.cpp.o"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/imgui_lib.dir/_deps/imgui-src/imgui_tables.cpp.o -MF CMakeFiles/imgui_lib.dir/_deps/imgui-src/imgui_tables.cpp.o.d -o CMakeFiles/imgui_lib.dir/_deps/imgui-src/imgui_tables.cpp.o -c /home/santi/Documentos/DistributionTool/build_viewer/_deps/imgui-src/imgui_tables.cpp
 
 CMakeFiles/imgui_lib.dir/_deps/imgui-src/imgui_tables.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/imgui_lib.dir/_deps/imgui-src/imgui_tables.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/build_viewer/_deps/imgui-src/imgui_tables.cpp > CMakeFiles/imgui_lib.dir/_deps/imgui-src/imgui_tables.cpp.i
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/santi/Documentos/DistributionTool/build_viewer/_deps/imgui-src/imgui_tables.cpp > CMakeFiles/imgui_lib.dir/_deps/imgui-src/imgui_tables.cpp.i
 
 CMakeFiles/imgui_lib.dir/_deps/imgui-src/imgui_tables.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/imgui_lib.dir/_deps/imgui-src/imgui_tables.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/build_viewer/_deps/imgui-src/imgui_tables.cpp -o CMakeFiles/imgui_lib.dir/_deps/imgui-src/imgui_tables.cpp.s
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/santi/Documentos/DistributionTool/build_viewer/_deps/imgui-src/imgui_tables.cpp -o CMakeFiles/imgui_lib.dir/_deps/imgui-src/imgui_tables.cpp.s
 
 CMakeFiles/imgui_lib.dir/_deps/imgui-src/imgui_widgets.cpp.o: CMakeFiles/imgui_lib.dir/flags.make
 CMakeFiles/imgui_lib.dir/_deps/imgui-src/imgui_widgets.cpp.o: _deps/imgui-src/imgui_widgets.cpp
 CMakeFiles/imgui_lib.dir/_deps/imgui-src/imgui_widgets.cpp.o: CMakeFiles/imgui_lib.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/build_viewer/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Building CXX object CMakeFiles/imgui_lib.dir/_deps/imgui-src/imgui_widgets.cpp.o"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/imgui_lib.dir/_deps/imgui-src/imgui_widgets.cpp.o -MF CMakeFiles/imgui_lib.dir/_deps/imgui-src/imgui_widgets.cpp.o.d -o CMakeFiles/imgui_lib.dir/_deps/imgui-src/imgui_widgets.cpp.o -c /home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/build_viewer/_deps/imgui-src/imgui_widgets.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/santi/Documentos/DistributionTool/build_viewer/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Building CXX object CMakeFiles/imgui_lib.dir/_deps/imgui-src/imgui_widgets.cpp.o"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/imgui_lib.dir/_deps/imgui-src/imgui_widgets.cpp.o -MF CMakeFiles/imgui_lib.dir/_deps/imgui-src/imgui_widgets.cpp.o.d -o CMakeFiles/imgui_lib.dir/_deps/imgui-src/imgui_widgets.cpp.o -c /home/santi/Documentos/DistributionTool/build_viewer/_deps/imgui-src/imgui_widgets.cpp
 
 CMakeFiles/imgui_lib.dir/_deps/imgui-src/imgui_widgets.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/imgui_lib.dir/_deps/imgui-src/imgui_widgets.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/build_viewer/_deps/imgui-src/imgui_widgets.cpp > CMakeFiles/imgui_lib.dir/_deps/imgui-src/imgui_widgets.cpp.i
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/santi/Documentos/DistributionTool/build_viewer/_deps/imgui-src/imgui_widgets.cpp > CMakeFiles/imgui_lib.dir/_deps/imgui-src/imgui_widgets.cpp.i
 
 CMakeFiles/imgui_lib.dir/_deps/imgui-src/imgui_widgets.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/imgui_lib.dir/_deps/imgui-src/imgui_widgets.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/build_viewer/_deps/imgui-src/imgui_widgets.cpp -o CMakeFiles/imgui_lib.dir/_deps/imgui-src/imgui_widgets.cpp.s
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/santi/Documentos/DistributionTool/build_viewer/_deps/imgui-src/imgui_widgets.cpp -o CMakeFiles/imgui_lib.dir/_deps/imgui-src/imgui_widgets.cpp.s
 
 CMakeFiles/imgui_lib.dir/_deps/imgui-src/backends/imgui_impl_glfw.cpp.o: CMakeFiles/imgui_lib.dir/flags.make
 CMakeFiles/imgui_lib.dir/_deps/imgui-src/backends/imgui_impl_glfw.cpp.o: _deps/imgui-src/backends/imgui_impl_glfw.cpp
 CMakeFiles/imgui_lib.dir/_deps/imgui-src/backends/imgui_impl_glfw.cpp.o: CMakeFiles/imgui_lib.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/build_viewer/CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Building CXX object CMakeFiles/imgui_lib.dir/_deps/imgui-src/backends/imgui_impl_glfw.cpp.o"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/imgui_lib.dir/_deps/imgui-src/backends/imgui_impl_glfw.cpp.o -MF CMakeFiles/imgui_lib.dir/_deps/imgui-src/backends/imgui_impl_glfw.cpp.o.d -o CMakeFiles/imgui_lib.dir/_deps/imgui-src/backends/imgui_impl_glfw.cpp.o -c /home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/build_viewer/_deps/imgui-src/backends/imgui_impl_glfw.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/santi/Documentos/DistributionTool/build_viewer/CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Building CXX object CMakeFiles/imgui_lib.dir/_deps/imgui-src/backends/imgui_impl_glfw.cpp.o"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/imgui_lib.dir/_deps/imgui-src/backends/imgui_impl_glfw.cpp.o -MF CMakeFiles/imgui_lib.dir/_deps/imgui-src/backends/imgui_impl_glfw.cpp.o.d -o CMakeFiles/imgui_lib.dir/_deps/imgui-src/backends/imgui_impl_glfw.cpp.o -c /home/santi/Documentos/DistributionTool/build_viewer/_deps/imgui-src/backends/imgui_impl_glfw.cpp
 
 CMakeFiles/imgui_lib.dir/_deps/imgui-src/backends/imgui_impl_glfw.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/imgui_lib.dir/_deps/imgui-src/backends/imgui_impl_glfw.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/build_viewer/_deps/imgui-src/backends/imgui_impl_glfw.cpp > CMakeFiles/imgui_lib.dir/_deps/imgui-src/backends/imgui_impl_glfw.cpp.i
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/santi/Documentos/DistributionTool/build_viewer/_deps/imgui-src/backends/imgui_impl_glfw.cpp > CMakeFiles/imgui_lib.dir/_deps/imgui-src/backends/imgui_impl_glfw.cpp.i
 
 CMakeFiles/imgui_lib.dir/_deps/imgui-src/backends/imgui_impl_glfw.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/imgui_lib.dir/_deps/imgui-src/backends/imgui_impl_glfw.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/build_viewer/_deps/imgui-src/backends/imgui_impl_glfw.cpp -o CMakeFiles/imgui_lib.dir/_deps/imgui-src/backends/imgui_impl_glfw.cpp.s
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/santi/Documentos/DistributionTool/build_viewer/_deps/imgui-src/backends/imgui_impl_glfw.cpp -o CMakeFiles/imgui_lib.dir/_deps/imgui-src/backends/imgui_impl_glfw.cpp.s
 
 CMakeFiles/imgui_lib.dir/_deps/imgui-src/backends/imgui_impl_opengl3.cpp.o: CMakeFiles/imgui_lib.dir/flags.make
 CMakeFiles/imgui_lib.dir/_deps/imgui-src/backends/imgui_impl_opengl3.cpp.o: _deps/imgui-src/backends/imgui_impl_opengl3.cpp
 CMakeFiles/imgui_lib.dir/_deps/imgui-src/backends/imgui_impl_opengl3.cpp.o: CMakeFiles/imgui_lib.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/build_viewer/CMakeFiles --progress-num=$(CMAKE_PROGRESS_6) "Building CXX object CMakeFiles/imgui_lib.dir/_deps/imgui-src/backends/imgui_impl_opengl3.cpp.o"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/imgui_lib.dir/_deps/imgui-src/backends/imgui_impl_opengl3.cpp.o -MF CMakeFiles/imgui_lib.dir/_deps/imgui-src/backends/imgui_impl_opengl3.cpp.o.d -o CMakeFiles/imgui_lib.dir/_deps/imgui-src/backends/imgui_impl_opengl3.cpp.o -c /home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/build_viewer/_deps/imgui-src/backends/imgui_impl_opengl3.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/santi/Documentos/DistributionTool/build_viewer/CMakeFiles --progress-num=$(CMAKE_PROGRESS_6) "Building CXX object CMakeFiles/imgui_lib.dir/_deps/imgui-src/backends/imgui_impl_opengl3.cpp.o"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/imgui_lib.dir/_deps/imgui-src/backends/imgui_impl_opengl3.cpp.o -MF CMakeFiles/imgui_lib.dir/_deps/imgui-src/backends/imgui_impl_opengl3.cpp.o.d -o CMakeFiles/imgui_lib.dir/_deps/imgui-src/backends/imgui_impl_opengl3.cpp.o -c /home/santi/Documentos/DistributionTool/build_viewer/_deps/imgui-src/backends/imgui_impl_opengl3.cpp
 
 CMakeFiles/imgui_lib.dir/_deps/imgui-src/backends/imgui_impl_opengl3.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/imgui_lib.dir/_deps/imgui-src/backends/imgui_impl_opengl3.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/build_viewer/_deps/imgui-src/backends/imgui_impl_opengl3.cpp > CMakeFiles/imgui_lib.dir/_deps/imgui-src/backends/imgui_impl_opengl3.cpp.i
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/santi/Documentos/DistributionTool/build_viewer/_deps/imgui-src/backends/imgui_impl_opengl3.cpp > CMakeFiles/imgui_lib.dir/_deps/imgui-src/backends/imgui_impl_opengl3.cpp.i
 
 CMakeFiles/imgui_lib.dir/_deps/imgui-src/backends/imgui_impl_opengl3.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/imgui_lib.dir/_deps/imgui-src/backends/imgui_impl_opengl3.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/build_viewer/_deps/imgui-src/backends/imgui_impl_opengl3.cpp -o CMakeFiles/imgui_lib.dir/_deps/imgui-src/backends/imgui_impl_opengl3.cpp.s
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/santi/Documentos/DistributionTool/build_viewer/_deps/imgui-src/backends/imgui_impl_opengl3.cpp -o CMakeFiles/imgui_lib.dir/_deps/imgui-src/backends/imgui_impl_opengl3.cpp.s
 
 # Object files for target imgui_lib
 imgui_lib_OBJECTS = \
@@ -173,7 +173,7 @@ libimgui_lib.a: CMakeFiles/imgui_lib.dir/_deps/imgui-src/backends/imgui_impl_glf
 libimgui_lib.a: CMakeFiles/imgui_lib.dir/_deps/imgui-src/backends/imgui_impl_opengl3.cpp.o
 libimgui_lib.a: CMakeFiles/imgui_lib.dir/build.make
 libimgui_lib.a: CMakeFiles/imgui_lib.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=/home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/build_viewer/CMakeFiles --progress-num=$(CMAKE_PROGRESS_7) "Linking CXX static library libimgui_lib.a"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=/home/santi/Documentos/DistributionTool/build_viewer/CMakeFiles --progress-num=$(CMAKE_PROGRESS_7) "Linking CXX static library libimgui_lib.a"
 	$(CMAKE_COMMAND) -P CMakeFiles/imgui_lib.dir/cmake_clean_target.cmake
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/imgui_lib.dir/link.txt --verbose=$(VERBOSE)
 
@@ -186,6 +186,6 @@ CMakeFiles/imgui_lib.dir/clean:
 .PHONY : CMakeFiles/imgui_lib.dir/clean
 
 CMakeFiles/imgui_lib.dir/depend:
-	cd /home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/build_viewer && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/viewer /home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/viewer /home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/build_viewer /home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/build_viewer /home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/build_viewer/CMakeFiles/imgui_lib.dir/DependInfo.cmake "--color=$(COLOR)"
+	cd /home/santi/Documentos/DistributionTool/build_viewer && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/santi/Documentos/DistributionTool/viewer /home/santi/Documentos/DistributionTool/viewer /home/santi/Documentos/DistributionTool/build_viewer /home/santi/Documentos/DistributionTool/build_viewer /home/santi/Documentos/DistributionTool/build_viewer/CMakeFiles/imgui_lib.dir/DependInfo.cmake "--color=$(COLOR)"
 .PHONY : CMakeFiles/imgui_lib.dir/depend
 

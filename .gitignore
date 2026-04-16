@@ -1,0 +1,15 @@
+# Build directories
+build/
+build_*/
+_build_*/
+_AppDir/
+
+# AppImage output
+*.AppImage
+
+# Packaging tools (binaries descargados por build_appimage.sh)
+packaging/tools/
+
+# Python cache
+__pycache__/
+*.pyc

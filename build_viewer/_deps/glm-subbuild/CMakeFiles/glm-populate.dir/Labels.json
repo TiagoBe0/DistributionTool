@@ -2,37 +2,37 @@
 	"sources" : 
 	[
 		{
-			"file" : "/home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/build_viewer/_deps/glm-subbuild/CMakeFiles/glm-populate"
+			"file" : "/home/santi/Documentos/DistributionTool/build_viewer/_deps/glm-subbuild/CMakeFiles/glm-populate"
 		},
 		{
-			"file" : "/home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/build_viewer/_deps/glm-subbuild/CMakeFiles/glm-populate.rule"
+			"file" : "/home/santi/Documentos/DistributionTool/build_viewer/_deps/glm-subbuild/CMakeFiles/glm-populate.rule"
 		},
 		{
-			"file" : "/home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/build_viewer/_deps/glm-subbuild/CMakeFiles/glm-populate-complete.rule"
+			"file" : "/home/santi/Documentos/DistributionTool/build_viewer/_deps/glm-subbuild/CMakeFiles/glm-populate-complete.rule"
 		},
 		{
-			"file" : "/home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/build_viewer/_deps/glm-subbuild/glm-populate-prefix/src/glm-populate-stamp/glm-populate-build.rule"
+			"file" : "/home/santi/Documentos/DistributionTool/build_viewer/_deps/glm-subbuild/glm-populate-prefix/src/glm-populate-stamp/glm-populate-build.rule"
 		},
 		{
-			"file" : "/home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/build_viewer/_deps/glm-subbuild/glm-populate-prefix/src/glm-populate-stamp/glm-populate-configure.rule"
+			"file" : "/home/santi/Documentos/DistributionTool/build_viewer/_deps/glm-subbuild/glm-populate-prefix/src/glm-populate-stamp/glm-populate-configure.rule"
 		},
 		{
-			"file" : "/home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/build_viewer/_deps/glm-subbuild/glm-populate-prefix/src/glm-populate-stamp/glm-populate-download.rule"
+			"file" : "/home/santi/Documentos/DistributionTool/build_viewer/_deps/glm-subbuild/glm-populate-prefix/src/glm-populate-stamp/glm-populate-download.rule"
 		},
 		{
-			"file" : "/home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/build_viewer/_deps/glm-subbuild/glm-populate-prefix/src/glm-populate-stamp/glm-populate-install.rule"
+			"file" : "/home/santi/Documentos/DistributionTool/build_viewer/_deps/glm-subbuild/glm-populate-prefix/src/glm-populate-stamp/glm-populate-install.rule"
 		},
 		{
-			"file" : "/home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/build_viewer/_deps/glm-subbuild/glm-populate-prefix/src/glm-populate-stamp/glm-populate-mkdir.rule"
+			"file" : "/home/santi/Documentos/DistributionTool/build_viewer/_deps/glm-subbuild/glm-populate-prefix/src/glm-populate-stamp/glm-populate-mkdir.rule"
 		},
 		{
-			"file" : "/home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/build_viewer/_deps/glm-subbuild/glm-populate-prefix/src/glm-populate-stamp/glm-populate-patch.rule"
+			"file" : "/home/santi/Documentos/DistributionTool/build_viewer/_deps/glm-subbuild/glm-populate-prefix/src/glm-populate-stamp/glm-populate-patch.rule"
 		},
 		{
-			"file" : "/home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/build_viewer/_deps/glm-subbuild/glm-populate-prefix/src/glm-populate-stamp/glm-populate-test.rule"
+			"file" : "/home/santi/Documentos/DistributionTool/build_viewer/_deps/glm-subbuild/glm-populate-prefix/src/glm-populate-stamp/glm-populate-test.rule"
 		},
 		{
-			"file" : "/home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/build_viewer/_deps/glm-subbuild/glm-populate-prefix/src/glm-populate-stamp/glm-populate-update.rule"
+			"file" : "/home/santi/Documentos/DistributionTool/build_viewer/_deps/glm-subbuild/glm-populate-prefix/src/glm-populate-stamp/glm-populate-update.rule"
 		}
 	],
 	"target" : 

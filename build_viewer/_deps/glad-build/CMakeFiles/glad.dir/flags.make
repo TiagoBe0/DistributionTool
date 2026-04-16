@@ -4,7 +4,7 @@
 # compile C with /usr/bin/cc
 C_DEFINES = 
 
-C_INCLUDES = -I/home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/build_viewer/_deps/glad-build/include
+C_INCLUDES = -I/home/santi/Documentos/DistributionTool/build_viewer/_deps/glad-build/include
 
 C_FLAGS = -O3 -DNDEBUG
 

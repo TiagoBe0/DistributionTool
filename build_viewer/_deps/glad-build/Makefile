@@ -57,10 +57,10 @@ RM = /usr/bin/cmake -E rm -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/viewer
+CMAKE_SOURCE_DIR = /home/santi/Documentos/DistributionTool/viewer
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/build_viewer
+CMAKE_BINARY_DIR = /home/santi/Documentos/DistributionTool/build_viewer
 
 #=============================================================================
 # Targets provided globally by CMake.
@@ -132,14 +132,14 @@ install/strip/fast: preinstall/fast
 
 # The main all target
 all: cmake_check_build_system
-	cd /home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/build_viewer && $(CMAKE_COMMAND) -E cmake_progress_start /home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/build_viewer/CMakeFiles /home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/build_viewer/_deps/glad-build//CMakeFiles/progress.marks
-	cd /home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/build_viewer && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 _deps/glad-build/all
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/build_viewer/CMakeFiles 0
+	cd /home/santi/Documentos/DistributionTool/build_viewer && $(CMAKE_COMMAND) -E cmake_progress_start /home/santi/Documentos/DistributionTool/build_viewer/CMakeFiles /home/santi/Documentos/DistributionTool/build_viewer/_deps/glad-build//CMakeFiles/progress.marks
+	cd /home/santi/Documentos/DistributionTool/build_viewer && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 _deps/glad-build/all
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/santi/Documentos/DistributionTool/build_viewer/CMakeFiles 0
 .PHONY : all
 
 # The main clean target
 clean:
-	cd /home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/build_viewer && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 _deps/glad-build/clean
+	cd /home/santi/Documentos/DistributionTool/build_viewer && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 _deps/glad-build/clean
 .PHONY : clean
 
 # The main clean target
@@ -148,22 +148,22 @@ clean/fast: clean
 
 # Prepare targets for installation.
 preinstall: all
-	cd /home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/build_viewer && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 _deps/glad-build/preinstall
+	cd /home/santi/Documentos/DistributionTool/build_viewer && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 _deps/glad-build/preinstall
 .PHONY : preinstall
 
 # Prepare targets for installation.
 preinstall/fast:
-	cd /home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/build_viewer && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 _deps/glad-build/preinstall
+	cd /home/santi/Documentos/DistributionTool/build_viewer && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 _deps/glad-build/preinstall
 .PHONY : preinstall/fast
 
 # clear depends
 depend:
-	cd /home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/build_viewer && $(CMAKE_COMMAND) -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 1
+	cd /home/santi/Documentos/DistributionTool/build_viewer && $(CMAKE_COMMAND) -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 1
 .PHONY : depend
 
 # Convenience name for target.
 _deps/glad-build/CMakeFiles/glad-generate-files.dir/rule:
-	cd /home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/build_viewer && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 _deps/glad-build/CMakeFiles/glad-generate-files.dir/rule
+	cd /home/santi/Documentos/DistributionTool/build_viewer && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 _deps/glad-build/CMakeFiles/glad-generate-files.dir/rule
 .PHONY : _deps/glad-build/CMakeFiles/glad-generate-files.dir/rule
 
 # Convenience name for target.
@@ -172,12 +172,12 @@ glad-generate-files: _deps/glad-build/CMakeFiles/glad-generate-files.dir/rule
 
 # fast build rule for target.
 glad-generate-files/fast:
-	cd /home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/build_viewer && $(MAKE) $(MAKESILENT) -f _deps/glad-build/CMakeFiles/glad-generate-files.dir/build.make _deps/glad-build/CMakeFiles/glad-generate-files.dir/build
+	cd /home/santi/Documentos/DistributionTool/build_viewer && $(MAKE) $(MAKESILENT) -f _deps/glad-build/CMakeFiles/glad-generate-files.dir/build.make _deps/glad-build/CMakeFiles/glad-generate-files.dir/build
 .PHONY : glad-generate-files/fast
 
 # Convenience name for target.
 _deps/glad-build/CMakeFiles/glad.dir/rule:
-	cd /home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/build_viewer && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 _deps/glad-build/CMakeFiles/glad.dir/rule
+	cd /home/santi/Documentos/DistributionTool/build_viewer && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 _deps/glad-build/CMakeFiles/glad.dir/rule
 .PHONY : _deps/glad-build/CMakeFiles/glad.dir/rule
 
 # Convenience name for target.
@@ -186,7 +186,7 @@ glad: _deps/glad-build/CMakeFiles/glad.dir/rule
 
 # fast build rule for target.
 glad/fast:
-	cd /home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/build_viewer && $(MAKE) $(MAKESILENT) -f _deps/glad-build/CMakeFiles/glad.dir/build.make _deps/glad-build/CMakeFiles/glad.dir/build
+	cd /home/santi/Documentos/DistributionTool/build_viewer && $(MAKE) $(MAKESILENT) -f _deps/glad-build/CMakeFiles/glad.dir/build.make _deps/glad-build/CMakeFiles/glad.dir/build
 .PHONY : glad/fast
 
 src/glad.o: src/glad.c.o
@@ -194,7 +194,7 @@ src/glad.o: src/glad.c.o
 
 # target to build an object file
 src/glad.c.o:
-	cd /home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/build_viewer && $(MAKE) $(MAKESILENT) -f _deps/glad-build/CMakeFiles/glad.dir/build.make _deps/glad-build/CMakeFiles/glad.dir/src/glad.c.o
+	cd /home/santi/Documentos/DistributionTool/build_viewer && $(MAKE) $(MAKESILENT) -f _deps/glad-build/CMakeFiles/glad.dir/build.make _deps/glad-build/CMakeFiles/glad.dir/src/glad.c.o
 .PHONY : src/glad.c.o
 
 src/glad.i: src/glad.c.i
@@ -202,7 +202,7 @@ src/glad.i: src/glad.c.i
 
 # target to preprocess a source file
 src/glad.c.i:
-	cd /home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/build_viewer && $(MAKE) $(MAKESILENT) -f _deps/glad-build/CMakeFiles/glad.dir/build.make _deps/glad-build/CMakeFiles/glad.dir/src/glad.c.i
+	cd /home/santi/Documentos/DistributionTool/build_viewer && $(MAKE) $(MAKESILENT) -f _deps/glad-build/CMakeFiles/glad.dir/build.make _deps/glad-build/CMakeFiles/glad.dir/src/glad.c.i
 .PHONY : src/glad.c.i
 
 src/glad.s: src/glad.c.s
@@ -210,7 +210,7 @@ src/glad.s: src/glad.c.s
 
 # target to generate assembly for a file
 src/glad.c.s:
-	cd /home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/build_viewer && $(MAKE) $(MAKESILENT) -f _deps/glad-build/CMakeFiles/glad.dir/build.make _deps/glad-build/CMakeFiles/glad.dir/src/glad.c.s
+	cd /home/santi/Documentos/DistributionTool/build_viewer && $(MAKE) $(MAKESILENT) -f _deps/glad-build/CMakeFiles/glad.dir/build.make _deps/glad-build/CMakeFiles/glad.dir/src/glad.c.s
 .PHONY : src/glad.c.s
 
 # Help Target
@@ -241,6 +241,6 @@ help:
 # No rule that depends on this can have commands that come from listfiles
 # because they might be regenerated.
 cmake_check_build_system:
-	cd /home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/build_viewer && $(CMAKE_COMMAND) -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 0
+	cd /home/santi/Documentos/DistributionTool/build_viewer && $(CMAKE_COMMAND) -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 0
 .PHONY : cmake_check_build_system
 

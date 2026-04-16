@@ -1,9 +1,9 @@
 
-if (NOT EXISTS "/home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/build_viewer/_deps/glfw-build/install_manifest.txt")
-    message(FATAL_ERROR "Cannot find install manifest: \"/home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/build_viewer/_deps/glfw-build/install_manifest.txt\"")
+if (NOT EXISTS "/home/santi/Documentos/DistributionTool/build_viewer/_deps/glfw-build/install_manifest.txt")
+    message(FATAL_ERROR "Cannot find install manifest: \"/home/santi/Documentos/DistributionTool/build_viewer/_deps/glfw-build/install_manifest.txt\"")
 endif()
 
-file(READ "/home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/build_viewer/_deps/glfw-build/install_manifest.txt" files)
+file(READ "/home/santi/Documentos/DistributionTool/build_viewer/_deps/glfw-build/install_manifest.txt" files)
 string(REGEX REPLACE "\n" ";" files "${files}")
 
 foreach (file ${files})
