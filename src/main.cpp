@@ -3,6 +3,7 @@
 #include "PCA.h"
 #include "SOAPDescriptor.h"
 #include "Statistics.h"
+#include "WignerSeitz.h"
 
 #include <chrono>
 #include <cmath>
@@ -113,6 +114,9 @@ static void printUsage(const char* prog) {
         "  --ref-typea FILE DV file for type-A (PCA-discovered) defect\n"
         "  --save-dv ID FILE  Save DV of atom ID (from damaged frame) to FILE\n"
         "                     Use this to build reference DV files from known sites\n\n"
+        "Wigner-Seitz comparison:\n"
+        "  --ws             Run WS analysis in parallel with SOAP\n"
+        "  --ws-r-cut R     WS search radius [Å] (default: same as --r-cut)\n\n"
         "Output options:\n"
         "  --output   FILE  Main output CSV file         (default: output.csv)\n"
         "  --pca      [N]   Run PCA with N components    (default: 2)\n"
@@ -250,6 +254,71 @@ static void writeHistogram(
     std::cout << "  → histogram CSV written: " << path << '\n';
 }
 
+// Per-atom WS CSV: id type x y z ws_ref_id ws_dist ws_occ ws_type
+static void writeWSAtomCSV(
+    const Frame&                    frame,
+    const std::vector<WSAtomResult>& ws,
+    const std::vector<WSSite>&       sites,
+    const std::string&              path)
+{
+    std::ofstream f(path);
+    if (!f) throw std::runtime_error("Cannot write: " + path);
+    f << "# id type x y z ws_ref_id ws_dist ws_occ ws_type\n"
+      << std::fixed << std::setprecision(8);
+
+    for (int i = 0; i < static_cast<int>(frame.atoms.size()); ++i) {
+        const auto& a  = frame.atoms[i];
+        const auto& r  = ws[i];
+        int ref_id = (r.ref_site_idx >= 0) ? sites[r.ref_site_idx].ref_atom_id : -1;
+        const char* ws_type = (r.ws_occ == 0) ? "Unknown"
+                            : (r.ws_occ == 1) ? "Lattice"
+                                              : "Interstitial";
+        f << a.id   << ' '
+          << a.type << ' '
+          << a.x    << ' '
+          << a.y    << ' '
+          << a.z    << ' '
+          << ref_id << ' '
+          << r.dist << ' '
+          << r.ws_occ << ' '
+          << ws_type  << '\n';
+    }
+    std::cout << "  → WS atom CSV written: " << path << '\n';
+}
+
+// Per-site WS CSV: ref_id x y z occupancy site_type
+static void writeWSSitesCSV(
+    const std::vector<WSSite>& sites,
+    const std::string&         path)
+{
+    std::ofstream f(path);
+    if (!f) throw std::runtime_error("Cannot write: " + path);
+    f << "# ref_id x y z occupancy site_type\n"
+      << std::fixed << std::setprecision(8);
+
+    for (const auto& s : sites) {
+        const char* stype = (s.occupancy == 0) ? "Vacancy"
+                          : (s.occupancy == 1) ? "Normal"
+                                               : "Interstitial_site";
+        f << s.ref_atom_id << ' '
+          << s.x           << ' '
+          << s.y           << ' '
+          << s.z           << ' '
+          << s.occupancy   << ' '
+          << stype         << '\n';
+    }
+
+    // Count anomalous sites
+    int n_vac = 0, n_int_sites = 0;
+    for (const auto& s : sites) {
+        if (s.occupancy == 0) ++n_vac;
+        else if (s.occupancy >= 2) ++n_int_sites;
+    }
+    std::cout << "  → WS sites CSV written: " << path
+              << "  (" << n_vac << " vacancies, "
+              << n_int_sites << " interstitial sites)\n";
+}
+
 // ─────────────────────────────────────────────────────────────────────────────
 // Path helpers
 // ─────────────────────────────────────────────────────────────────────────────
@@ -318,6 +387,8 @@ int main(int argc, char* argv[]) {
     int    pca_nc  = 2;
     bool   do_hist = false;
     int    hist_bins = 50;
+    bool   do_ws      = false;
+    double ws_r_cut   = -1.0;  // -1 = use soap.r_cut
     std::string ref_file, dmg_file;
 
     // ── Parse CLI ─────────────────────────────────────────────────────────────
@@ -364,6 +435,8 @@ int main(int argc, char* argv[]) {
             do_hist = true;
             if (nextIsUInt()) hist_bins = nextInt();
         }
+        else if (a == "--ws")       do_ws    = true;
+        else if (a == "--ws-r-cut") ws_r_cut = nextDbl();
         else if (a[0] != '-') {
             if      (ref_file.empty()) ref_file = a;
             else if (dmg_file.empty()) dmg_file = a;
@@ -462,6 +535,16 @@ int main(int argc, char* argv[]) {
                   << timerSec(t0) << " s\n";
 
         clf.buildReference(ref_frame.atoms);
+
+        // Build WS spatial index before freeing reference positions.
+        WignerSeitz ws;
+        if (do_ws) {
+            if (ws_r_cut < 0.0) ws_r_cut = soap.r_cut;
+            ws.build(ref_frame, ws_r_cut);
+            std::cout << "      WS index built  (r_cut=" << std::fixed
+                      << std::setprecision(2) << ws_r_cut << " Å, "
+                      << ws.sites().size() << " reference sites)\n";
+        }
 
         // Liberar DVs del frame de referencia: buildReference ya extrajo todo lo
         // necesario (media DV).  Esto libera ~N×DV×8 bytes antes de cargar el
@@ -578,6 +661,15 @@ int main(int argc, char* argv[]) {
                           << adj_r << " Å)\n";
         }
 
+        // Wigner-Seitz classification (parallel to SOAP)
+        std::vector<WSAtomResult> ws_results;
+        if (do_ws) {
+            std::cout << "\n[WS]  Classifying via Wigner-Seitz…\n";
+            ws_results = ws.classify(dmg_frame);
+            std::cout << "      Vacancies: " << ws.vacancyCount()
+                      << "  Interstitials: " << ws.interstitialCount() << '\n';
+        }
+
         printSummary(dmg_frame, vac_pts, clusters, grid_spacing);
 
         // ══════════════════════════════════════════════════════════════════════
@@ -590,6 +682,14 @@ int main(int argc, char* argv[]) {
         // Vacancy file: one row per cluster (physical vacancy)
         if (!clusters.empty()) {
             writeVacancyCSV(clusters, prefixedPath("vacancies_", out_file));
+        }
+
+        // Wigner-Seitz outputs
+        if (do_ws && !ws_results.empty()) {
+            writeWSAtomCSV(dmg_frame, ws_results, ws.sites(),
+                           prefixedPath("ws_", out_file));
+            writeWSSitesCSV(ws.sites(),
+                            prefixedPath("ws_sites_", out_file));
         }
 
         // Distance histogram (Fig. 4b equivalent)

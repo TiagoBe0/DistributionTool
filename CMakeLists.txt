@@ -40,6 +40,7 @@ set(LIB_SOURCES
     src/Statistics.cpp
     src/DefectClassifier.cpp
     src/PCA.cpp
+    src/WignerSeitz.cpp
 )
 
 add_library(distool_lib OBJECT ${LIB_SOURCES})
