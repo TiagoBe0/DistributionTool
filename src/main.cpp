@@ -269,17 +269,19 @@ static void writeWSAtomCSV(
     for (int i = 0; i < static_cast<int>(frame.atoms.size()); ++i) {
         const auto& a  = frame.atoms[i];
         const auto& r  = ws[i];
-        int ref_id = (r.ref_site_idx >= 0) ? sites[r.ref_site_idx].ref_atom_id : -1;
-        const char* ws_type = (r.ws_occ == 0) ? "Unknown"
+        const bool assigned = (r.ref_site_idx >= 0);
+        int    ref_id  = assigned ? sites[r.ref_site_idx].ref_atom_id : -1;
+        double ws_dist = assigned ? r.dist : -1.0;
+        const char* ws_type = !assigned        ? "Unknown"
                             : (r.ws_occ == 1) ? "Lattice"
                                               : "Interstitial";
-        f << a.id   << ' '
-          << a.type << ' '
-          << a.x    << ' '
-          << a.y    << ' '
-          << a.z    << ' '
-          << ref_id << ' '
-          << r.dist << ' '
+        f << a.id    << ' '
+          << a.type  << ' '
+          << a.x     << ' '
+          << a.y     << ' '
+          << a.z     << ' '
+          << ref_id  << ' '
+          << ws_dist << ' '
           << r.ws_occ << ' '
           << ws_type  << '\n';
     }
@@ -293,7 +295,7 @@ static void writeWSSitesCSV(
 {
     std::ofstream f(path);
     if (!f) throw std::runtime_error("Cannot write: " + path);
-    f << "# ref_id x y z occupancy site_type\n"
+    f << "# ref_id x y z occupancy min_dist site_type\n"
       << std::fixed << std::setprecision(8);
 
     for (const auto& s : sites) {
@@ -305,6 +307,7 @@ static void writeWSSitesCSV(
           << s.y           << ' '
           << s.z           << ' '
           << s.occupancy   << ' '
+          << s.min_dist    << ' '
           << stype         << '\n';
     }
 
@@ -467,7 +470,12 @@ int main(int argc, char* argv[]) {
               << "  r_cut="       << soap.r_cut << " Å"
               << "  DV size="     << soap.dvSize() << "\n"
               << "  Threshold=" << threshold
-              << "  grid_spacing=" << grid_spacing << " Å\n\n";
+              << "  grid_spacing=" << grid_spacing << " Å\n";
+    if (do_ws) {
+        const double wr = (ws_r_cut > 0.0) ? ws_r_cut : soap.r_cut;
+        std::cout << "  WS r_cut=" << wr << " Å\n";
+    }
+    std::cout << '\n';
 
     SOAPDescriptor desc(soap);
     DefectClassifier clf(threshold);

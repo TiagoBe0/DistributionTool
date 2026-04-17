@@ -129,13 +129,17 @@ int WignerSeitz::nearestSite(double qx, double qy, double qz,
         }
     }
 
-    // Fallback: linear scan for non-periodic systems where atoms may lie
-    // outside the 27-cell shell (e.g. atoms sputtered far from a nanoparticle).
-    if (nearest < 0) {
+    // Fallback: linear scan when either no site was found in the 27-cell shell
+    // OR the best candidate is farther than r_cut_ (the shell guarantee only holds
+    // for sites within r_cut_; beyond that, the true NN might be in a farther cell).
+    if (nearest < 0 || min_r2 > r_cut_ * r_cut_) {
         for (int k = 0; k < static_cast<int>(sites_.size()); ++k) {
             double dx = sites_[k].x - qx;
             double dy = sites_[k].y - qy;
             double dz = sites_[k].z - qz;
+            if (ref_box_.periodic[0] && Lx_ > 0.0) dx -= Lx_ * std::round(dx / Lx_);
+            if (ref_box_.periodic[1] && Ly_ > 0.0) dy -= Ly_ * std::round(dy / Ly_);
+            if (ref_box_.periodic[2] && Lz_ > 0.0) dz -= Lz_ * std::round(dz / Lz_);
             const double r2 = dx*dx + dy*dy + dz*dz;
             if (r2 < min_r2) { min_r2 = r2; nearest = k; }
         }
