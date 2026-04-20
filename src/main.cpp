@@ -346,7 +346,7 @@ static void printSummary(const Frame& frame,
     for (const auto& a : frame.atoms)
         ++cnt[static_cast<int>(a.defect_type)];
 
-    const double vac_vol = vac_pts.size() * grid_spacing * grid_spacing * grid_spacing;
+    const double vac_vol = static_cast<double>(vac_pts.size()) * grid_spacing * grid_spacing * grid_spacing;
 
     std::cout << "\n┌─── Defect Summary ───────────────────────────────┐\n"
               << "│  Total atoms        : " << std::setw(6) << frame.size()     << "                     │\n"
