@@ -4,7 +4,7 @@
 # compile CXX with /usr/bin/c++
 CXX_DEFINES = 
 
-CXX_INCLUDES = -I/home/santi/Documentos/DistributionTool/build_viewer/_deps/imgui-src -I/home/santi/Documentos/DistributionTool/build_viewer/_deps/imgui-src/backends -I/home/santi/Documentos/DistributionTool/build_viewer/_deps/glfw-src/include
+CXX_INCLUDES = -I/home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/build_viewer/_deps/imgui-src -I/home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/build_viewer/_deps/imgui-src/backends -I/home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/build_viewer/_deps/glfw-src/include
 
 CXX_FLAGS = -O2 -DNDEBUG -std=gnu++17
 

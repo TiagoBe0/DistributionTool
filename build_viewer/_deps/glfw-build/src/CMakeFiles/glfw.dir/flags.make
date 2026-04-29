@@ -4,7 +4,7 @@
 # compile C with /usr/bin/cc
 C_DEFINES = -D_DEFAULT_SOURCE -D_GLFW_X11
 
-C_INCLUDES = -I/home/santi/Documentos/DistributionTool/build_viewer/_deps/glfw-src/include -I/home/santi/Documentos/DistributionTool/build_viewer/_deps/glfw-src/src -I/home/santi/Documentos/DistributionTool/build_viewer/_deps/glfw-build/src
+C_INCLUDES = -I/home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/build_viewer/_deps/glfw-src/include -I/home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/build_viewer/_deps/glfw-src/src -I/home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/build_viewer/_deps/glfw-build/src
 
-C_FLAGS = -O3 -DNDEBUG -std=c99 -fPIC -Wall
+C_FLAGS = -std=c99 -fPIC -Wall
 

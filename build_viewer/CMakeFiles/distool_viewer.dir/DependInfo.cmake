@@ -8,7 +8,7 @@ set(CMAKE_DEPENDS_LANGUAGES
 
 # The set of dependency files which are needed:
 set(CMAKE_DEPENDS_DEPENDENCY_FILES
-  "/home/santi/Documentos/DistributionTool/viewer/main.cpp" "CMakeFiles/distool_viewer.dir/main.cpp.o" "gcc" "CMakeFiles/distool_viewer.dir/main.cpp.o.d"
+  "/home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/viewer/main.cpp" "CMakeFiles/distool_viewer.dir/main.cpp.o" "gcc" "CMakeFiles/distool_viewer.dir/main.cpp.o.d"
   )
 
 # Targets to which this target links which contain Fortran sources.

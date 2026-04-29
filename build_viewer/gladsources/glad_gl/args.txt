@@ -1,1 +1,0 @@
---out-path /home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/build_viewer/gladsources/glad_gl --api gl:core=3.3 --reproducible c

@@ -449,6 +449,7 @@ struct GpuAtom {
 // ═══════════════════════════════════════════════════════════════════════════════
 
 enum class ColorMode { DistToRef = 0, DefectType, AtomType, DefectProb };
+enum class UiTheme { Dark = 0, Light };
 
 static glm::vec4 plasma(float t) {
     // Plasma colormap approximation
@@ -684,12 +685,17 @@ struct App {
     std::string filename;
     std::vector<float> dist_histogram;   // normalized bin heights [0,1], HIST_BINS entries
     int defect_counts[5] = {0,0,0,0,0}; // atoms per defect type (indices 0-4)
+
+    // Vacancy cluster histogram (loaded from vacancies_*.csv alongside the output)
+    std::vector<int> vac_cluster_sizes;
+    std::vector<int> vac_hist_raw;       // VAC_HIST_BINS counts
     BoxBounds   loaded_box;              // box bounds from last loaded dump (may be invalid)
     int         loaded_timestep = 0;    // timestep from last loaded dump
 
     // Sub-systems
     AnalysisState analysis;
     int active_tab = 0;   // 0=Analizar, 1=Visualizar
+    UiTheme ui_theme = UiTheme::Dark;
 
     // README viewer
     bool show_readme = false;
@@ -767,7 +773,8 @@ static void buildGpuData(App& app, Renderer& rend) {
 // Center camera on loaded data
 // ═══════════════════════════════════════════════════════════════════════════════
 
-static constexpr int HIST_BINS = 80;
+static constexpr int HIST_BINS     = 80;
+static constexpr int VAC_HIST_BINS = 111;  // bins 0-109 → sizes 1-110, bin 110 → >110
 
 static void buildHistogram(App& app) {
     app.dist_histogram.assign(HIST_BINS, 0.f);
@@ -782,6 +789,40 @@ static void buildHistogram(App& app) {
     float mx = *std::max_element(app.dist_histogram.begin(), app.dist_histogram.end());
     if (mx > 0.f)
         for (auto& v : app.dist_histogram) v /= mx;
+}
+
+static void buildVacancyHistogram(App& app) {
+    app.vac_hist_raw.assign(VAC_HIST_BINS, 0);
+    for (int sz : app.vac_cluster_sizes) {
+        int bin = (sz >= 1 && sz <= 110) ? (sz - 1) : 110;
+        app.vac_hist_raw[bin]++;
+    }
+}
+
+// Tries to load vacancies_<basename> alongside the given file.
+static void tryLoadVacancies(App& app, const std::string& loaded_path) {
+    app.vac_cluster_sizes.clear();
+    app.vac_hist_raw.clear();
+
+    size_t sl = loaded_path.rfind('/');
+    std::string vac_path = (sl == std::string::npos)
+        ? "vacancies_" + loaded_path
+        : loaded_path.substr(0, sl + 1) + "vacancies_" + loaded_path.substr(sl + 1);
+
+    std::ifstream f(vac_path);
+    if (!f) return;
+
+    std::string line;
+    while (std::getline(f, line)) {
+        if (line.empty() || line[0] == '#') continue;
+        std::istringstream ss(line);
+        double x, y, z, d_near;
+        int n_pts;
+        if ((ss >> x >> y >> z >> d_near >> n_pts) && n_pts > 0)
+            app.vac_cluster_sizes.push_back(n_pts);
+    }
+    if (!app.vac_cluster_sizes.empty())
+        buildVacancyHistogram(app);
 }
 
 static void centerCamera(App& app) {
@@ -1092,6 +1133,7 @@ static void loadIntoViewer(App& app, Renderer& rend, const std::string& path) {
 
     centerCamera(app);
     buildHistogram(app);
+    tryLoadVacancies(app, path);
     buildGpuData(app, rend);
 }
 
@@ -1406,7 +1448,123 @@ static void drawVisualizationUI(App& app, Renderer& rend) {
         ImGui::Text("defect : %s",   defectName(a.defect_label));
     }
 
+    // ── Vacancy cluster size histogram ────────────────────────────────────
+    if (!app.vac_hist_raw.empty() &&
+        ImGui::CollapsingHeader("Distribución clusters vacancias",
+                                ImGuiTreeNodeFlags_DefaultOpen)) {
+        int total = (int)app.vac_cluster_sizes.size();
+        int max_sz = total > 0
+            ? *std::max_element(app.vac_cluster_sizes.begin(),
+                                app.vac_cluster_sizes.end())
+            : 0;
+        ImGui::Text("%d clusters  |  max tamaño: %d", total, max_sz);
+
+        const float hist_h = 90.f;
+        ImVec2 cp = ImGui::GetCursorScreenPos();
+        float  aw = ImGui::GetContentRegionAvail().x;
+
+        ImGui::InvisibleButton("##vachist", {aw, hist_h});
+        bool hov = ImGui::IsItemHovered();
+
+        auto* dl = ImGui::GetWindowDrawList();
+        dl->AddRectFilled(cp, {cp.x + aw, cp.y + hist_h}, IM_COL32(22, 22, 32, 255));
+
+        int mx_count = *std::max_element(app.vac_hist_raw.begin(), app.vac_hist_raw.end());
+        float bar_w  = aw / VAC_HIST_BINS;
+
+        int hov_bin = -1;
+        if (hov) {
+            hov_bin = (int)((ImGui::GetIO().MousePos.x - cp.x) / bar_w);
+            hov_bin = std::clamp(hov_bin, 0, VAC_HIST_BINS - 1);
+        }
+
+        for (int i = 0; i < VAC_HIST_BINS; ++i) {
+            if (app.vac_hist_raw[i] == 0) continue;
+            float h  = (float)app.vac_hist_raw[i] / mx_count * (hist_h - 2.f);
+            float x0 = cp.x + i * bar_w;
+            float x1 = x0 + std::max(bar_w - 0.5f, 1.f);
+            float y0 = cp.y + hist_h - h;
+            float y1 = cp.y + hist_h;
+            ImU32 col;
+            if (i == VAC_HIST_BINS - 1)  // >110 bin — orange
+                col = (hov_bin == i) ? IM_COL32(255, 160, 80, 255)
+                                     : IM_COL32(200, 110, 40, 255);
+            else
+                col = (hov_bin == i) ? IM_COL32(110, 210, 255, 255)
+                                     : IM_COL32(60, 140, 220, 255);
+            dl->AddRectFilled({x0, y0}, {x1, y1}, col);
+        }
+
+        // X-axis tick labels drawn with drawlist text
+        ImFont* font = ImGui::GetFont();
+        float fs = ImGui::GetFontSize() * 0.75f;
+        auto drawLabel = [&](int bin, const char* txt) {
+            float lx = cp.x + bin * bar_w;
+            dl->AddText(font, fs, {lx, cp.y + hist_h - fs - 1.f},
+                        IM_COL32(160, 160, 160, 200), txt);
+        };
+        drawLabel(0,   "1");
+        drawLabel(24,  "25");
+        drawLabel(49,  "50");
+        drawLabel(74,  "75");
+        drawLabel(99,  "100");
+        // ">110" label near the last bin
+        {
+            float lx = cp.x + 109 * bar_w;
+            dl->AddText(font, fs, {lx - 2.f, cp.y + hist_h - fs - 1.f},
+                        IM_COL32(220, 140, 80, 200), ">110");
+        }
+
+        if (hov && hov_bin >= 0) {
+            int cnt = app.vac_hist_raw[hov_bin];
+            if (hov_bin < 110)
+                ImGui::SetTooltip("Tamaño %d: %d cluster%s", hov_bin + 1, cnt, cnt == 1 ? "" : "s");
+            else
+                ImGui::SetTooltip("Tamaño >110: %d cluster%s", cnt, cnt == 1 ? "" : "s");
+        }
+
+        // Advance cursor past the histogram
+        ImGui::SetCursorScreenPos({cp.x, cp.y + hist_h + 4.f});
+        ImGui::Spacing();
+    }
+
     if (changed) buildGpuData(app, rend);
+}
+
+// ── UI theme ─────────────────────────────────────────────────────────────────
+static void applyUiTheme(UiTheme theme) {
+    ImGuiStyle& style = ImGui::GetStyle();
+    if (theme == UiTheme::Light) {
+        ImGui::StyleColorsLight(&style);
+        style.Colors[ImGuiCol_WindowBg]      = {0.96f, 0.97f, 0.98f, 1.f};
+        style.Colors[ImGuiCol_ChildBg]       = {0.98f, 0.99f, 1.00f, 1.f};
+        style.Colors[ImGuiCol_FrameBg]       = {0.88f, 0.90f, 0.93f, 1.f};
+        style.Colors[ImGuiCol_FrameBgHovered]= {0.80f, 0.86f, 0.94f, 1.f};
+        style.Colors[ImGuiCol_FrameBgActive] = {0.72f, 0.82f, 0.94f, 1.f};
+        style.Colors[ImGuiCol_Button]        = {0.84f, 0.88f, 0.93f, 1.f};
+        style.Colors[ImGuiCol_ButtonHovered] = {0.74f, 0.83f, 0.94f, 1.f};
+        style.Colors[ImGuiCol_ButtonActive]  = {0.62f, 0.76f, 0.92f, 1.f};
+        style.Colors[ImGuiCol_Header]        = {0.78f, 0.86f, 0.96f, 1.f};
+        style.Colors[ImGuiCol_HeaderHovered] = {0.70f, 0.80f, 0.94f, 1.f};
+        style.Colors[ImGuiCol_HeaderActive]  = {0.60f, 0.72f, 0.90f, 1.f};
+        style.Colors[ImGuiCol_SliderGrab]    = {0.24f, 0.46f, 0.78f, 1.f};
+        style.Colors[ImGuiCol_Tab]           = {0.86f, 0.89f, 0.94f, 1.f};
+        style.Colors[ImGuiCol_TabHovered]    = {0.70f, 0.82f, 0.96f, 1.f};
+        style.Colors[ImGuiCol_TabActive]     = {0.76f, 0.84f, 0.95f, 1.f};
+    } else {
+        ImGui::StyleColorsDark(&style);
+        style.Colors[ImGuiCol_WindowBg]      = {0.10f, 0.10f, 0.12f, 1.f};
+        style.Colors[ImGuiCol_FrameBg]       = {0.18f, 0.18f, 0.22f, 1.f};
+        style.Colors[ImGuiCol_SliderGrab]    = {0.35f, 0.55f, 0.85f, 1.f};
+    }
+    style.WindowRounding = 0;
+    style.FrameRounding  = 3;
+}
+
+static ImVec4 viewportBg(UiTheme theme) {
+    return theme == UiTheme::Light
+        ? ImVec4(0.94f, 0.96f, 0.98f, 1.f)
+        : ImVec4(0.07f, 0.07f, 0.09f, 1.f);
 }
 
 // ── README loader ─────────────────────────────────────────────────────────────
@@ -1529,7 +1687,18 @@ static void drawUI(App& app, Renderer& rend) {
                  ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize |
                  ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoTitleBar);
 
-    // Botón Info alineado a la derecha
+    // Theme selector + Info button
+    ImGui::AlignTextToFramePadding();
+    ImGui::TextUnformatted("Tema");
+    ImGui::SameLine();
+    const char* themes[] = {"Oscuro", "Claro"};
+    int theme_idx = (int)app.ui_theme;
+    ImGui::SetNextItemWidth(92);
+    if (ImGui::Combo("##theme", &theme_idx, themes, 2)) {
+        app.ui_theme = (UiTheme)theme_idx;
+        applyUiTheme(app.ui_theme);
+    }
+    ImGui::SameLine();
     {
         const char* lbl = app.show_readme ? "[ Info ]" : "  Info  ";
         float bw = ImGui::CalcTextSize(lbl).x + ImGui::GetStyle().FramePadding.x * 2.f;
@@ -1537,7 +1706,7 @@ static void drawUI(App& app, Renderer& rend) {
                              - ImGui::GetStyle().WindowPadding.x);
         ImGui::PushStyleColor(ImGuiCol_Button,
             app.show_readme ? ImVec4(0.20f,0.45f,0.70f,1.f)
-                            : ImVec4(0.18f,0.18f,0.22f,1.f));
+                            : ImGui::GetStyleColorVec4(ImGuiCol_Button));
         ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.25f,0.55f,0.85f,1.f));
         ImGui::PushStyleColor(ImGuiCol_ButtonActive,  ImVec4(0.15f,0.35f,0.60f,1.f));
         if (ImGui::SmallButton(lbl)) app.show_readme = !app.show_readme;
@@ -1604,18 +1773,9 @@ int main(int argc, char* argv[]) {
 
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
-    ImGui::StyleColorsDark();
+    applyUiTheme(app.ui_theme);
     ImGui_ImplGlfw_InitForOpenGL(win, true);
     ImGui_ImplOpenGL3_Init("#version 330");
-
-    // Dark theme tweaks
-    auto& style = ImGui::GetStyle();
-    style.WindowRounding = 0;
-    style.FrameRounding  = 3;
-    auto* c = style.Colors;
-    c[ImGuiCol_WindowBg]  = {0.10f, 0.10f, 0.12f, 1.f};
-    c[ImGuiCol_FrameBg]   = {0.18f, 0.18f, 0.22f, 1.f};
-    c[ImGuiCol_SliderGrab]= {0.35f, 0.55f, 0.85f, 1.f};
 
     loadReadme(app);
 
@@ -1652,7 +1812,8 @@ int main(int argc, char* argv[]) {
         app.win_w = fbw; app.win_h = winh;  // fbw for GL, winh for ImGui (logical px)
 
         glViewport(0, 0, fbw, fbh);
-        glClearColor(0.07f, 0.07f, 0.09f, 1.f);
+        ImVec4 bg = viewportBg(app.ui_theme);
+        glClearColor(bg.x, bg.y, bg.z, bg.w);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         float aspect = fbw > 0 ? (float)fbw / (float)fbh : 1.f;

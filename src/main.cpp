@@ -7,6 +7,7 @@
 
 #include <chrono>
 #include <cmath>
+#include <filesystem>
 #include <fstream>
 #include <iomanip>
 #include <iostream>
@@ -368,6 +369,10 @@ static void printSummary(const Frame& frame,
 // ─────────────────────────────────────────────────────────────────────────────
 
 int main(int argc, char* argv[]) {
+    // Flush stdout after every write so output appears in the viewer log
+    // even if the process is killed mid-run (pipes are fully buffered by default).
+    std::cout << std::unitbuf;
+
     printBanner();
 
     // ── Default parameters ────────────────────────────────────────────────────
@@ -385,7 +390,7 @@ int main(int argc, char* argv[]) {
     std::string sia_file, antv_file, typea_file;
     int         save_dv_id   = -1;
     std::string save_dv_path;
-    std::string out_file = "output.csv";
+    std::string out_file = "results/output.csv";
     bool   do_pca  = false;
     int    pca_nc  = 2;
     bool   do_hist = false;
@@ -598,6 +603,44 @@ int main(int argc, char* argv[]) {
         if (dmg_reader.hasNext())
             std::cout << "  [!] Damaged file has multiple frames; only the first is used.\n";
 
+        // Pre-flight memory check for damaged frame (mirrors the reference check above)
+        {
+            const double dv_gb2 = static_cast<double>(dmg_frame.size())
+                                  * soap.dvSize() * sizeof(double) / 1e9;
+            long avail_mb2 = -1;
+            {
+                std::ifstream mi("/proc/meminfo");
+                std::string key; long val;
+                while (mi >> key >> val) {
+                    if (key == "MemAvailable:") { avail_mb2 = val / 1024; break; }
+                    mi.ignore(256, '\n');
+                }
+            }
+            std::cout << std::fixed << std::setprecision(1);
+            std::cout << "  Memory for damaged frame: ~" << dv_gb2 << " GB";
+            if (avail_mb2 > 0)
+                std::cout << "  |  Available: ~" << avail_mb2 / 1024.0 << " GB";
+            std::cout << '\n';
+            if (avail_mb2 > 0 && dv_gb2 > avail_mb2 / 1024.0 * 0.75) {
+                int suggest_n = 4;
+                for (int n = 9; n >= 2; --n) {
+                    double gb = static_cast<double>(dmg_frame.size())
+                                * (n*(n+1)/2) * (n+1) * 8.0 / 1e9;
+                    if (gb < avail_mb2 / 1024.0 * 0.5) { suggest_n = n; break; }
+                }
+                throw std::runtime_error(
+                    "Not enough RAM for SOAP descriptors of damaged frame.\n"
+                    "  Needed   : ~" + [&]{ std::ostringstream s;
+                        s << std::fixed << std::setprecision(1) << dv_gb2;
+                        return s.str(); }() + " GB\n"
+                    "  Available: ~" + [&]{ std::ostringstream s;
+                        s << std::fixed << std::setprecision(1) << avail_mb2/1024.0;
+                        return s.str(); }() + " GB\n"
+                    "  Try: --n-max " + std::to_string(suggest_n) +
+                         " --l-max " + std::to_string(suggest_n));
+            }
+        }
+
         std::cout << "      Computing SOAP descriptors for damaged frame…\n";
         t0 = std::chrono::steady_clock::now();
         desc.computeAll(dmg_frame);
@@ -626,9 +669,46 @@ int main(int argc, char* argv[]) {
         if (vac_cluster_radius < 0.0)
             vac_cluster_radius = vac_dist; // default: same radius as detection threshold
 
-        std::cout << "      Vacancy grid: " << std::fixed << std::setprecision(2)
-                  << grid_spacing << " Å spacing,  threshold " << vac_dist << " Å"
-                  << ",  cluster radius " << vac_cluster_radius << " Å\n";
+        // Check vacancy grid size before iterating — large boxes with the default
+        // 0.5 Å spacing can produce billions of grid points and exhaust memory.
+        {
+            const double Lx = dmg_frame.box.lx();
+            const double Ly = dmg_frame.box.ly();
+            const double Lz = dmg_frame.box.lz();
+            const long long gnx = std::max(1LL, static_cast<long long>(std::ceil(Lx / grid_spacing)));
+            const long long gny = std::max(1LL, static_cast<long long>(std::ceil(Ly / grid_spacing)));
+            const long long gnz = std::max(1LL, static_cast<long long>(std::ceil(Lz / grid_spacing)));
+            const long long n_grid_pts = gnx * gny * gnz;
+
+            constexpr long long MAX_GRID_PTS = 200'000'000LL;  // 200 M — ~1 GB if all vacant
+            if (n_grid_pts > MAX_GRID_PTS) {
+                // Suggest the smallest spacing that keeps the grid under MAX_GRID_PTS
+                double suggest_gs = grid_spacing;
+                while (true) {
+                    suggest_gs *= 1.5;
+                    long long sg = static_cast<long long>(std::ceil(Lx/suggest_gs))
+                                 * static_cast<long long>(std::ceil(Ly/suggest_gs))
+                                 * static_cast<long long>(std::ceil(Lz/suggest_gs));
+                    if (sg <= MAX_GRID_PTS) break;
+                }
+                std::ostringstream msg;
+                msg << std::fixed << std::setprecision(1);
+                msg << "Vacancy grid is too large: "
+                    << gnx << " × " << gny << " × " << gnz
+                    << " = " << n_grid_pts << " points.\n"
+                    << "  Box: " << Lx << " × " << Ly << " × " << Lz
+                    << " Å,  spacing: " << grid_spacing << " Å\n"
+                    << "  Try: --grid-spacing "
+                    << std::setprecision(1) << suggest_gs
+                    << "  (reduces grid to ≤200M points)";
+                throw std::runtime_error(msg.str());
+            }
+            std::cout << "      Vacancy grid: " << gnx << " × " << gny << " × " << gnz
+                      << " = " << n_grid_pts << " points  ("
+                      << std::fixed << std::setprecision(2) << grid_spacing
+                      << " Å spacing, threshold " << vac_dist
+                      << " Å, cluster radius " << vac_cluster_radius << " Å)\n";
+        }
 
         auto vac_pts  = clf.findVacanciesGrid(dmg_frame, grid_spacing, vac_dist);
         auto clusters = clf.clusterVacancyPoints(vac_pts, vac_cluster_radius, dmg_frame.box);
@@ -683,6 +763,11 @@ int main(int argc, char* argv[]) {
         // ══════════════════════════════════════════════════════════════════════
         // 4. OUTPUTS
         // ══════════════════════════════════════════════════════════════════════
+        {
+            auto out_dir = std::filesystem::path(out_file).parent_path();
+            if (!out_dir.empty())
+                std::filesystem::create_directories(out_dir);
+        }
         std::cout << "\nWriting outputs…\n";
         writeAtomCSV(dmg_frame, out_file);
         writeLAMMPSDump(dmg_frame, prefixedPath("analyzed_", dmg_file));

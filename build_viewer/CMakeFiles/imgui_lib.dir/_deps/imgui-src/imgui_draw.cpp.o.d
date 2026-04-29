@@ -1,8 +1,8 @@
 CMakeFiles/imgui_lib.dir/_deps/imgui-src/imgui_draw.cpp.o: \
- /home/santi/Documentos/DistributionTool/build_viewer/_deps/imgui-src/imgui_draw.cpp \
+ /home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/build_viewer/_deps/imgui-src/imgui_draw.cpp \
  /usr/include/stdc-predef.h \
- /home/santi/Documentos/DistributionTool/build_viewer/_deps/imgui-src/imgui.h \
- /home/santi/Documentos/DistributionTool/build_viewer/_deps/imgui-src/imconfig.h \
+ /home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/build_viewer/_deps/imgui-src/imgui.h \
+ /home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/build_viewer/_deps/imgui-src/imconfig.h \
  /usr/lib/gcc/x86_64-linux-gnu/13/include/float.h \
  /usr/lib/gcc/x86_64-linux-gnu/13/include/stdarg.h \
  /usr/lib/gcc/x86_64-linux-gnu/13/include/stddef.h /usr/include/string.h \
@@ -20,7 +20,7 @@ CMakeFiles/imgui_lib.dir/_deps/imgui-src/imgui_draw.cpp.o: \
  /usr/include/x86_64-linux-gnu/bits/strings_fortified.h \
  /usr/include/x86_64-linux-gnu/bits/string_fortified.h \
  /usr/include/assert.h \
- /home/santi/Documentos/DistributionTool/build_viewer/_deps/imgui-src/imgui_internal.h \
+ /home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/build_viewer/_deps/imgui-src/imgui_internal.h \
  /usr/include/stdio.h /usr/include/x86_64-linux-gnu/bits/types.h \
  /usr/include/x86_64-linux-gnu/bits/typesizes.h \
  /usr/include/x86_64-linux-gnu/bits/time64.h \
@@ -213,5 +213,5 @@ CMakeFiles/imgui_lib.dir/_deps/imgui-src/imgui_draw.cpp.o: \
  /usr/lib/gcc/x86_64-linux-gnu/13/include/prfchwintrin.h \
  /usr/lib/gcc/x86_64-linux-gnu/13/include/keylockerintrin.h \
  /usr/lib/gcc/x86_64-linux-gnu/13/include/amxfp16intrin.h \
- /home/santi/Documentos/DistributionTool/build_viewer/_deps/imgui-src/imstb_rectpack.h \
- /home/santi/Documentos/DistributionTool/build_viewer/_deps/imgui-src/imstb_truetype.h
+ /home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/build_viewer/_deps/imgui-src/imstb_rectpack.h \
+ /home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/build_viewer/_deps/imgui-src/imstb_truetype.h

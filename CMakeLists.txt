@@ -25,7 +25,7 @@ endif()
 set(CMAKE_CXX_FLAGS_DEBUG    "-g -O0 -Wall -Wextra")
 
 # ── Eigen3 (header-only) ────────────────────────────────────────────────────
-find_package(Eigen3 3.3 REQUIRED NO_MODULE)
+find_package(Eigen3 REQUIRED NO_MODULE)
 message(STATUS "Eigen3 found: ${EIGEN3_INCLUDE_DIR}")
 
 # ── OpenMP (optional, speeds up neighbor-list & descriptor loops) ────────────

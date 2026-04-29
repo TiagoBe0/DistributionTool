@@ -53,10 +53,10 @@ RM = /usr/bin/cmake -E rm -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/santi/Documentos/DistributionTool/build_viewer/_deps/glfw-subbuild
+CMAKE_SOURCE_DIR = /home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/build_viewer/_deps/glfw-subbuild
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/santi/Documentos/DistributionTool/build_viewer/_deps/glfw-subbuild
+CMAKE_BINARY_DIR = /home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/build_viewer/_deps/glfw-subbuild
 
 # Utility rule file for glfw-populate.
 
@@ -77,60 +77,60 @@ CMakeFiles/glfw-populate-complete: glfw-populate-prefix/src/glfw-populate-stamp/
 CMakeFiles/glfw-populate-complete: glfw-populate-prefix/src/glfw-populate-stamp/glfw-populate-build
 CMakeFiles/glfw-populate-complete: glfw-populate-prefix/src/glfw-populate-stamp/glfw-populate-install
 CMakeFiles/glfw-populate-complete: glfw-populate-prefix/src/glfw-populate-stamp/glfw-populate-test
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --blue --bold --progress-dir=/home/santi/Documentos/DistributionTool/build_viewer/_deps/glfw-subbuild/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Completed 'glfw-populate'"
-	/usr/bin/cmake -E make_directory /home/santi/Documentos/DistributionTool/build_viewer/_deps/glfw-subbuild/CMakeFiles
-	/usr/bin/cmake -E touch /home/santi/Documentos/DistributionTool/build_viewer/_deps/glfw-subbuild/CMakeFiles/glfw-populate-complete
-	/usr/bin/cmake -E touch /home/santi/Documentos/DistributionTool/build_viewer/_deps/glfw-subbuild/glfw-populate-prefix/src/glfw-populate-stamp/glfw-populate-done
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --blue --bold --progress-dir=/home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/build_viewer/_deps/glfw-subbuild/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Completed 'glfw-populate'"
+	/usr/bin/cmake -E make_directory /home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/build_viewer/_deps/glfw-subbuild/CMakeFiles
+	/usr/bin/cmake -E touch /home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/build_viewer/_deps/glfw-subbuild/CMakeFiles/glfw-populate-complete
+	/usr/bin/cmake -E touch /home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/build_viewer/_deps/glfw-subbuild/glfw-populate-prefix/src/glfw-populate-stamp/glfw-populate-done
 
 glfw-populate-prefix/src/glfw-populate-stamp/glfw-populate-update:
 .PHONY : glfw-populate-prefix/src/glfw-populate-stamp/glfw-populate-update
 
 glfw-populate-prefix/src/glfw-populate-stamp/glfw-populate-build: glfw-populate-prefix/src/glfw-populate-stamp/glfw-populate-configure
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --blue --bold --progress-dir=/home/santi/Documentos/DistributionTool/build_viewer/_deps/glfw-subbuild/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "No build step for 'glfw-populate'"
-	cd /home/santi/Documentos/DistributionTool/build_viewer/_deps/glfw-build && /usr/bin/cmake -E echo_append
-	cd /home/santi/Documentos/DistributionTool/build_viewer/_deps/glfw-build && /usr/bin/cmake -E touch /home/santi/Documentos/DistributionTool/build_viewer/_deps/glfw-subbuild/glfw-populate-prefix/src/glfw-populate-stamp/glfw-populate-build
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --blue --bold --progress-dir=/home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/build_viewer/_deps/glfw-subbuild/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "No build step for 'glfw-populate'"
+	cd /home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/build_viewer/_deps/glfw-build && /usr/bin/cmake -E echo_append
+	cd /home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/build_viewer/_deps/glfw-build && /usr/bin/cmake -E touch /home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/build_viewer/_deps/glfw-subbuild/glfw-populate-prefix/src/glfw-populate-stamp/glfw-populate-build
 
 glfw-populate-prefix/src/glfw-populate-stamp/glfw-populate-configure: glfw-populate-prefix/tmp/glfw-populate-cfgcmd.txt
 glfw-populate-prefix/src/glfw-populate-stamp/glfw-populate-configure: glfw-populate-prefix/src/glfw-populate-stamp/glfw-populate-patch
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --blue --bold --progress-dir=/home/santi/Documentos/DistributionTool/build_viewer/_deps/glfw-subbuild/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "No configure step for 'glfw-populate'"
-	cd /home/santi/Documentos/DistributionTool/build_viewer/_deps/glfw-build && /usr/bin/cmake -E echo_append
-	cd /home/santi/Documentos/DistributionTool/build_viewer/_deps/glfw-build && /usr/bin/cmake -E touch /home/santi/Documentos/DistributionTool/build_viewer/_deps/glfw-subbuild/glfw-populate-prefix/src/glfw-populate-stamp/glfw-populate-configure
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --blue --bold --progress-dir=/home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/build_viewer/_deps/glfw-subbuild/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "No configure step for 'glfw-populate'"
+	cd /home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/build_viewer/_deps/glfw-build && /usr/bin/cmake -E echo_append
+	cd /home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/build_viewer/_deps/glfw-build && /usr/bin/cmake -E touch /home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/build_viewer/_deps/glfw-subbuild/glfw-populate-prefix/src/glfw-populate-stamp/glfw-populate-configure
 
 glfw-populate-prefix/src/glfw-populate-stamp/glfw-populate-download: glfw-populate-prefix/src/glfw-populate-stamp/glfw-populate-gitinfo.txt
 glfw-populate-prefix/src/glfw-populate-stamp/glfw-populate-download: glfw-populate-prefix/src/glfw-populate-stamp/glfw-populate-mkdir
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --blue --bold --progress-dir=/home/santi/Documentos/DistributionTool/build_viewer/_deps/glfw-subbuild/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Performing download step (git clone) for 'glfw-populate'"
-	cd /home/santi/Documentos/DistributionTool/build_viewer/_deps && /usr/bin/cmake -P /home/santi/Documentos/DistributionTool/build_viewer/_deps/glfw-subbuild/glfw-populate-prefix/tmp/glfw-populate-gitclone.cmake
-	cd /home/santi/Documentos/DistributionTool/build_viewer/_deps && /usr/bin/cmake -E touch /home/santi/Documentos/DistributionTool/build_viewer/_deps/glfw-subbuild/glfw-populate-prefix/src/glfw-populate-stamp/glfw-populate-download
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --blue --bold --progress-dir=/home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/build_viewer/_deps/glfw-subbuild/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Performing download step (git clone) for 'glfw-populate'"
+	cd /home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/build_viewer/_deps && /usr/bin/cmake -P /home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/build_viewer/_deps/glfw-subbuild/glfw-populate-prefix/tmp/glfw-populate-gitclone.cmake
+	cd /home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/build_viewer/_deps && /usr/bin/cmake -E touch /home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/build_viewer/_deps/glfw-subbuild/glfw-populate-prefix/src/glfw-populate-stamp/glfw-populate-download
 
 glfw-populate-prefix/src/glfw-populate-stamp/glfw-populate-install: glfw-populate-prefix/src/glfw-populate-stamp/glfw-populate-build
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --blue --bold --progress-dir=/home/santi/Documentos/DistributionTool/build_viewer/_deps/glfw-subbuild/CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "No install step for 'glfw-populate'"
-	cd /home/santi/Documentos/DistributionTool/build_viewer/_deps/glfw-build && /usr/bin/cmake -E echo_append
-	cd /home/santi/Documentos/DistributionTool/build_viewer/_deps/glfw-build && /usr/bin/cmake -E touch /home/santi/Documentos/DistributionTool/build_viewer/_deps/glfw-subbuild/glfw-populate-prefix/src/glfw-populate-stamp/glfw-populate-install
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --blue --bold --progress-dir=/home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/build_viewer/_deps/glfw-subbuild/CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "No install step for 'glfw-populate'"
+	cd /home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/build_viewer/_deps/glfw-build && /usr/bin/cmake -E echo_append
+	cd /home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/build_viewer/_deps/glfw-build && /usr/bin/cmake -E touch /home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/build_viewer/_deps/glfw-subbuild/glfw-populate-prefix/src/glfw-populate-stamp/glfw-populate-install
 
 glfw-populate-prefix/src/glfw-populate-stamp/glfw-populate-mkdir:
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --blue --bold --progress-dir=/home/santi/Documentos/DistributionTool/build_viewer/_deps/glfw-subbuild/CMakeFiles --progress-num=$(CMAKE_PROGRESS_6) "Creating directories for 'glfw-populate'"
-	/usr/bin/cmake -Dcfgdir= -P /home/santi/Documentos/DistributionTool/build_viewer/_deps/glfw-subbuild/glfw-populate-prefix/tmp/glfw-populate-mkdirs.cmake
-	/usr/bin/cmake -E touch /home/santi/Documentos/DistributionTool/build_viewer/_deps/glfw-subbuild/glfw-populate-prefix/src/glfw-populate-stamp/glfw-populate-mkdir
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --blue --bold --progress-dir=/home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/build_viewer/_deps/glfw-subbuild/CMakeFiles --progress-num=$(CMAKE_PROGRESS_6) "Creating directories for 'glfw-populate'"
+	/usr/bin/cmake -Dcfgdir= -P /home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/build_viewer/_deps/glfw-subbuild/glfw-populate-prefix/tmp/glfw-populate-mkdirs.cmake
+	/usr/bin/cmake -E touch /home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/build_viewer/_deps/glfw-subbuild/glfw-populate-prefix/src/glfw-populate-stamp/glfw-populate-mkdir
 
 glfw-populate-prefix/src/glfw-populate-stamp/glfw-populate-patch: glfw-populate-prefix/src/glfw-populate-stamp/glfw-populate-patch-info.txt
 glfw-populate-prefix/src/glfw-populate-stamp/glfw-populate-patch: glfw-populate-prefix/src/glfw-populate-stamp/glfw-populate-update
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --blue --bold --progress-dir=/home/santi/Documentos/DistributionTool/build_viewer/_deps/glfw-subbuild/CMakeFiles --progress-num=$(CMAKE_PROGRESS_7) "No patch step for 'glfw-populate'"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --blue --bold --progress-dir=/home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/build_viewer/_deps/glfw-subbuild/CMakeFiles --progress-num=$(CMAKE_PROGRESS_7) "No patch step for 'glfw-populate'"
 	/usr/bin/cmake -E echo_append
-	/usr/bin/cmake -E touch /home/santi/Documentos/DistributionTool/build_viewer/_deps/glfw-subbuild/glfw-populate-prefix/src/glfw-populate-stamp/glfw-populate-patch
+	/usr/bin/cmake -E touch /home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/build_viewer/_deps/glfw-subbuild/glfw-populate-prefix/src/glfw-populate-stamp/glfw-populate-patch
 
 glfw-populate-prefix/src/glfw-populate-stamp/glfw-populate-update:
 .PHONY : glfw-populate-prefix/src/glfw-populate-stamp/glfw-populate-update
 
 glfw-populate-prefix/src/glfw-populate-stamp/glfw-populate-test: glfw-populate-prefix/src/glfw-populate-stamp/glfw-populate-install
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --blue --bold --progress-dir=/home/santi/Documentos/DistributionTool/build_viewer/_deps/glfw-subbuild/CMakeFiles --progress-num=$(CMAKE_PROGRESS_8) "No test step for 'glfw-populate'"
-	cd /home/santi/Documentos/DistributionTool/build_viewer/_deps/glfw-build && /usr/bin/cmake -E echo_append
-	cd /home/santi/Documentos/DistributionTool/build_viewer/_deps/glfw-build && /usr/bin/cmake -E touch /home/santi/Documentos/DistributionTool/build_viewer/_deps/glfw-subbuild/glfw-populate-prefix/src/glfw-populate-stamp/glfw-populate-test
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --blue --bold --progress-dir=/home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/build_viewer/_deps/glfw-subbuild/CMakeFiles --progress-num=$(CMAKE_PROGRESS_8) "No test step for 'glfw-populate'"
+	cd /home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/build_viewer/_deps/glfw-build && /usr/bin/cmake -E echo_append
+	cd /home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/build_viewer/_deps/glfw-build && /usr/bin/cmake -E touch /home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/build_viewer/_deps/glfw-subbuild/glfw-populate-prefix/src/glfw-populate-stamp/glfw-populate-test
 
 glfw-populate-prefix/src/glfw-populate-stamp/glfw-populate-update: glfw-populate-prefix/tmp/glfw-populate-gitupdate.cmake
 glfw-populate-prefix/src/glfw-populate-stamp/glfw-populate-update: glfw-populate-prefix/src/glfw-populate-stamp/glfw-populate-update-info.txt
 glfw-populate-prefix/src/glfw-populate-stamp/glfw-populate-update: glfw-populate-prefix/src/glfw-populate-stamp/glfw-populate-download
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --blue --bold --progress-dir=/home/santi/Documentos/DistributionTool/build_viewer/_deps/glfw-subbuild/CMakeFiles --progress-num=$(CMAKE_PROGRESS_9) "Performing update step for 'glfw-populate'"
-	cd /home/santi/Documentos/DistributionTool/build_viewer/_deps/glfw-src && /usr/bin/cmake -Dcan_fetch=YES -P /home/santi/Documentos/DistributionTool/build_viewer/_deps/glfw-subbuild/glfw-populate-prefix/tmp/glfw-populate-gitupdate.cmake
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --blue --bold --progress-dir=/home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/build_viewer/_deps/glfw-subbuild/CMakeFiles --progress-num=$(CMAKE_PROGRESS_9) "Performing update step for 'glfw-populate'"
+	cd /home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/build_viewer/_deps/glfw-src && /usr/bin/cmake -Dcan_fetch=YES -P /home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/build_viewer/_deps/glfw-subbuild/glfw-populate-prefix/tmp/glfw-populate-gitupdate.cmake
 
 glfw-populate: CMakeFiles/glfw-populate
 glfw-populate: CMakeFiles/glfw-populate-complete
@@ -154,6 +154,6 @@ CMakeFiles/glfw-populate.dir/clean:
 .PHONY : CMakeFiles/glfw-populate.dir/clean
 
 CMakeFiles/glfw-populate.dir/depend:
-	cd /home/santi/Documentos/DistributionTool/build_viewer/_deps/glfw-subbuild && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/santi/Documentos/DistributionTool/build_viewer/_deps/glfw-subbuild /home/santi/Documentos/DistributionTool/build_viewer/_deps/glfw-subbuild /home/santi/Documentos/DistributionTool/build_viewer/_deps/glfw-subbuild /home/santi/Documentos/DistributionTool/build_viewer/_deps/glfw-subbuild /home/santi/Documentos/DistributionTool/build_viewer/_deps/glfw-subbuild/CMakeFiles/glfw-populate.dir/DependInfo.cmake "--color=$(COLOR)"
+	cd /home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/build_viewer/_deps/glfw-subbuild && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/build_viewer/_deps/glfw-subbuild /home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/build_viewer/_deps/glfw-subbuild /home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/build_viewer/_deps/glfw-subbuild /home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/build_viewer/_deps/glfw-subbuild /home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/build_viewer/_deps/glfw-subbuild/CMakeFiles/glfw-populate.dir/DependInfo.cmake "--color=$(COLOR)"
 .PHONY : CMakeFiles/glfw-populate.dir/depend
 
