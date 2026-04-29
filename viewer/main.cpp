@@ -992,7 +992,7 @@ static void runAnalysisThread(AnalysisState* st) {
     cmd += " --r-cut "    + fstr(st->r_cut);
     cmd += " --threshold "+ fstr(st->threshold);
     if (st->vac_dist > 0)
-        cmd += " --vac-dist " + fstr(st->vac_dist);
+        cmd += " --vacancy-detection-radius " + fstr(st->vac_dist);
     cmd += " --output \"" + std::string(st->out_path) + "\"";
     if (st->do_pca)  cmd += " --pca";
     if (st->do_hist) cmd += " --hist";
@@ -1203,9 +1203,9 @@ static void drawAnalysisUI(App& app, Renderer& rend) {
         ImGui::SliderFloat("threshold", &st.threshold, 0.0f, 1.0f, "%.3f");
         if (ImGui::IsItemHovered())
             ImGui::SetTooltip("Distancia mínima al DV de referencia para clasificar como defecto");
-        ImGui::SliderFloat("vac_dist (Å)", &st.vac_dist, -1.f, 6.f, st.vac_dist < 0 ? "auto" : "%.2f");
+        ImGui::SliderFloat("radio detección vacancia (Å)", &st.vac_dist, -1.f, 6.f, st.vac_dist < 0 ? "auto" : "%.2f");
         if (ImGui::IsItemHovered())
-            ImGui::SetTooltip("Threshold de detección de vacancias (-1 = auto: r_cut × 0.4)");
+            ImGui::SetTooltip("Radio mínimo al átomo más cercano para marcar un punto como vacante\n(-1 = auto: r_cut × 0.4)");
         ImGui::Checkbox("PCA",        &st.do_pca);
         ImGui::SameLine();
         ImGui::Checkbox("Histograma", &st.do_hist);

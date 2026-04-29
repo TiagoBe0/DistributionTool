@@ -1,7 +1,7 @@
 CMakeFiles/distool_lib.dir/src/SphericalHarmonics.cpp.o: \
- /home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/src/SphericalHarmonics.cpp \
+ /home/santi/Documents/DistributionTool/src/SphericalHarmonics.cpp \
  /usr/include/stdc-predef.h \
- /home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/include/SphericalHarmonics.h \
+ /home/santi/Documents/DistributionTool/include/SphericalHarmonics.h \
  /usr/include/c++/13/cmath /usr/include/c++/13/bits/requires_hosted.h \
  /usr/include/x86_64-linux-gnu/c++/13/bits/c++config.h \
  /usr/include/x86_64-linux-gnu/c++/13/bits/os_defines.h \

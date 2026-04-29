@@ -8,12 +8,13 @@ set(CMAKE_DEPENDS_LANGUAGES
 
 # The set of dependency files which are needed:
 set(CMAKE_DEPENDS_DEPENDENCY_FILES
-  "/home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/tests/main.cpp" "tests/CMakeFiles/distool_tests.dir/main.cpp.o" "gcc" "tests/CMakeFiles/distool_tests.dir/main.cpp.o.d"
-  "/home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/tests/test_classifier.cpp" "tests/CMakeFiles/distool_tests.dir/test_classifier.cpp.o" "gcc" "tests/CMakeFiles/distool_tests.dir/test_classifier.cpp.o.d"
-  "/home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/tests/test_descriptors.cpp" "tests/CMakeFiles/distool_tests.dir/test_descriptors.cpp.o" "gcc" "tests/CMakeFiles/distool_tests.dir/test_descriptors.cpp.o.d"
-  "/home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/tests/test_pca.cpp" "tests/CMakeFiles/distool_tests.dir/test_pca.cpp.o" "gcc" "tests/CMakeFiles/distool_tests.dir/test_pca.cpp.o.d"
-  "/home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/tests/test_reader.cpp" "tests/CMakeFiles/distool_tests.dir/test_reader.cpp.o" "gcc" "tests/CMakeFiles/distool_tests.dir/test_reader.cpp.o.d"
-  "/home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/tests/test_statistics.cpp" "tests/CMakeFiles/distool_tests.dir/test_statistics.cpp.o" "gcc" "tests/CMakeFiles/distool_tests.dir/test_statistics.cpp.o.d"
+  "/home/santi/Documents/DistributionTool/tests/main.cpp" "tests/CMakeFiles/distool_tests.dir/main.cpp.o" "gcc" "tests/CMakeFiles/distool_tests.dir/main.cpp.o.d"
+  "/home/santi/Documents/DistributionTool/tests/test_classifier.cpp" "tests/CMakeFiles/distool_tests.dir/test_classifier.cpp.o" "gcc" "tests/CMakeFiles/distool_tests.dir/test_classifier.cpp.o.d"
+  "/home/santi/Documents/DistributionTool/tests/test_descriptors.cpp" "tests/CMakeFiles/distool_tests.dir/test_descriptors.cpp.o" "gcc" "tests/CMakeFiles/distool_tests.dir/test_descriptors.cpp.o.d"
+  "/home/santi/Documents/DistributionTool/tests/test_pca.cpp" "tests/CMakeFiles/distool_tests.dir/test_pca.cpp.o" "gcc" "tests/CMakeFiles/distool_tests.dir/test_pca.cpp.o.d"
+  "/home/santi/Documents/DistributionTool/tests/test_reader.cpp" "tests/CMakeFiles/distool_tests.dir/test_reader.cpp.o" "gcc" "tests/CMakeFiles/distool_tests.dir/test_reader.cpp.o.d"
+  "/home/santi/Documents/DistributionTool/tests/test_statistics.cpp" "tests/CMakeFiles/distool_tests.dir/test_statistics.cpp.o" "gcc" "tests/CMakeFiles/distool_tests.dir/test_statistics.cpp.o.d"
+  "/home/santi/Documents/DistributionTool/tests/test_wigner_seitz.cpp" "tests/CMakeFiles/distool_tests.dir/test_wigner_seitz.cpp.o" "gcc" "tests/CMakeFiles/distool_tests.dir/test_wigner_seitz.cpp.o.d"
   )
 
 # Targets to which this target links which contain Fortran sources.

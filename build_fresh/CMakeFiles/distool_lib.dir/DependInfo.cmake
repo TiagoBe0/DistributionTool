@@ -8,13 +8,14 @@ set(CMAKE_DEPENDS_LANGUAGES
 
 # The set of dependency files which are needed:
 set(CMAKE_DEPENDS_DEPENDENCY_FILES
-  "/home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/src/DefectClassifier.cpp" "CMakeFiles/distool_lib.dir/src/DefectClassifier.cpp.o" "gcc" "CMakeFiles/distool_lib.dir/src/DefectClassifier.cpp.o.d"
-  "/home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/src/LammpsDumpReader.cpp" "CMakeFiles/distool_lib.dir/src/LammpsDumpReader.cpp.o" "gcc" "CMakeFiles/distool_lib.dir/src/LammpsDumpReader.cpp.o.d"
-  "/home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/src/PCA.cpp" "CMakeFiles/distool_lib.dir/src/PCA.cpp.o" "gcc" "CMakeFiles/distool_lib.dir/src/PCA.cpp.o.d"
-  "/home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/src/RadialBasis.cpp" "CMakeFiles/distool_lib.dir/src/RadialBasis.cpp.o" "gcc" "CMakeFiles/distool_lib.dir/src/RadialBasis.cpp.o.d"
-  "/home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/src/SOAPDescriptor.cpp" "CMakeFiles/distool_lib.dir/src/SOAPDescriptor.cpp.o" "gcc" "CMakeFiles/distool_lib.dir/src/SOAPDescriptor.cpp.o.d"
-  "/home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/src/SphericalHarmonics.cpp" "CMakeFiles/distool_lib.dir/src/SphericalHarmonics.cpp.o" "gcc" "CMakeFiles/distool_lib.dir/src/SphericalHarmonics.cpp.o.d"
-  "/home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/src/Statistics.cpp" "CMakeFiles/distool_lib.dir/src/Statistics.cpp.o" "gcc" "CMakeFiles/distool_lib.dir/src/Statistics.cpp.o.d"
+  "/home/santi/Documents/DistributionTool/src/DefectClassifier.cpp" "CMakeFiles/distool_lib.dir/src/DefectClassifier.cpp.o" "gcc" "CMakeFiles/distool_lib.dir/src/DefectClassifier.cpp.o.d"
+  "/home/santi/Documents/DistributionTool/src/LammpsDumpReader.cpp" "CMakeFiles/distool_lib.dir/src/LammpsDumpReader.cpp.o" "gcc" "CMakeFiles/distool_lib.dir/src/LammpsDumpReader.cpp.o.d"
+  "/home/santi/Documents/DistributionTool/src/PCA.cpp" "CMakeFiles/distool_lib.dir/src/PCA.cpp.o" "gcc" "CMakeFiles/distool_lib.dir/src/PCA.cpp.o.d"
+  "/home/santi/Documents/DistributionTool/src/RadialBasis.cpp" "CMakeFiles/distool_lib.dir/src/RadialBasis.cpp.o" "gcc" "CMakeFiles/distool_lib.dir/src/RadialBasis.cpp.o.d"
+  "/home/santi/Documents/DistributionTool/src/SOAPDescriptor.cpp" "CMakeFiles/distool_lib.dir/src/SOAPDescriptor.cpp.o" "gcc" "CMakeFiles/distool_lib.dir/src/SOAPDescriptor.cpp.o.d"
+  "/home/santi/Documents/DistributionTool/src/SphericalHarmonics.cpp" "CMakeFiles/distool_lib.dir/src/SphericalHarmonics.cpp.o" "gcc" "CMakeFiles/distool_lib.dir/src/SphericalHarmonics.cpp.o.d"
+  "/home/santi/Documents/DistributionTool/src/Statistics.cpp" "CMakeFiles/distool_lib.dir/src/Statistics.cpp.o" "gcc" "CMakeFiles/distool_lib.dir/src/Statistics.cpp.o.d"
+  "/home/santi/Documents/DistributionTool/src/WignerSeitz.cpp" "CMakeFiles/distool_lib.dir/src/WignerSeitz.cpp.o" "gcc" "CMakeFiles/distool_lib.dir/src/WignerSeitz.cpp.o.d"
   )
 
 # Targets to which this target links which contain Fortran sources.

@@ -13,6 +13,8 @@ file(REMOVE_RECURSE
   "CMakeFiles/distool_lib.dir/src/SphericalHarmonics.cpp.o.d"
   "CMakeFiles/distool_lib.dir/src/Statistics.cpp.o"
   "CMakeFiles/distool_lib.dir/src/Statistics.cpp.o.d"
+  "CMakeFiles/distool_lib.dir/src/WignerSeitz.cpp.o"
+  "CMakeFiles/distool_lib.dir/src/WignerSeitz.cpp.o.d"
 )
 
 # Per-language clean rules from dependency scanning.

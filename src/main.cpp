@@ -104,11 +104,14 @@ static void printUsage(const char* prog) {
         "  --r-cut  R       Cutoff radius [Å]            (default: 5.0)\n"
         "  --sigma  S       Gaussian width [Å] (-1=auto) (default: -1)\n\n"
         "Classification options:\n"
-        "  --threshold T          Distance threshold for defects (default: 0.15)\n"
-        "  --vac-dist  D          Vacancy detection distance [Å] (default: r_cut×0.4)\n"
-        "  --grid-spacing G       Vacancy grid spacing [Å]       (default: 0.5)\n"
-        "  --vac-cluster-radius R Cluster radius for vacancy merging [Å]\n"
-        "                         (default: vac-dist; use FaVaD greedy algorithm)\n\n"
+        "  --threshold T                  Distance threshold for defects (default: 0.15)\n"
+        "  --vacancy-detection-radius D   Min distance to nearest atom to flag a grid\n"
+        "                                 point as vacant [Å]  (default: r_cut×0.4)\n"
+        "  --grid-spacing G               Vacancy detection grid spacing [Å] (default: 0.5)\n"
+        "  --vacancy-merge-radius R       Radius for merging nearby vacant points into\n"
+        "                                 one vacancy cluster [Å] (default: detection radius)\n"
+        "  Aliases: --vac-dist (= --vacancy-detection-radius)\n"
+        "           --vac-cluster-radius (= --vacancy-merge-radius)\n\n"
         "Reference DV files (secondary classification):\n"
         "  --ref-sia  FILE  DV file for self-interstitial atom\n"
         "  --ref-antv FILE  DV file for atom-next-to-vacancy\n"
@@ -194,6 +197,31 @@ static void writeVacancyCSV(
           << c.n_pts      << '\n';
     std::cout << "  → vacancy CSV written: " << path
               << "  (" << clusters.size() << " vacancies)\n";
+}
+
+static void writeInterstitialCSV(
+    const std::vector<WSSite>& sites,
+    const std::string& path)
+{
+    std::ofstream f(path);
+    if (!f) throw std::runtime_error("Cannot write: " + path);
+    f << "# ref_id x y z occupancy n_extra\n" << std::fixed << std::setprecision(8);
+
+    int n_sites = 0, n_extra = 0;
+    for (const auto& s : sites) {
+        if (s.occupancy < 2) continue;
+        f << s.ref_atom_id << ' '
+          << s.x           << ' '
+          << s.y           << ' '
+          << s.z           << ' '
+          << s.occupancy   << ' '
+          << (s.occupancy - 1) << '\n';
+        ++n_sites;
+        n_extra += s.occupancy - 1;
+    }
+    std::cout << "  → interstitials CSV written: " << path
+              << "  (" << n_sites << " crowded sites, "
+              << n_extra << " extra atoms)\n";
 }
 
 // Write analyzed LAMMPS dump — same box/timestep as input, with extra columns
@@ -340,25 +368,46 @@ static std::string prefixedPath(const std::string& prefix, const std::string& pa
 // ─────────────────────────────────────────────────────────────────────────────
 
 static void printSummary(const Frame& frame,
-                         const std::vector<VacancyPoint>& vac_pts,
                          const std::vector<VacancyCluster>& clusters,
-                         double grid_spacing) {
+                         double vac_vol,
+                         int ws_vac, int ws_int) {
     int cnt[5] = {0,0,0,0,0};
     for (const auto& a : frame.atoms)
         ++cnt[static_cast<int>(a.defect_type)];
 
-    const double vac_vol = static_cast<double>(vac_pts.size()) * grid_spacing * grid_spacing * grid_spacing;
+    const int    total   = frame.size();
+    const double vac_pct = total > 0
+        ? 100.0 * static_cast<double>(clusters.size()) / total : 0.0;
 
-    std::cout << "\n┌─── Defect Summary ───────────────────────────────┐\n"
-              << "│  Total atoms        : " << std::setw(6) << frame.size()     << "                     │\n"
-              << "│  Lattice            : " << std::setw(6) << cnt[0]           << "                     │\n"
-              << "│  Interstitials      : " << std::setw(6) << cnt[1]           << "                     │\n"
-              << "│  Vacancy-adjacent   : " << std::setw(6) << cnt[2]           << "                     │\n"
-              << "│  Type-A defects     : " << std::setw(6) << cnt[3]           << "                     │\n"
-              << "│  Unknown (distorted): " << std::setw(6) << cnt[4]           << "                     │\n"
-              << "│  Vacancies (clustered): " << std::setw(4) << clusters.size()<< "                     │\n"
-              << "│  Vacant grid pts    : " << std::setw(6) << vac_pts.size()   << "                     │\n"
-              << "│  Void volume (est.) : " << std::setw(6) << std::fixed
+    char buf[64];
+    std::cout << std::right
+              << "\n┌─── Defect Summary ───────────────────────────────┐\n"
+              << "│  Total atoms        : " << std::setw(6) << total  << "                     │\n"
+              << "│  Lattice            : " << std::setw(6) << cnt[0] << "                     │\n"
+              << "│  Interstitials      : " << std::setw(6) << cnt[1] << "                     │\n"
+              << "│  Vacancy-adjacent   : " << std::setw(6) << cnt[2] << "                     │\n"
+              << "│  Type-A defects     : " << std::setw(6) << cnt[3] << "                     │\n"
+              << "│  Unknown (distorted): " << std::setw(6) << cnt[4] << "                     │\n"
+              << "├──────────────────────────────────────────────────┤\n";
+
+    if (ws_vac >= 0) {
+        snprintf(buf, sizeof(buf),
+                 "│  Vacancies  grid:%5d  WS:%5d  (%6.3f%%)       │",
+                 (int)clusters.size(), ws_vac, vac_pct);
+        std::cout << buf << '\n';
+        const double int_pct = total > 0 ? 100.0 * ws_int / total : 0.0;
+        snprintf(buf, sizeof(buf),
+                 "│  Interstitials (WS) : %6d  (%6.3f%%)          │",
+                 ws_int, int_pct);
+        std::cout << buf << '\n';
+    } else {
+        snprintf(buf, sizeof(buf),
+                 "│  Vacancies (grid)   : %6d  (%6.3f%%)          │",
+                 (int)clusters.size(), vac_pct);
+        std::cout << buf << '\n';
+    }
+
+    std::cout << "│  Void volume (est.) : " << std::setw(6) << std::fixed
                                             << std::setprecision(1) << vac_vol
                                             << " Å³                 │\n"
               << "└──────────────────────────────────────────────────┘\n";
@@ -424,9 +473,12 @@ int main(int argc, char* argv[]) {
         else if (a == "--r-cut")     soap.r_cut   = nextDbl();
         else if (a == "--sigma")     soap.sigma   = nextDbl();
         else if (a == "--threshold")    threshold    = nextDbl();
-        else if (a == "--vac-dist")           vac_dist           = nextDbl();
-        else if (a == "--grid-spacing")       grid_spacing       = nextDbl();
-        else if (a == "--vac-cluster-radius") vac_cluster_radius = nextDbl();
+        else if (a == "--vacancy-detection-radius" || a == "--vac-dist")
+            vac_dist           = nextDbl();
+        else if (a == "--grid-spacing")
+            grid_spacing       = nextDbl();
+        else if (a == "--vacancy-merge-radius" || a == "--vac-cluster-radius")
+            vac_cluster_radius = nextDbl();
         else if (a == "--ref-sia")      sia_file     = nextStr();
         else if (a == "--ref-antv")     antv_file    = nextStr();
         else if (a == "--ref-typea")    typea_file   = nextStr();
@@ -727,7 +779,9 @@ int main(int argc, char* argv[]) {
             const double Lz = dmg_frame.box.lz();
             int n_adj = 0;
             for (auto& atom : dmg_frame.atoms) {
-                if (atom.defect_type != DefectType::Unknown) continue;
+                if (atom.defect_type == DefectType::Interstitial ||
+                    atom.defect_type == DefectType::TypeA         ||
+                    atom.defect_type == DefectType::VacancyAdjacent) continue;
                 for (const auto& c : clusters) {
                     double dx = atom.x - c.center[0];
                     double dy = atom.y - c.center[1];
@@ -751,14 +805,33 @@ int main(int argc, char* argv[]) {
 
         // Wigner-Seitz classification (parallel to SOAP)
         std::vector<WSAtomResult> ws_results;
+        int ws_vac_count = -1, ws_int_count = -1;
         if (do_ws) {
             std::cout << "\n[WS]  Classifying via Wigner-Seitz…\n";
             ws_results = ws.classify(dmg_frame);
-            std::cout << "      Vacancies: " << ws.vacancyCount()
-                      << "  Interstitials: " << ws.interstitialCount() << '\n';
+            ws_vac_count = ws.vacancyCount();
+            ws_int_count = ws.interstitialCount();
+
+            // Propagate WS interstitial labels → SOAP frame so the viewer
+            // filter and CSV reflect them even without --ref-sia.
+            int n_int_prop = 0;
+            for (int i = 0; i < (int)ws_results.size(); ++i) {
+                if (!ws_results[i].is_interstitial) continue;
+                auto& atom = dmg_frame.atoms[i];
+                if (atom.defect_type != DefectType::TypeA &&
+                    atom.defect_type != DefectType::VacancyAdjacent) {
+                    atom.defect_type = DefectType::Interstitial;
+                    ++n_int_prop;
+                }
+            }
+            if (n_int_prop > 0)
+                std::cout << "      " << n_int_prop
+                          << " atoms re-classified as Interstitial (WS)\n";
         }
 
-        printSummary(dmg_frame, vac_pts, clusters, grid_spacing);
+        const double vac_vol = static_cast<double>(vac_pts.size())
+                               * grid_spacing * grid_spacing * grid_spacing;
+        printSummary(dmg_frame, clusters, vac_vol, ws_vac_count, ws_int_count);
 
         // ══════════════════════════════════════════════════════════════════════
         // 4. OUTPUTS
@@ -783,6 +856,9 @@ int main(int argc, char* argv[]) {
                            prefixedPath("ws_", out_file));
             writeWSSitesCSV(ws.sites(),
                             prefixedPath("ws_sites_", out_file));
+            if (ws_int_count > 0)
+                writeInterstitialCSV(ws.sites(),
+                                     prefixedPath("interstitials_", out_file));
         }
 
         // Distance histogram (Fig. 4b equivalent)

@@ -1,8 +1,8 @@
 CMakeFiles/distool_lib.dir/src/LammpsDumpReader.cpp.o: \
- /home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/src/LammpsDumpReader.cpp \
+ /home/santi/Documents/DistributionTool/src/LammpsDumpReader.cpp \
  /usr/include/stdc-predef.h \
- /home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/include/LammpsDumpReader.h \
- /home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/include/AtomData.h \
+ /home/santi/Documents/DistributionTool/include/LammpsDumpReader.h \
+ /home/santi/Documents/DistributionTool/include/AtomData.h \
  /usr/include/c++/13/array /usr/include/c++/13/compare \
  /usr/include/c++/13/initializer_list \
  /usr/include/x86_64-linux-gnu/c++/13/bits/c++config.h \

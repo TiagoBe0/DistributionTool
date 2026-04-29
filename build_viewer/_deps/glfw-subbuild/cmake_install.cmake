@@ -1,4 +1,4 @@
-# Install script for directory: /home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/build_viewer/_deps/glfw-subbuild
+# Install script for directory: /home/santi/Documents/DistributionTool/build_viewer/_deps/glfw-subbuild
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
@@ -45,5 +45,5 @@ endif()
 
 string(REPLACE ";" "\n" CMAKE_INSTALL_MANIFEST_CONTENT
        "${CMAKE_INSTALL_MANIFEST_FILES}")
-file(WRITE "/home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/build_viewer/_deps/glfw-subbuild/${CMAKE_INSTALL_MANIFEST}"
+file(WRITE "/home/santi/Documents/DistributionTool/build_viewer/_deps/glfw-subbuild/${CMAKE_INSTALL_MANIFEST}"
      "${CMAKE_INSTALL_MANIFEST_CONTENT}")

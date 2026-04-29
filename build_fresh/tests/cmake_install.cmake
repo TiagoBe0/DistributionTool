@@ -1,4 +1,4 @@
-# Install script for directory: /home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/tests
+# Install script for directory: /home/santi/Documents/DistributionTool/tests
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)

@@ -1,8 +1,8 @@
 CMakeFiles/distool_lib.dir/src/DefectClassifier.cpp.o: \
- /home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/src/DefectClassifier.cpp \
+ /home/santi/Documents/DistributionTool/src/DefectClassifier.cpp \
  /usr/include/stdc-predef.h \
- /home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/include/DefectClassifier.h \
- /home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/include/AtomData.h \
+ /home/santi/Documents/DistributionTool/include/DefectClassifier.h \
+ /home/santi/Documents/DistributionTool/include/AtomData.h \
  /usr/include/c++/13/array /usr/include/c++/13/compare \
  /usr/include/c++/13/initializer_list \
  /usr/include/x86_64-linux-gnu/c++/13/bits/c++config.h \
@@ -129,8 +129,8 @@ CMakeFiles/distool_lib.dir/src/DefectClassifier.cpp.o: \
  /usr/include/c++/13/bits/stl_vector.h \
  /usr/include/c++/13/bits/stl_bvector.h \
  /usr/include/c++/13/bits/vector.tcc \
- /home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/include/Statistics.h \
- /home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/include/CellList.h \
+ /home/santi/Documents/DistributionTool/include/Statistics.h \
+ /home/santi/Documents/DistributionTool/include/CellList.h \
  /usr/include/c++/13/cmath /usr/include/math.h \
  /usr/include/x86_64-linux-gnu/bits/math-vector.h \
  /usr/include/x86_64-linux-gnu/bits/libm-simd-decl-stubs.h \

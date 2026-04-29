@@ -4,7 +4,7 @@
 # compile CXX with /usr/bin/c++
 CXX_DEFINES = -DUSE_OPENMP
 
-CXX_INCLUDES = -I/home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/include -isystem /usr/include/eigen3
+CXX_INCLUDES = -I/home/santi/Documents/DistributionTool/include -isystem /home/santi/miniconda3/include/eigen3
 
 CXX_FLAGS = -O3 -march=native -DNDEBUG -Wall -std=gnu++17 -fopenmp
 

@@ -11,6 +11,8 @@ file(REMOVE_RECURSE
   "CMakeFiles/distool_tests.dir/test_reader.cpp.o.d"
   "CMakeFiles/distool_tests.dir/test_statistics.cpp.o"
   "CMakeFiles/distool_tests.dir/test_statistics.cpp.o.d"
+  "CMakeFiles/distool_tests.dir/test_wigner_seitz.cpp.o"
+  "CMakeFiles/distool_tests.dir/test_wigner_seitz.cpp.o.d"
   "distool_tests"
   "distool_tests.pdb"
 )

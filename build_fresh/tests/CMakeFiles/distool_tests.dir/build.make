@@ -53,10 +53,10 @@ RM = /usr/bin/cmake -E rm -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/santi-simaf/Documentos/ABRIL-2026/DistributionTool
+CMAKE_SOURCE_DIR = /home/santi/Documents/DistributionTool
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/build_fresh
+CMAKE_BINARY_DIR = /home/santi/Documents/DistributionTool/build_fresh
 
 # Include any dependencies generated for this target.
 include tests/CMakeFiles/distool_tests.dir/depend.make
@@ -70,88 +70,102 @@ include tests/CMakeFiles/distool_tests.dir/progress.make
 include tests/CMakeFiles/distool_tests.dir/flags.make
 
 tests/CMakeFiles/distool_tests.dir/main.cpp.o: tests/CMakeFiles/distool_tests.dir/flags.make
-tests/CMakeFiles/distool_tests.dir/main.cpp.o: /home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/tests/main.cpp
+tests/CMakeFiles/distool_tests.dir/main.cpp.o: /home/santi/Documents/DistributionTool/tests/main.cpp
 tests/CMakeFiles/distool_tests.dir/main.cpp.o: tests/CMakeFiles/distool_tests.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/build_fresh/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object tests/CMakeFiles/distool_tests.dir/main.cpp.o"
-	cd /home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/build_fresh/tests && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT tests/CMakeFiles/distool_tests.dir/main.cpp.o -MF CMakeFiles/distool_tests.dir/main.cpp.o.d -o CMakeFiles/distool_tests.dir/main.cpp.o -c /home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/tests/main.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/santi/Documents/DistributionTool/build_fresh/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object tests/CMakeFiles/distool_tests.dir/main.cpp.o"
+	cd /home/santi/Documents/DistributionTool/build_fresh/tests && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT tests/CMakeFiles/distool_tests.dir/main.cpp.o -MF CMakeFiles/distool_tests.dir/main.cpp.o.d -o CMakeFiles/distool_tests.dir/main.cpp.o -c /home/santi/Documents/DistributionTool/tests/main.cpp
 
 tests/CMakeFiles/distool_tests.dir/main.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/distool_tests.dir/main.cpp.i"
-	cd /home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/build_fresh/tests && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/tests/main.cpp > CMakeFiles/distool_tests.dir/main.cpp.i
+	cd /home/santi/Documents/DistributionTool/build_fresh/tests && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/santi/Documents/DistributionTool/tests/main.cpp > CMakeFiles/distool_tests.dir/main.cpp.i
 
 tests/CMakeFiles/distool_tests.dir/main.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/distool_tests.dir/main.cpp.s"
-	cd /home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/build_fresh/tests && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/tests/main.cpp -o CMakeFiles/distool_tests.dir/main.cpp.s
+	cd /home/santi/Documents/DistributionTool/build_fresh/tests && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/santi/Documents/DistributionTool/tests/main.cpp -o CMakeFiles/distool_tests.dir/main.cpp.s
 
 tests/CMakeFiles/distool_tests.dir/test_statistics.cpp.o: tests/CMakeFiles/distool_tests.dir/flags.make
-tests/CMakeFiles/distool_tests.dir/test_statistics.cpp.o: /home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/tests/test_statistics.cpp
+tests/CMakeFiles/distool_tests.dir/test_statistics.cpp.o: /home/santi/Documents/DistributionTool/tests/test_statistics.cpp
 tests/CMakeFiles/distool_tests.dir/test_statistics.cpp.o: tests/CMakeFiles/distool_tests.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/build_fresh/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building CXX object tests/CMakeFiles/distool_tests.dir/test_statistics.cpp.o"
-	cd /home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/build_fresh/tests && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT tests/CMakeFiles/distool_tests.dir/test_statistics.cpp.o -MF CMakeFiles/distool_tests.dir/test_statistics.cpp.o.d -o CMakeFiles/distool_tests.dir/test_statistics.cpp.o -c /home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/tests/test_statistics.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/santi/Documents/DistributionTool/build_fresh/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building CXX object tests/CMakeFiles/distool_tests.dir/test_statistics.cpp.o"
+	cd /home/santi/Documents/DistributionTool/build_fresh/tests && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT tests/CMakeFiles/distool_tests.dir/test_statistics.cpp.o -MF CMakeFiles/distool_tests.dir/test_statistics.cpp.o.d -o CMakeFiles/distool_tests.dir/test_statistics.cpp.o -c /home/santi/Documents/DistributionTool/tests/test_statistics.cpp
 
 tests/CMakeFiles/distool_tests.dir/test_statistics.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/distool_tests.dir/test_statistics.cpp.i"
-	cd /home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/build_fresh/tests && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/tests/test_statistics.cpp > CMakeFiles/distool_tests.dir/test_statistics.cpp.i
+	cd /home/santi/Documents/DistributionTool/build_fresh/tests && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/santi/Documents/DistributionTool/tests/test_statistics.cpp > CMakeFiles/distool_tests.dir/test_statistics.cpp.i
 
 tests/CMakeFiles/distool_tests.dir/test_statistics.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/distool_tests.dir/test_statistics.cpp.s"
-	cd /home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/build_fresh/tests && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/tests/test_statistics.cpp -o CMakeFiles/distool_tests.dir/test_statistics.cpp.s
+	cd /home/santi/Documents/DistributionTool/build_fresh/tests && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/santi/Documents/DistributionTool/tests/test_statistics.cpp -o CMakeFiles/distool_tests.dir/test_statistics.cpp.s
 
 tests/CMakeFiles/distool_tests.dir/test_descriptors.cpp.o: tests/CMakeFiles/distool_tests.dir/flags.make
-tests/CMakeFiles/distool_tests.dir/test_descriptors.cpp.o: /home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/tests/test_descriptors.cpp
+tests/CMakeFiles/distool_tests.dir/test_descriptors.cpp.o: /home/santi/Documents/DistributionTool/tests/test_descriptors.cpp
 tests/CMakeFiles/distool_tests.dir/test_descriptors.cpp.o: tests/CMakeFiles/distool_tests.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/build_fresh/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building CXX object tests/CMakeFiles/distool_tests.dir/test_descriptors.cpp.o"
-	cd /home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/build_fresh/tests && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT tests/CMakeFiles/distool_tests.dir/test_descriptors.cpp.o -MF CMakeFiles/distool_tests.dir/test_descriptors.cpp.o.d -o CMakeFiles/distool_tests.dir/test_descriptors.cpp.o -c /home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/tests/test_descriptors.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/santi/Documents/DistributionTool/build_fresh/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building CXX object tests/CMakeFiles/distool_tests.dir/test_descriptors.cpp.o"
+	cd /home/santi/Documents/DistributionTool/build_fresh/tests && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT tests/CMakeFiles/distool_tests.dir/test_descriptors.cpp.o -MF CMakeFiles/distool_tests.dir/test_descriptors.cpp.o.d -o CMakeFiles/distool_tests.dir/test_descriptors.cpp.o -c /home/santi/Documents/DistributionTool/tests/test_descriptors.cpp
 
 tests/CMakeFiles/distool_tests.dir/test_descriptors.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/distool_tests.dir/test_descriptors.cpp.i"
-	cd /home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/build_fresh/tests && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/tests/test_descriptors.cpp > CMakeFiles/distool_tests.dir/test_descriptors.cpp.i
+	cd /home/santi/Documents/DistributionTool/build_fresh/tests && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/santi/Documents/DistributionTool/tests/test_descriptors.cpp > CMakeFiles/distool_tests.dir/test_descriptors.cpp.i
 
 tests/CMakeFiles/distool_tests.dir/test_descriptors.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/distool_tests.dir/test_descriptors.cpp.s"
-	cd /home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/build_fresh/tests && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/tests/test_descriptors.cpp -o CMakeFiles/distool_tests.dir/test_descriptors.cpp.s
+	cd /home/santi/Documents/DistributionTool/build_fresh/tests && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/santi/Documents/DistributionTool/tests/test_descriptors.cpp -o CMakeFiles/distool_tests.dir/test_descriptors.cpp.s
 
 tests/CMakeFiles/distool_tests.dir/test_classifier.cpp.o: tests/CMakeFiles/distool_tests.dir/flags.make
-tests/CMakeFiles/distool_tests.dir/test_classifier.cpp.o: /home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/tests/test_classifier.cpp
+tests/CMakeFiles/distool_tests.dir/test_classifier.cpp.o: /home/santi/Documents/DistributionTool/tests/test_classifier.cpp
 tests/CMakeFiles/distool_tests.dir/test_classifier.cpp.o: tests/CMakeFiles/distool_tests.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/build_fresh/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Building CXX object tests/CMakeFiles/distool_tests.dir/test_classifier.cpp.o"
-	cd /home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/build_fresh/tests && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT tests/CMakeFiles/distool_tests.dir/test_classifier.cpp.o -MF CMakeFiles/distool_tests.dir/test_classifier.cpp.o.d -o CMakeFiles/distool_tests.dir/test_classifier.cpp.o -c /home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/tests/test_classifier.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/santi/Documents/DistributionTool/build_fresh/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Building CXX object tests/CMakeFiles/distool_tests.dir/test_classifier.cpp.o"
+	cd /home/santi/Documents/DistributionTool/build_fresh/tests && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT tests/CMakeFiles/distool_tests.dir/test_classifier.cpp.o -MF CMakeFiles/distool_tests.dir/test_classifier.cpp.o.d -o CMakeFiles/distool_tests.dir/test_classifier.cpp.o -c /home/santi/Documents/DistributionTool/tests/test_classifier.cpp
 
 tests/CMakeFiles/distool_tests.dir/test_classifier.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/distool_tests.dir/test_classifier.cpp.i"
-	cd /home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/build_fresh/tests && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/tests/test_classifier.cpp > CMakeFiles/distool_tests.dir/test_classifier.cpp.i
+	cd /home/santi/Documents/DistributionTool/build_fresh/tests && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/santi/Documents/DistributionTool/tests/test_classifier.cpp > CMakeFiles/distool_tests.dir/test_classifier.cpp.i
 
 tests/CMakeFiles/distool_tests.dir/test_classifier.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/distool_tests.dir/test_classifier.cpp.s"
-	cd /home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/build_fresh/tests && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/tests/test_classifier.cpp -o CMakeFiles/distool_tests.dir/test_classifier.cpp.s
+	cd /home/santi/Documents/DistributionTool/build_fresh/tests && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/santi/Documents/DistributionTool/tests/test_classifier.cpp -o CMakeFiles/distool_tests.dir/test_classifier.cpp.s
 
 tests/CMakeFiles/distool_tests.dir/test_pca.cpp.o: tests/CMakeFiles/distool_tests.dir/flags.make
-tests/CMakeFiles/distool_tests.dir/test_pca.cpp.o: /home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/tests/test_pca.cpp
+tests/CMakeFiles/distool_tests.dir/test_pca.cpp.o: /home/santi/Documents/DistributionTool/tests/test_pca.cpp
 tests/CMakeFiles/distool_tests.dir/test_pca.cpp.o: tests/CMakeFiles/distool_tests.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/build_fresh/CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Building CXX object tests/CMakeFiles/distool_tests.dir/test_pca.cpp.o"
-	cd /home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/build_fresh/tests && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT tests/CMakeFiles/distool_tests.dir/test_pca.cpp.o -MF CMakeFiles/distool_tests.dir/test_pca.cpp.o.d -o CMakeFiles/distool_tests.dir/test_pca.cpp.o -c /home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/tests/test_pca.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/santi/Documents/DistributionTool/build_fresh/CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Building CXX object tests/CMakeFiles/distool_tests.dir/test_pca.cpp.o"
+	cd /home/santi/Documents/DistributionTool/build_fresh/tests && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT tests/CMakeFiles/distool_tests.dir/test_pca.cpp.o -MF CMakeFiles/distool_tests.dir/test_pca.cpp.o.d -o CMakeFiles/distool_tests.dir/test_pca.cpp.o -c /home/santi/Documents/DistributionTool/tests/test_pca.cpp
 
 tests/CMakeFiles/distool_tests.dir/test_pca.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/distool_tests.dir/test_pca.cpp.i"
-	cd /home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/build_fresh/tests && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/tests/test_pca.cpp > CMakeFiles/distool_tests.dir/test_pca.cpp.i
+	cd /home/santi/Documents/DistributionTool/build_fresh/tests && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/santi/Documents/DistributionTool/tests/test_pca.cpp > CMakeFiles/distool_tests.dir/test_pca.cpp.i
 
 tests/CMakeFiles/distool_tests.dir/test_pca.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/distool_tests.dir/test_pca.cpp.s"
-	cd /home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/build_fresh/tests && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/tests/test_pca.cpp -o CMakeFiles/distool_tests.dir/test_pca.cpp.s
+	cd /home/santi/Documents/DistributionTool/build_fresh/tests && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/santi/Documents/DistributionTool/tests/test_pca.cpp -o CMakeFiles/distool_tests.dir/test_pca.cpp.s
 
 tests/CMakeFiles/distool_tests.dir/test_reader.cpp.o: tests/CMakeFiles/distool_tests.dir/flags.make
-tests/CMakeFiles/distool_tests.dir/test_reader.cpp.o: /home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/tests/test_reader.cpp
+tests/CMakeFiles/distool_tests.dir/test_reader.cpp.o: /home/santi/Documents/DistributionTool/tests/test_reader.cpp
 tests/CMakeFiles/distool_tests.dir/test_reader.cpp.o: tests/CMakeFiles/distool_tests.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/build_fresh/CMakeFiles --progress-num=$(CMAKE_PROGRESS_6) "Building CXX object tests/CMakeFiles/distool_tests.dir/test_reader.cpp.o"
-	cd /home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/build_fresh/tests && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT tests/CMakeFiles/distool_tests.dir/test_reader.cpp.o -MF CMakeFiles/distool_tests.dir/test_reader.cpp.o.d -o CMakeFiles/distool_tests.dir/test_reader.cpp.o -c /home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/tests/test_reader.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/santi/Documents/DistributionTool/build_fresh/CMakeFiles --progress-num=$(CMAKE_PROGRESS_6) "Building CXX object tests/CMakeFiles/distool_tests.dir/test_reader.cpp.o"
+	cd /home/santi/Documents/DistributionTool/build_fresh/tests && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT tests/CMakeFiles/distool_tests.dir/test_reader.cpp.o -MF CMakeFiles/distool_tests.dir/test_reader.cpp.o.d -o CMakeFiles/distool_tests.dir/test_reader.cpp.o -c /home/santi/Documents/DistributionTool/tests/test_reader.cpp
 
 tests/CMakeFiles/distool_tests.dir/test_reader.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/distool_tests.dir/test_reader.cpp.i"
-	cd /home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/build_fresh/tests && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/tests/test_reader.cpp > CMakeFiles/distool_tests.dir/test_reader.cpp.i
+	cd /home/santi/Documents/DistributionTool/build_fresh/tests && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/santi/Documents/DistributionTool/tests/test_reader.cpp > CMakeFiles/distool_tests.dir/test_reader.cpp.i
 
 tests/CMakeFiles/distool_tests.dir/test_reader.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/distool_tests.dir/test_reader.cpp.s"
-	cd /home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/build_fresh/tests && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/tests/test_reader.cpp -o CMakeFiles/distool_tests.dir/test_reader.cpp.s
+	cd /home/santi/Documents/DistributionTool/build_fresh/tests && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/santi/Documents/DistributionTool/tests/test_reader.cpp -o CMakeFiles/distool_tests.dir/test_reader.cpp.s
+
+tests/CMakeFiles/distool_tests.dir/test_wigner_seitz.cpp.o: tests/CMakeFiles/distool_tests.dir/flags.make
+tests/CMakeFiles/distool_tests.dir/test_wigner_seitz.cpp.o: /home/santi/Documents/DistributionTool/tests/test_wigner_seitz.cpp
+tests/CMakeFiles/distool_tests.dir/test_wigner_seitz.cpp.o: tests/CMakeFiles/distool_tests.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/santi/Documents/DistributionTool/build_fresh/CMakeFiles --progress-num=$(CMAKE_PROGRESS_7) "Building CXX object tests/CMakeFiles/distool_tests.dir/test_wigner_seitz.cpp.o"
+	cd /home/santi/Documents/DistributionTool/build_fresh/tests && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT tests/CMakeFiles/distool_tests.dir/test_wigner_seitz.cpp.o -MF CMakeFiles/distool_tests.dir/test_wigner_seitz.cpp.o.d -o CMakeFiles/distool_tests.dir/test_wigner_seitz.cpp.o -c /home/santi/Documents/DistributionTool/tests/test_wigner_seitz.cpp
+
+tests/CMakeFiles/distool_tests.dir/test_wigner_seitz.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/distool_tests.dir/test_wigner_seitz.cpp.i"
+	cd /home/santi/Documents/DistributionTool/build_fresh/tests && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/santi/Documents/DistributionTool/tests/test_wigner_seitz.cpp > CMakeFiles/distool_tests.dir/test_wigner_seitz.cpp.i
+
+tests/CMakeFiles/distool_tests.dir/test_wigner_seitz.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/distool_tests.dir/test_wigner_seitz.cpp.s"
+	cd /home/santi/Documents/DistributionTool/build_fresh/tests && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/santi/Documents/DistributionTool/tests/test_wigner_seitz.cpp -o CMakeFiles/distool_tests.dir/test_wigner_seitz.cpp.s
 
 # Object files for target distool_tests
 distool_tests_OBJECTS = \
@@ -160,17 +174,19 @@ distool_tests_OBJECTS = \
 "CMakeFiles/distool_tests.dir/test_descriptors.cpp.o" \
 "CMakeFiles/distool_tests.dir/test_classifier.cpp.o" \
 "CMakeFiles/distool_tests.dir/test_pca.cpp.o" \
-"CMakeFiles/distool_tests.dir/test_reader.cpp.o"
+"CMakeFiles/distool_tests.dir/test_reader.cpp.o" \
+"CMakeFiles/distool_tests.dir/test_wigner_seitz.cpp.o"
 
 # External object files for target distool_tests
 distool_tests_EXTERNAL_OBJECTS = \
-"/home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/build_fresh/CMakeFiles/distool_lib.dir/src/LammpsDumpReader.cpp.o" \
-"/home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/build_fresh/CMakeFiles/distool_lib.dir/src/SphericalHarmonics.cpp.o" \
-"/home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/build_fresh/CMakeFiles/distool_lib.dir/src/RadialBasis.cpp.o" \
-"/home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/build_fresh/CMakeFiles/distool_lib.dir/src/SOAPDescriptor.cpp.o" \
-"/home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/build_fresh/CMakeFiles/distool_lib.dir/src/Statistics.cpp.o" \
-"/home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/build_fresh/CMakeFiles/distool_lib.dir/src/DefectClassifier.cpp.o" \
-"/home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/build_fresh/CMakeFiles/distool_lib.dir/src/PCA.cpp.o"
+"/home/santi/Documents/DistributionTool/build_fresh/CMakeFiles/distool_lib.dir/src/LammpsDumpReader.cpp.o" \
+"/home/santi/Documents/DistributionTool/build_fresh/CMakeFiles/distool_lib.dir/src/SphericalHarmonics.cpp.o" \
+"/home/santi/Documents/DistributionTool/build_fresh/CMakeFiles/distool_lib.dir/src/RadialBasis.cpp.o" \
+"/home/santi/Documents/DistributionTool/build_fresh/CMakeFiles/distool_lib.dir/src/SOAPDescriptor.cpp.o" \
+"/home/santi/Documents/DistributionTool/build_fresh/CMakeFiles/distool_lib.dir/src/Statistics.cpp.o" \
+"/home/santi/Documents/DistributionTool/build_fresh/CMakeFiles/distool_lib.dir/src/DefectClassifier.cpp.o" \
+"/home/santi/Documents/DistributionTool/build_fresh/CMakeFiles/distool_lib.dir/src/PCA.cpp.o" \
+"/home/santi/Documents/DistributionTool/build_fresh/CMakeFiles/distool_lib.dir/src/WignerSeitz.cpp.o"
 
 tests/distool_tests: tests/CMakeFiles/distool_tests.dir/main.cpp.o
 tests/distool_tests: tests/CMakeFiles/distool_tests.dir/test_statistics.cpp.o
@@ -178,6 +194,7 @@ tests/distool_tests: tests/CMakeFiles/distool_tests.dir/test_descriptors.cpp.o
 tests/distool_tests: tests/CMakeFiles/distool_tests.dir/test_classifier.cpp.o
 tests/distool_tests: tests/CMakeFiles/distool_tests.dir/test_pca.cpp.o
 tests/distool_tests: tests/CMakeFiles/distool_tests.dir/test_reader.cpp.o
+tests/distool_tests: tests/CMakeFiles/distool_tests.dir/test_wigner_seitz.cpp.o
 tests/distool_tests: CMakeFiles/distool_lib.dir/src/LammpsDumpReader.cpp.o
 tests/distool_tests: CMakeFiles/distool_lib.dir/src/SphericalHarmonics.cpp.o
 tests/distool_tests: CMakeFiles/distool_lib.dir/src/RadialBasis.cpp.o
@@ -185,22 +202,23 @@ tests/distool_tests: CMakeFiles/distool_lib.dir/src/SOAPDescriptor.cpp.o
 tests/distool_tests: CMakeFiles/distool_lib.dir/src/Statistics.cpp.o
 tests/distool_tests: CMakeFiles/distool_lib.dir/src/DefectClassifier.cpp.o
 tests/distool_tests: CMakeFiles/distool_lib.dir/src/PCA.cpp.o
+tests/distool_tests: CMakeFiles/distool_lib.dir/src/WignerSeitz.cpp.o
 tests/distool_tests: tests/CMakeFiles/distool_tests.dir/build.make
 tests/distool_tests: /usr/lib/gcc/x86_64-linux-gnu/13/libgomp.so
 tests/distool_tests: /usr/lib/x86_64-linux-gnu/libpthread.a
 tests/distool_tests: tests/CMakeFiles/distool_tests.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=/home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/build_fresh/CMakeFiles --progress-num=$(CMAKE_PROGRESS_7) "Linking CXX executable distool_tests"
-	cd /home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/build_fresh/tests && $(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/distool_tests.dir/link.txt --verbose=$(VERBOSE)
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=/home/santi/Documents/DistributionTool/build_fresh/CMakeFiles --progress-num=$(CMAKE_PROGRESS_8) "Linking CXX executable distool_tests"
+	cd /home/santi/Documents/DistributionTool/build_fresh/tests && $(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/distool_tests.dir/link.txt --verbose=$(VERBOSE)
 
 # Rule to build all files generated by this target.
 tests/CMakeFiles/distool_tests.dir/build: tests/distool_tests
 .PHONY : tests/CMakeFiles/distool_tests.dir/build
 
 tests/CMakeFiles/distool_tests.dir/clean:
-	cd /home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/build_fresh/tests && $(CMAKE_COMMAND) -P CMakeFiles/distool_tests.dir/cmake_clean.cmake
+	cd /home/santi/Documents/DistributionTool/build_fresh/tests && $(CMAKE_COMMAND) -P CMakeFiles/distool_tests.dir/cmake_clean.cmake
 .PHONY : tests/CMakeFiles/distool_tests.dir/clean
 
 tests/CMakeFiles/distool_tests.dir/depend:
-	cd /home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/build_fresh && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/santi-simaf/Documentos/ABRIL-2026/DistributionTool /home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/tests /home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/build_fresh /home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/build_fresh/tests /home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/build_fresh/tests/CMakeFiles/distool_tests.dir/DependInfo.cmake "--color=$(COLOR)"
+	cd /home/santi/Documents/DistributionTool/build_fresh && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/santi/Documents/DistributionTool /home/santi/Documents/DistributionTool/tests /home/santi/Documents/DistributionTool/build_fresh /home/santi/Documents/DistributionTool/build_fresh/tests /home/santi/Documents/DistributionTool/build_fresh/tests/CMakeFiles/distool_tests.dir/DependInfo.cmake "--color=$(COLOR)"
 .PHONY : tests/CMakeFiles/distool_tests.dir/depend
 

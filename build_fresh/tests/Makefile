@@ -57,10 +57,10 @@ RM = /usr/bin/cmake -E rm -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/santi-simaf/Documentos/ABRIL-2026/DistributionTool
+CMAKE_SOURCE_DIR = /home/santi/Documents/DistributionTool
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/build_fresh
+CMAKE_BINARY_DIR = /home/santi/Documents/DistributionTool/build_fresh
 
 #=============================================================================
 # Targets provided globally by CMake.
@@ -77,8 +77,8 @@ test/fast: test
 
 # Special rule for the target edit_cache
 edit_cache:
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --cyan "No interactive CMake dialog available..."
-	/usr/bin/cmake -E echo No\ interactive\ CMake\ dialog\ available.
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --cyan "Running CMake cache editor..."
+	/usr/bin/ccmake -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR)
 .PHONY : edit_cache
 
 # Special rule for the target edit_cache
@@ -142,14 +142,14 @@ install/strip/fast: preinstall/fast
 
 # The main all target
 all: cmake_check_build_system
-	cd /home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/build_fresh && $(CMAKE_COMMAND) -E cmake_progress_start /home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/build_fresh/CMakeFiles /home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/build_fresh/tests//CMakeFiles/progress.marks
-	cd /home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/build_fresh && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 tests/all
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/build_fresh/CMakeFiles 0
+	cd /home/santi/Documents/DistributionTool/build_fresh && $(CMAKE_COMMAND) -E cmake_progress_start /home/santi/Documents/DistributionTool/build_fresh/CMakeFiles /home/santi/Documents/DistributionTool/build_fresh/tests//CMakeFiles/progress.marks
+	cd /home/santi/Documents/DistributionTool/build_fresh && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 tests/all
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/santi/Documents/DistributionTool/build_fresh/CMakeFiles 0
 .PHONY : all
 
 # The main clean target
 clean:
-	cd /home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/build_fresh && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 tests/clean
+	cd /home/santi/Documents/DistributionTool/build_fresh && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 tests/clean
 .PHONY : clean
 
 # The main clean target
@@ -158,22 +158,22 @@ clean/fast: clean
 
 # Prepare targets for installation.
 preinstall: all
-	cd /home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/build_fresh && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 tests/preinstall
+	cd /home/santi/Documents/DistributionTool/build_fresh && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 tests/preinstall
 .PHONY : preinstall
 
 # Prepare targets for installation.
 preinstall/fast:
-	cd /home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/build_fresh && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 tests/preinstall
+	cd /home/santi/Documents/DistributionTool/build_fresh && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 tests/preinstall
 .PHONY : preinstall/fast
 
 # clear depends
 depend:
-	cd /home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/build_fresh && $(CMAKE_COMMAND) -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 1
+	cd /home/santi/Documents/DistributionTool/build_fresh && $(CMAKE_COMMAND) -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 1
 .PHONY : depend
 
 # Convenience name for target.
 tests/CMakeFiles/distool_tests.dir/rule:
-	cd /home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/build_fresh && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 tests/CMakeFiles/distool_tests.dir/rule
+	cd /home/santi/Documents/DistributionTool/build_fresh && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 tests/CMakeFiles/distool_tests.dir/rule
 .PHONY : tests/CMakeFiles/distool_tests.dir/rule
 
 # Convenience name for target.
@@ -182,7 +182,7 @@ distool_tests: tests/CMakeFiles/distool_tests.dir/rule
 
 # fast build rule for target.
 distool_tests/fast:
-	cd /home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/build_fresh && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/distool_tests.dir/build.make tests/CMakeFiles/distool_tests.dir/build
+	cd /home/santi/Documents/DistributionTool/build_fresh && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/distool_tests.dir/build.make tests/CMakeFiles/distool_tests.dir/build
 .PHONY : distool_tests/fast
 
 main.o: main.cpp.o
@@ -190,7 +190,7 @@ main.o: main.cpp.o
 
 # target to build an object file
 main.cpp.o:
-	cd /home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/build_fresh && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/distool_tests.dir/build.make tests/CMakeFiles/distool_tests.dir/main.cpp.o
+	cd /home/santi/Documents/DistributionTool/build_fresh && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/distool_tests.dir/build.make tests/CMakeFiles/distool_tests.dir/main.cpp.o
 .PHONY : main.cpp.o
 
 main.i: main.cpp.i
@@ -198,7 +198,7 @@ main.i: main.cpp.i
 
 # target to preprocess a source file
 main.cpp.i:
-	cd /home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/build_fresh && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/distool_tests.dir/build.make tests/CMakeFiles/distool_tests.dir/main.cpp.i
+	cd /home/santi/Documents/DistributionTool/build_fresh && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/distool_tests.dir/build.make tests/CMakeFiles/distool_tests.dir/main.cpp.i
 .PHONY : main.cpp.i
 
 main.s: main.cpp.s
@@ -206,7 +206,7 @@ main.s: main.cpp.s
 
 # target to generate assembly for a file
 main.cpp.s:
-	cd /home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/build_fresh && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/distool_tests.dir/build.make tests/CMakeFiles/distool_tests.dir/main.cpp.s
+	cd /home/santi/Documents/DistributionTool/build_fresh && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/distool_tests.dir/build.make tests/CMakeFiles/distool_tests.dir/main.cpp.s
 .PHONY : main.cpp.s
 
 test_classifier.o: test_classifier.cpp.o
@@ -214,7 +214,7 @@ test_classifier.o: test_classifier.cpp.o
 
 # target to build an object file
 test_classifier.cpp.o:
-	cd /home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/build_fresh && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/distool_tests.dir/build.make tests/CMakeFiles/distool_tests.dir/test_classifier.cpp.o
+	cd /home/santi/Documents/DistributionTool/build_fresh && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/distool_tests.dir/build.make tests/CMakeFiles/distool_tests.dir/test_classifier.cpp.o
 .PHONY : test_classifier.cpp.o
 
 test_classifier.i: test_classifier.cpp.i
@@ -222,7 +222,7 @@ test_classifier.i: test_classifier.cpp.i
 
 # target to preprocess a source file
 test_classifier.cpp.i:
-	cd /home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/build_fresh && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/distool_tests.dir/build.make tests/CMakeFiles/distool_tests.dir/test_classifier.cpp.i
+	cd /home/santi/Documents/DistributionTool/build_fresh && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/distool_tests.dir/build.make tests/CMakeFiles/distool_tests.dir/test_classifier.cpp.i
 .PHONY : test_classifier.cpp.i
 
 test_classifier.s: test_classifier.cpp.s
@@ -230,7 +230,7 @@ test_classifier.s: test_classifier.cpp.s
 
 # target to generate assembly for a file
 test_classifier.cpp.s:
-	cd /home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/build_fresh && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/distool_tests.dir/build.make tests/CMakeFiles/distool_tests.dir/test_classifier.cpp.s
+	cd /home/santi/Documents/DistributionTool/build_fresh && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/distool_tests.dir/build.make tests/CMakeFiles/distool_tests.dir/test_classifier.cpp.s
 .PHONY : test_classifier.cpp.s
 
 test_descriptors.o: test_descriptors.cpp.o
@@ -238,7 +238,7 @@ test_descriptors.o: test_descriptors.cpp.o
 
 # target to build an object file
 test_descriptors.cpp.o:
-	cd /home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/build_fresh && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/distool_tests.dir/build.make tests/CMakeFiles/distool_tests.dir/test_descriptors.cpp.o
+	cd /home/santi/Documents/DistributionTool/build_fresh && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/distool_tests.dir/build.make tests/CMakeFiles/distool_tests.dir/test_descriptors.cpp.o
 .PHONY : test_descriptors.cpp.o
 
 test_descriptors.i: test_descriptors.cpp.i
@@ -246,7 +246,7 @@ test_descriptors.i: test_descriptors.cpp.i
 
 # target to preprocess a source file
 test_descriptors.cpp.i:
-	cd /home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/build_fresh && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/distool_tests.dir/build.make tests/CMakeFiles/distool_tests.dir/test_descriptors.cpp.i
+	cd /home/santi/Documents/DistributionTool/build_fresh && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/distool_tests.dir/build.make tests/CMakeFiles/distool_tests.dir/test_descriptors.cpp.i
 .PHONY : test_descriptors.cpp.i
 
 test_descriptors.s: test_descriptors.cpp.s
@@ -254,7 +254,7 @@ test_descriptors.s: test_descriptors.cpp.s
 
 # target to generate assembly for a file
 test_descriptors.cpp.s:
-	cd /home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/build_fresh && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/distool_tests.dir/build.make tests/CMakeFiles/distool_tests.dir/test_descriptors.cpp.s
+	cd /home/santi/Documents/DistributionTool/build_fresh && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/distool_tests.dir/build.make tests/CMakeFiles/distool_tests.dir/test_descriptors.cpp.s
 .PHONY : test_descriptors.cpp.s
 
 test_pca.o: test_pca.cpp.o
@@ -262,7 +262,7 @@ test_pca.o: test_pca.cpp.o
 
 # target to build an object file
 test_pca.cpp.o:
-	cd /home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/build_fresh && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/distool_tests.dir/build.make tests/CMakeFiles/distool_tests.dir/test_pca.cpp.o
+	cd /home/santi/Documents/DistributionTool/build_fresh && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/distool_tests.dir/build.make tests/CMakeFiles/distool_tests.dir/test_pca.cpp.o
 .PHONY : test_pca.cpp.o
 
 test_pca.i: test_pca.cpp.i
@@ -270,7 +270,7 @@ test_pca.i: test_pca.cpp.i
 
 # target to preprocess a source file
 test_pca.cpp.i:
-	cd /home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/build_fresh && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/distool_tests.dir/build.make tests/CMakeFiles/distool_tests.dir/test_pca.cpp.i
+	cd /home/santi/Documents/DistributionTool/build_fresh && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/distool_tests.dir/build.make tests/CMakeFiles/distool_tests.dir/test_pca.cpp.i
 .PHONY : test_pca.cpp.i
 
 test_pca.s: test_pca.cpp.s
@@ -278,7 +278,7 @@ test_pca.s: test_pca.cpp.s
 
 # target to generate assembly for a file
 test_pca.cpp.s:
-	cd /home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/build_fresh && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/distool_tests.dir/build.make tests/CMakeFiles/distool_tests.dir/test_pca.cpp.s
+	cd /home/santi/Documents/DistributionTool/build_fresh && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/distool_tests.dir/build.make tests/CMakeFiles/distool_tests.dir/test_pca.cpp.s
 .PHONY : test_pca.cpp.s
 
 test_reader.o: test_reader.cpp.o
@@ -286,7 +286,7 @@ test_reader.o: test_reader.cpp.o
 
 # target to build an object file
 test_reader.cpp.o:
-	cd /home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/build_fresh && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/distool_tests.dir/build.make tests/CMakeFiles/distool_tests.dir/test_reader.cpp.o
+	cd /home/santi/Documents/DistributionTool/build_fresh && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/distool_tests.dir/build.make tests/CMakeFiles/distool_tests.dir/test_reader.cpp.o
 .PHONY : test_reader.cpp.o
 
 test_reader.i: test_reader.cpp.i
@@ -294,7 +294,7 @@ test_reader.i: test_reader.cpp.i
 
 # target to preprocess a source file
 test_reader.cpp.i:
-	cd /home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/build_fresh && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/distool_tests.dir/build.make tests/CMakeFiles/distool_tests.dir/test_reader.cpp.i
+	cd /home/santi/Documents/DistributionTool/build_fresh && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/distool_tests.dir/build.make tests/CMakeFiles/distool_tests.dir/test_reader.cpp.i
 .PHONY : test_reader.cpp.i
 
 test_reader.s: test_reader.cpp.s
@@ -302,7 +302,7 @@ test_reader.s: test_reader.cpp.s
 
 # target to generate assembly for a file
 test_reader.cpp.s:
-	cd /home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/build_fresh && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/distool_tests.dir/build.make tests/CMakeFiles/distool_tests.dir/test_reader.cpp.s
+	cd /home/santi/Documents/DistributionTool/build_fresh && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/distool_tests.dir/build.make tests/CMakeFiles/distool_tests.dir/test_reader.cpp.s
 .PHONY : test_reader.cpp.s
 
 test_statistics.o: test_statistics.cpp.o
@@ -310,7 +310,7 @@ test_statistics.o: test_statistics.cpp.o
 
 # target to build an object file
 test_statistics.cpp.o:
-	cd /home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/build_fresh && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/distool_tests.dir/build.make tests/CMakeFiles/distool_tests.dir/test_statistics.cpp.o
+	cd /home/santi/Documents/DistributionTool/build_fresh && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/distool_tests.dir/build.make tests/CMakeFiles/distool_tests.dir/test_statistics.cpp.o
 .PHONY : test_statistics.cpp.o
 
 test_statistics.i: test_statistics.cpp.i
@@ -318,7 +318,7 @@ test_statistics.i: test_statistics.cpp.i
 
 # target to preprocess a source file
 test_statistics.cpp.i:
-	cd /home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/build_fresh && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/distool_tests.dir/build.make tests/CMakeFiles/distool_tests.dir/test_statistics.cpp.i
+	cd /home/santi/Documents/DistributionTool/build_fresh && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/distool_tests.dir/build.make tests/CMakeFiles/distool_tests.dir/test_statistics.cpp.i
 .PHONY : test_statistics.cpp.i
 
 test_statistics.s: test_statistics.cpp.s
@@ -326,8 +326,32 @@ test_statistics.s: test_statistics.cpp.s
 
 # target to generate assembly for a file
 test_statistics.cpp.s:
-	cd /home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/build_fresh && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/distool_tests.dir/build.make tests/CMakeFiles/distool_tests.dir/test_statistics.cpp.s
+	cd /home/santi/Documents/DistributionTool/build_fresh && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/distool_tests.dir/build.make tests/CMakeFiles/distool_tests.dir/test_statistics.cpp.s
 .PHONY : test_statistics.cpp.s
+
+test_wigner_seitz.o: test_wigner_seitz.cpp.o
+.PHONY : test_wigner_seitz.o
+
+# target to build an object file
+test_wigner_seitz.cpp.o:
+	cd /home/santi/Documents/DistributionTool/build_fresh && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/distool_tests.dir/build.make tests/CMakeFiles/distool_tests.dir/test_wigner_seitz.cpp.o
+.PHONY : test_wigner_seitz.cpp.o
+
+test_wigner_seitz.i: test_wigner_seitz.cpp.i
+.PHONY : test_wigner_seitz.i
+
+# target to preprocess a source file
+test_wigner_seitz.cpp.i:
+	cd /home/santi/Documents/DistributionTool/build_fresh && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/distool_tests.dir/build.make tests/CMakeFiles/distool_tests.dir/test_wigner_seitz.cpp.i
+.PHONY : test_wigner_seitz.cpp.i
+
+test_wigner_seitz.s: test_wigner_seitz.cpp.s
+.PHONY : test_wigner_seitz.s
+
+# target to generate assembly for a file
+test_wigner_seitz.cpp.s:
+	cd /home/santi/Documents/DistributionTool/build_fresh && $(MAKE) $(MAKESILENT) -f tests/CMakeFiles/distool_tests.dir/build.make tests/CMakeFiles/distool_tests.dir/test_wigner_seitz.cpp.s
+.PHONY : test_wigner_seitz.cpp.s
 
 # Help Target
 help:
@@ -361,6 +385,9 @@ help:
 	@echo "... test_statistics.o"
 	@echo "... test_statistics.i"
 	@echo "... test_statistics.s"
+	@echo "... test_wigner_seitz.o"
+	@echo "... test_wigner_seitz.i"
+	@echo "... test_wigner_seitz.s"
 .PHONY : help
 
 
@@ -372,6 +399,6 @@ help:
 # No rule that depends on this can have commands that come from listfiles
 # because they might be regenerated.
 cmake_check_build_system:
-	cd /home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/build_fresh && $(CMAKE_COMMAND) -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 0
+	cd /home/santi/Documents/DistributionTool/build_fresh && $(CMAKE_COMMAND) -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 0
 .PHONY : cmake_check_build_system
 

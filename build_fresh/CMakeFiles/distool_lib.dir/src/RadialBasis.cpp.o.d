@@ -1,7 +1,7 @@
 CMakeFiles/distool_lib.dir/src/RadialBasis.cpp.o: \
- /home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/src/RadialBasis.cpp \
+ /home/santi/Documents/DistributionTool/src/RadialBasis.cpp \
  /usr/include/stdc-predef.h \
- /home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/include/RadialBasis.h \
+ /home/santi/Documents/DistributionTool/include/RadialBasis.h \
  /usr/include/c++/13/vector /usr/include/c++/13/bits/requires_hosted.h \
  /usr/include/x86_64-linux-gnu/c++/13/bits/c++config.h \
  /usr/include/x86_64-linux-gnu/c++/13/bits/os_defines.h \

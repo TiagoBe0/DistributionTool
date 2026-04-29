@@ -53,10 +53,10 @@ RM = /usr/bin/cmake -E rm -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/santi-simaf/Documentos/ABRIL-2026/DistributionTool
+CMAKE_SOURCE_DIR = /home/santi/Documents/DistributionTool
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/build_fresh
+CMAKE_BINARY_DIR = /home/santi/Documents/DistributionTool/build_fresh
 
 # Include any dependencies generated for this target.
 include CMakeFiles/distool.dir/depend.make
@@ -70,18 +70,18 @@ include CMakeFiles/distool.dir/progress.make
 include CMakeFiles/distool.dir/flags.make
 
 CMakeFiles/distool.dir/src/main.cpp.o: CMakeFiles/distool.dir/flags.make
-CMakeFiles/distool.dir/src/main.cpp.o: /home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/src/main.cpp
+CMakeFiles/distool.dir/src/main.cpp.o: /home/santi/Documents/DistributionTool/src/main.cpp
 CMakeFiles/distool.dir/src/main.cpp.o: CMakeFiles/distool.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/build_fresh/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object CMakeFiles/distool.dir/src/main.cpp.o"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/distool.dir/src/main.cpp.o -MF CMakeFiles/distool.dir/src/main.cpp.o.d -o CMakeFiles/distool.dir/src/main.cpp.o -c /home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/src/main.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/santi/Documents/DistributionTool/build_fresh/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object CMakeFiles/distool.dir/src/main.cpp.o"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/distool.dir/src/main.cpp.o -MF CMakeFiles/distool.dir/src/main.cpp.o.d -o CMakeFiles/distool.dir/src/main.cpp.o -c /home/santi/Documents/DistributionTool/src/main.cpp
 
 CMakeFiles/distool.dir/src/main.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/distool.dir/src/main.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/src/main.cpp > CMakeFiles/distool.dir/src/main.cpp.i
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/santi/Documents/DistributionTool/src/main.cpp > CMakeFiles/distool.dir/src/main.cpp.i
 
 CMakeFiles/distool.dir/src/main.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/distool.dir/src/main.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/src/main.cpp -o CMakeFiles/distool.dir/src/main.cpp.s
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/santi/Documents/DistributionTool/src/main.cpp -o CMakeFiles/distool.dir/src/main.cpp.s
 
 # Object files for target distool
 distool_OBJECTS = \
@@ -89,13 +89,14 @@ distool_OBJECTS = \
 
 # External object files for target distool
 distool_EXTERNAL_OBJECTS = \
-"/home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/build_fresh/CMakeFiles/distool_lib.dir/src/LammpsDumpReader.cpp.o" \
-"/home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/build_fresh/CMakeFiles/distool_lib.dir/src/SphericalHarmonics.cpp.o" \
-"/home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/build_fresh/CMakeFiles/distool_lib.dir/src/RadialBasis.cpp.o" \
-"/home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/build_fresh/CMakeFiles/distool_lib.dir/src/SOAPDescriptor.cpp.o" \
-"/home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/build_fresh/CMakeFiles/distool_lib.dir/src/Statistics.cpp.o" \
-"/home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/build_fresh/CMakeFiles/distool_lib.dir/src/DefectClassifier.cpp.o" \
-"/home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/build_fresh/CMakeFiles/distool_lib.dir/src/PCA.cpp.o"
+"/home/santi/Documents/DistributionTool/build_fresh/CMakeFiles/distool_lib.dir/src/LammpsDumpReader.cpp.o" \
+"/home/santi/Documents/DistributionTool/build_fresh/CMakeFiles/distool_lib.dir/src/SphericalHarmonics.cpp.o" \
+"/home/santi/Documents/DistributionTool/build_fresh/CMakeFiles/distool_lib.dir/src/RadialBasis.cpp.o" \
+"/home/santi/Documents/DistributionTool/build_fresh/CMakeFiles/distool_lib.dir/src/SOAPDescriptor.cpp.o" \
+"/home/santi/Documents/DistributionTool/build_fresh/CMakeFiles/distool_lib.dir/src/Statistics.cpp.o" \
+"/home/santi/Documents/DistributionTool/build_fresh/CMakeFiles/distool_lib.dir/src/DefectClassifier.cpp.o" \
+"/home/santi/Documents/DistributionTool/build_fresh/CMakeFiles/distool_lib.dir/src/PCA.cpp.o" \
+"/home/santi/Documents/DistributionTool/build_fresh/CMakeFiles/distool_lib.dir/src/WignerSeitz.cpp.o"
 
 distool: CMakeFiles/distool.dir/src/main.cpp.o
 distool: CMakeFiles/distool_lib.dir/src/LammpsDumpReader.cpp.o
@@ -105,11 +106,12 @@ distool: CMakeFiles/distool_lib.dir/src/SOAPDescriptor.cpp.o
 distool: CMakeFiles/distool_lib.dir/src/Statistics.cpp.o
 distool: CMakeFiles/distool_lib.dir/src/DefectClassifier.cpp.o
 distool: CMakeFiles/distool_lib.dir/src/PCA.cpp.o
+distool: CMakeFiles/distool_lib.dir/src/WignerSeitz.cpp.o
 distool: CMakeFiles/distool.dir/build.make
 distool: /usr/lib/gcc/x86_64-linux-gnu/13/libgomp.so
 distool: /usr/lib/x86_64-linux-gnu/libpthread.a
 distool: CMakeFiles/distool.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=/home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/build_fresh/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Linking CXX executable distool"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=/home/santi/Documents/DistributionTool/build_fresh/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Linking CXX executable distool"
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/distool.dir/link.txt --verbose=$(VERBOSE)
 
 # Rule to build all files generated by this target.
@@ -121,6 +123,6 @@ CMakeFiles/distool.dir/clean:
 .PHONY : CMakeFiles/distool.dir/clean
 
 CMakeFiles/distool.dir/depend:
-	cd /home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/build_fresh && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/santi-simaf/Documentos/ABRIL-2026/DistributionTool /home/santi-simaf/Documentos/ABRIL-2026/DistributionTool /home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/build_fresh /home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/build_fresh /home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/build_fresh/CMakeFiles/distool.dir/DependInfo.cmake "--color=$(COLOR)"
+	cd /home/santi/Documents/DistributionTool/build_fresh && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/santi/Documents/DistributionTool /home/santi/Documents/DistributionTool /home/santi/Documents/DistributionTool/build_fresh /home/santi/Documents/DistributionTool/build_fresh /home/santi/Documents/DistributionTool/build_fresh/CMakeFiles/distool.dir/DependInfo.cmake "--color=$(COLOR)"
 .PHONY : CMakeFiles/distool.dir/depend
 

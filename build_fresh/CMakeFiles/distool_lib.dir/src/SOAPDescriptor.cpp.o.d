@@ -1,8 +1,8 @@
 CMakeFiles/distool_lib.dir/src/SOAPDescriptor.cpp.o: \
- /home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/src/SOAPDescriptor.cpp \
+ /home/santi/Documents/DistributionTool/src/SOAPDescriptor.cpp \
  /usr/include/stdc-predef.h \
- /home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/include/SOAPDescriptor.h \
- /home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/include/AtomData.h \
+ /home/santi/Documents/DistributionTool/include/SOAPDescriptor.h \
+ /home/santi/Documents/DistributionTool/include/AtomData.h \
  /usr/include/c++/13/array /usr/include/c++/13/compare \
  /usr/include/c++/13/initializer_list \
  /usr/include/x86_64-linux-gnu/c++/13/bits/c++config.h \
@@ -129,8 +129,8 @@ CMakeFiles/distool_lib.dir/src/SOAPDescriptor.cpp.o: \
  /usr/include/c++/13/bits/stl_vector.h \
  /usr/include/c++/13/bits/stl_bvector.h \
  /usr/include/c++/13/bits/vector.tcc \
- /home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/include/RadialBasis.h \
- /home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/include/SphericalHarmonics.h \
+ /home/santi/Documents/DistributionTool/include/RadialBasis.h \
+ /home/santi/Documents/DistributionTool/include/SphericalHarmonics.h \
  /usr/include/c++/13/cmath /usr/include/math.h \
  /usr/include/x86_64-linux-gnu/bits/math-vector.h \
  /usr/include/x86_64-linux-gnu/bits/libm-simd-decl-stubs.h \
@@ -154,7 +154,7 @@ CMakeFiles/distool_lib.dir/src/SOAPDescriptor.cpp.o: \
  /usr/include/c++/13/tr1/poly_hermite.tcc \
  /usr/include/c++/13/tr1/poly_laguerre.tcc \
  /usr/include/c++/13/tr1/riemann_zeta.tcc \
- /home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/include/CellList.h \
+ /home/santi/Documents/DistributionTool/include/CellList.h \
  /usr/include/c++/13/numeric /usr/include/c++/13/bits/stl_numeric.h \
  /usr/include/c++/13/pstl/glue_numeric_defs.h \
  /usr/include/c++/13/pstl/execution_defs.h /usr/include/c++/13/stdexcept \

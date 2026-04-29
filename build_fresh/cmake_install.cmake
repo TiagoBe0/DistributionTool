@@ -1,4 +1,4 @@
-# Install script for directory: /home/santi-simaf/Documentos/ABRIL-2026/DistributionTool
+# Install script for directory: /home/santi/Documents/DistributionTool
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
@@ -49,7 +49,7 @@ if(CMAKE_INSTALL_COMPONENT STREQUAL "Unspecified" OR NOT CMAKE_INSTALL_COMPONENT
          FILE "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/bin/distool"
          RPATH "")
   endif()
-  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/bin" TYPE EXECUTABLE FILES "/home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/build_fresh/distool")
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/bin" TYPE EXECUTABLE FILES "/home/santi/Documents/DistributionTool/build_fresh/distool")
   if(EXISTS "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/bin/distool" AND
      NOT IS_SYMLINK "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/bin/distool")
     if(CMAKE_INSTALL_DO_STRIP)
@@ -59,12 +59,16 @@ if(CMAKE_INSTALL_COMPONENT STREQUAL "Unspecified" OR NOT CMAKE_INSTALL_COMPONENT
 endif()
 
 if(CMAKE_INSTALL_COMPONENT STREQUAL "Unspecified" OR NOT CMAKE_INSTALL_COMPONENT)
-  include("/home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/build_fresh/CMakeFiles/distool.dir/install-cxx-module-bmi-Release.cmake" OPTIONAL)
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/applications" TYPE FILE FILES "/home/santi/Documents/DistributionTool/packaging/distool.desktop")
+endif()
+
+if(CMAKE_INSTALL_COMPONENT STREQUAL "Unspecified" OR NOT CMAKE_INSTALL_COMPONENT)
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/icons/hicolor/256x256/apps" TYPE FILE FILES "/home/santi/Documents/DistributionTool/packaging/distool.png")
 endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for the subdirectory.
-  include("/home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/build_fresh/tests/cmake_install.cmake")
+  include("/home/santi/Documents/DistributionTool/build_fresh/tests/cmake_install.cmake")
 endif()
 
 if(CMAKE_INSTALL_COMPONENT)
@@ -75,5 +79,5 @@ endif()
 
 string(REPLACE ";" "\n" CMAKE_INSTALL_MANIFEST_CONTENT
        "${CMAKE_INSTALL_MANIFEST_FILES}")
-file(WRITE "/home/santi-simaf/Documentos/ABRIL-2026/DistributionTool/build_fresh/${CMAKE_INSTALL_MANIFEST}"
+file(WRITE "/home/santi/Documents/DistributionTool/build_fresh/${CMAKE_INSTALL_MANIFEST}"
      "${CMAKE_INSTALL_MANIFEST_CONTENT}")
