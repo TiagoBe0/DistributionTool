@@ -30,3 +30,6 @@ analyzed_dump-finalCool.160000
 analyzed_dump.ensayo.100000_void.config
 dump.ensayo.0_void.config
 dump.ensayo.100000_void.config
+*.dump
+*output.csv
+results_*/
