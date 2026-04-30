@@ -42,6 +42,8 @@
 #include <thread>
 #include <unordered_map>
 #include <vector>
+#include <functional>
+#include <numeric>
 #include <unistd.h>   // readlink, access
 
 // ═══════════════════════════════════════════════════════════════════════════════
@@ -448,7 +450,7 @@ struct GpuAtom {
 // Color mapping
 // ═══════════════════════════════════════════════════════════════════════════════
 
-enum class ColorMode { DistToRef = 0, DefectType, AtomType, DefectProb };
+enum class ColorMode { DistToRef = 0, DefectType, AtomType, DefectProb, Cluster };
 enum class UiTheme { Dark = 0, Light };
 
 static glm::vec4 plasma(float t) {
@@ -478,6 +480,177 @@ static const glm::vec4 TYPE_COLORS[] = {
     {0.80f, 0.50f, 0.10f, 1.f},
     {0.50f, 0.50f, 0.50f, 1.f},
 };
+
+// 20 colores distinguibles para clusters
+static const glm::vec4 CLUSTER_COLORS[] = {
+    {0.90f, 0.20f, 0.20f, 1.f}, {0.20f, 0.55f, 0.90f, 1.f},
+    {0.20f, 0.80f, 0.25f, 1.f}, {0.95f, 0.75f, 0.10f, 1.f},
+    {0.80f, 0.20f, 0.80f, 1.f}, {0.10f, 0.80f, 0.80f, 1.f},
+    {0.95f, 0.50f, 0.10f, 1.f}, {0.50f, 0.25f, 0.90f, 1.f},
+    {0.90f, 0.40f, 0.65f, 1.f}, {0.35f, 0.70f, 0.25f, 1.f},
+    {0.10f, 0.35f, 0.75f, 1.f}, {0.75f, 0.10f, 0.10f, 1.f},
+    {0.10f, 0.70f, 0.50f, 1.f}, {0.80f, 0.60f, 0.35f, 1.f},
+    {0.45f, 0.45f, 0.10f, 1.f}, {0.30f, 0.10f, 0.65f, 1.f},
+    {0.90f, 0.82f, 0.70f, 1.f}, {0.10f, 0.30f, 0.30f, 1.f},
+    {0.65f, 0.30f, 0.10f, 1.f}, {0.55f, 0.55f, 0.55f, 1.f},
+};
+static constexpr int N_CLUSTER_COLORS = 20;
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// HDBSCAN clustering
+// ═══════════════════════════════════════════════════════════════════════════════
+
+static constexpr int HDBSCAN_MAX_N = 8000;
+
+struct HDBSCANParams {
+    int min_samples      = 5;
+    int min_cluster_size = 15;
+};
+
+struct HDBSCANResult {
+    std::vector<int> labels;   // per visible atom: -1=noise, 0..K-1=cluster id
+    int              n_clusters = 0;
+    std::vector<int> counts;   // atoms per cluster (index = cluster id)
+};
+
+static HDBSCANResult runHDBSCAN(
+    const std::vector<AtomRecord>& all_atoms,
+    const std::vector<int>&        vis_idx,
+    const HDBSCANParams&           p)
+{
+    int n = (int)vis_idx.size();
+    HDBSCANResult res;
+    res.labels.assign(n, -1);
+    if (n < 2) return res;
+
+    int ms  = std::clamp(p.min_samples,      1, n - 1);
+    int mcs = std::clamp(p.min_cluster_size, 2, n);
+
+    // ── Pairwise Euclidean distances ────────────────────────────────────────
+    std::vector<float> D(n * n, 0.f);
+    for (int i = 0; i < n; ++i) {
+        const auto& ai = all_atoms[vis_idx[i]];
+        for (int j = i + 1; j < n; ++j) {
+            const auto& aj = all_atoms[vis_idx[j]];
+            float dx = ai.x - aj.x, dy = ai.y - aj.y, dz = ai.z - aj.z;
+            float d = std::sqrt(dx*dx + dy*dy + dz*dz);
+            D[i*n+j] = D[j*n+i] = d;
+        }
+    }
+
+    // ── Core distances (k-th nearest neighbour) ─────────────────────────────
+    std::vector<float> core(n);
+    {
+        std::vector<float> row(n);
+        for (int i = 0; i < n; ++i) {
+            for (int j = 0; j < n; ++j) row[j] = (j == i) ? 1e30f : D[i*n+j];
+            std::nth_element(row.begin(), row.begin() + ms - 1, row.end());
+            core[i] = row[ms - 1];
+        }
+    }
+
+    // ── MST via Prim's on mutual reachability distance ──────────────────────
+    std::vector<float> key(n, 1e30f);
+    std::vector<int>   mpar(n, -1);
+    std::vector<bool>  visited(n, false);
+    key[0] = 0.f;
+    struct Edge { float w; int u, v; };
+    std::vector<Edge> mst; mst.reserve(n - 1);
+    for (int iter = 0; iter < n; ++iter) {
+        int u = -1; float best = 1e30f;
+        for (int i = 0; i < n; ++i)
+            if (!visited[i] && key[i] < best) { best = key[i]; u = i; }
+        if (u < 0) break;
+        visited[u] = true;
+        if (mpar[u] >= 0) mst.push_back({key[u], mpar[u], u});
+        for (int v = 0; v < n; ++v) {
+            if (visited[v]) continue;
+            float mrd = std::max({core[u], core[v], D[u*n+v]});
+            if (mrd < key[v]) { key[v] = mrd; mpar[v] = u; }
+        }
+    }
+    std::sort(mst.begin(), mst.end(), [](const Edge& a, const Edge& b){ return a.w < b.w; });
+
+    // ── Condensed cluster tree (process edges smallest → largest) ───────────
+    // Union-find (no path compression — union by structural size)
+    std::vector<int> uf(n); std::iota(uf.begin(), uf.end(), 0);
+    std::vector<int> uf_sz(n, 1);      // total structural size for union-by-size
+    std::vector<int> comp_valid(n, 1); // non-noise atoms per component root
+    std::vector<int> comp_label(n, -1);
+    std::vector<std::vector<int>> comp_atoms(n);
+    for (int i = 0; i < n; ++i) comp_atoms[i] = {i};
+    std::vector<int> atom_label(n, -1);
+    int next_id = 0;
+
+    std::function<int(int)> find_root = [&](int x) -> int {
+        while (uf[x] != x) x = uf[x]; return x;
+    };
+
+    for (auto& e : mst) {
+        int ru = find_root(e.u), rv = find_root(e.v);
+        if (ru == rv) continue;
+
+        // ru = structural root of larger component (for union-by-size)
+        if (uf_sz[ru] < uf_sz[rv]) std::swap(ru, rv);
+
+        int su = comp_valid[ru], sv = comp_valid[rv];
+        bool ru_big = (su >= mcs), rv_big = (sv >= mcs);
+
+        // Structural merge
+        uf[rv] = ru;
+        uf_sz[ru] += uf_sz[rv];
+
+        if (!ru_big && !rv_big) {
+            // Both small: combine and check if newly big enough
+            for (int a : comp_atoms[rv]) comp_atoms[ru].push_back(a);
+            comp_atoms[rv].clear();
+            comp_valid[ru] += sv;
+            if (comp_valid[ru] >= mcs) {
+                int id = next_id++;
+                comp_label[ru] = id;
+                for (int a : comp_atoms[ru]) atom_label[a] = id;
+            }
+        } else if (ru_big && !rv_big) {
+            // Small component absorbed into cluster → those atoms become noise
+            for (int a : comp_atoms[rv]) atom_label[a] = -1;
+            comp_atoms[rv].clear();
+            // comp_valid[ru] and comp_label[ru] unchanged
+        } else if (!ru_big && rv_big) {
+            // ru (structural root) is small, rv is the cluster
+            // ru's atoms become noise
+            for (int a : comp_atoms[ru]) atom_label[a] = -1;
+            comp_atoms[ru].clear();
+            // Transfer rv's valid atoms to ru (the new root)
+            for (int a : comp_atoms[rv]) comp_atoms[ru].push_back(a);
+            comp_atoms[rv].clear();
+            comp_valid[ru] = sv;
+            comp_label[ru] = comp_label[rv];
+        } else {
+            // Both big: merge into new cluster
+            for (int a : comp_atoms[rv]) comp_atoms[ru].push_back(a);
+            comp_atoms[rv].clear();
+            comp_valid[ru] += sv;
+            int id = next_id++;
+            comp_label[ru] = id;
+            for (int a : comp_atoms[ru]) atom_label[a] = id;
+        }
+    }
+
+    // ── Remap cluster IDs to 0..K-1 ────────────────────────────────────────
+    std::unordered_map<int,int> remap;
+    for (int l : atom_label) {
+        if (l < 0) continue;
+        if (!remap.count(l)) remap[l] = (int)remap.size();
+    }
+    res.n_clusters = (int)remap.size();
+    res.counts.assign(res.n_clusters, 0);
+    for (int i = 0; i < n; ++i) {
+        int l = atom_label[i];
+        res.labels[i] = (l < 0) ? -1 : remap[l];
+        if (res.labels[i] >= 0) res.counts[res.labels[i]]++;
+    }
+    return res;
+}
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // Renderer
@@ -701,9 +874,22 @@ struct App {
     bool show_readme = false;
     std::vector<std::string> readme_lines;
 
+    // Vacancy cluster histogram window
+    bool show_vac_hist = false;
+
     // True mientras el resultado visible en el viewer es de un análisis anterior
     // al que está actualmente en curso (o falló).
     bool result_is_stale = false;
+
+    // Clustering HDBSCAN
+    HDBSCANParams hdbscan_params;
+    HDBSCANResult hdbscan_result;
+    bool          clustering_valid  = false;   // result matches current filters
+    bool          show_noise        = true;    // show noise atoms (-1) when clustering active
+    std::unordered_map<int,bool> cluster_visible;
+
+    // Maps GPU-buffer index → visible_indices index (needed when cluster filter is on)
+    std::vector<int> gpu_to_vis;
 };
 
 // ═══════════════════════════════════════════════════════════════════════════════
@@ -713,7 +899,7 @@ struct App {
 static void buildGpuData(App& app, Renderer& rend) {
     app.visible_indices.clear();
 
-    // Gather filtered atoms
+    // Gather atoms passing the primary filters (distortion, defect type, atom type)
     for (int i = 0; i < (int)app.all_atoms.size(); ++i) {
         const auto& a = app.all_atoms[i];
         if (a.dist_to_ref < app.filter_lo || a.dist_to_ref > app.filter_hi) continue;
@@ -723,14 +909,32 @@ static void buildGpuData(App& app, Renderer& rend) {
         app.visible_indices.push_back(i);
     }
 
+    // If the filter set changed, clustering result is no longer valid
+    // (caller is responsible for marking clustering_valid = false when needed)
+
     float drange = app.dist_max - app.dist_min;
     if (drange < 1e-9f) drange = 1.f;
 
     std::vector<GpuAtom> data, pick_data;
     data.reserve(app.visible_indices.size());
     pick_data.reserve(app.visible_indices.size());
+    app.gpu_to_vis.clear();
+    app.gpu_to_vis.reserve(app.visible_indices.size());
 
+    int gpu_idx = 0;
     for (int vi = 0; vi < (int)app.visible_indices.size(); ++vi) {
+        // ── Cluster visibility filter (secondary filter on top of primary) ──
+        if (app.clustering_valid) {
+            int clabel = app.hdbscan_result.labels[vi];
+            if (clabel < 0) {
+                // Noise atom
+                if (!app.show_noise) continue;
+            } else {
+                auto it = app.cluster_visible.find(clabel);
+                if (it != app.cluster_visible.end() && !it->second) continue;
+            }
+        }
+
         const auto& a = app.all_atoms[app.visible_indices[vi]];
 
         glm::vec4 col;
@@ -748,8 +952,20 @@ static void buildGpuData(App& app, Renderer& rend) {
                 col = TYPE_COLORS[ti < 0 ? 0 : ti];
                 break;
             }
-            case ColorMode::DefectProb: {
+            case ColorMode::DefectProb:
                 col = plasma(a.defect_prob);
+                break;
+            case ColorMode::Cluster: {
+                if (app.clustering_valid) {
+                    int clabel = app.hdbscan_result.labels[vi];
+                    if (clabel < 0) {
+                        col = {0.35f, 0.35f, 0.35f, 1.f}; // noise = dark gray
+                    } else {
+                        col = CLUSTER_COLORS[clabel % N_CLUSTER_COLORS];
+                    }
+                } else {
+                    col = {0.5f, 0.5f, 0.5f, 1.f};
+                }
                 break;
             }
         }
@@ -758,10 +974,12 @@ static void buildGpuData(App& app, Renderer& rend) {
         data.push_back({a.x, a.y, a.z, app.atom_radius,
                         col.r, col.g, col.b, col.a});
 
-        // Encode index as RGB (supports up to 16M atoms)
-        unsigned char pr = vi & 0xFF, pg = (vi>>8)&0xFF, pb = (vi>>16)&0xFF;
+        // Encode gpu_idx as RGB for picking (supports up to 16M atoms)
+        unsigned char pr = gpu_idx & 0xFF, pg = (gpu_idx>>8)&0xFF, pb = (gpu_idx>>16)&0xFF;
         pick_data.push_back({a.x, a.y, a.z, app.atom_radius,
                              pr/255.f, pg/255.f, pb/255.f, 1.f});
+        app.gpu_to_vis.push_back(vi);
+        ++gpu_idx;
     }
 
     rend.upload(data);
@@ -1420,11 +1638,106 @@ static void drawVisualizationUI(App& app, Renderer& rend) {
         ImGui::Separator();
     }
 
+    // ── HDBSCAN Clustering ────────────────────────────────────────────────
+    ImGui::TextDisabled("CLUSTERING (HDBSCAN)");
+
+    // Parameters
+    ImGui::SliderInt("min_samples##hdb",       &app.hdbscan_params.min_samples,      1,  50);
+    if (ImGui::IsItemHovered())
+        ImGui::SetTooltip("Cantidad de vecinos para calcular la distancia de núcleo.\n"
+                          "Valores bajos = más clusters pequeños.\n"
+                          "Valores altos = clusters más densos y compactos.");
+    ImGui::SliderInt("min_cluster_size##hdb",  &app.hdbscan_params.min_cluster_size, 2, 200);
+    if (ImGui::IsItemHovered())
+        ImGui::SetTooltip("Mínimo de átomos para considerar un grupo como cluster.\n"
+                          "Grupos menores quedan como ruido.");
+
+    int  n_vis = (int)app.visible_indices.size();
+    bool too_many = (n_vis > HDBSCAN_MAX_N);
+
+    if (too_many) {
+        ImGui::TextColored({1.f,0.6f,0.2f,1.f},
+            "Demasiados átomos visibles (%d).\nAplicá más filtros (máx %d).",
+            n_vis, HDBSCAN_MAX_N);
+    } else {
+        ImGui::Text("%d átomos serán agrupados", n_vis);
+    }
+
+    // Run button
+    ImGui::BeginDisabled(too_many || n_vis < 2);
+    bool run_clicked = ImGui::Button("  Correr HDBSCAN  ");
+    ImGui::EndDisabled();
+
+    if (run_clicked) {
+        app.hdbscan_result  = runHDBSCAN(app.all_atoms,
+                                         app.visible_indices,
+                                         app.hdbscan_params);
+        app.clustering_valid = true;
+        // Reset cluster visibility: all clusters on, noise on
+        app.cluster_visible.clear();
+        for (int c = 0; c < app.hdbscan_result.n_clusters; ++c)
+            app.cluster_visible[c] = true;
+        app.show_noise   = true;
+        app.color_mode   = ColorMode::Cluster;
+        buildGpuData(app, rend);
+    }
+
+    // Results
+    if (app.clustering_valid) {
+        auto& hr = app.hdbscan_result;
+        int noise_count = 0;
+        for (int l : hr.labels) if (l < 0) ++noise_count;
+
+        ImGui::Spacing();
+        ImGui::TextColored({0.4f,1.f,0.5f,1.f}, "Clusters: %d", hr.n_clusters);
+        ImGui::SameLine();
+        ImGui::TextDisabled("| Ruido: %d", noise_count);
+
+        // Per-cluster toggles in a scrollable child
+        if (hr.n_clusters > 0) {
+            float child_h = std::min(hr.n_clusters * 20.f + 6.f, 200.f);
+            ImGui::BeginChild("##clusters_list", {-1.f, child_h}, true);
+            for (int c = 0; c < hr.n_clusters; ++c) {
+                // colored square
+                glm::vec4 cc = CLUSTER_COLORS[c % N_CLUSTER_COLORS];
+                ImGui::PushStyleColor(ImGuiCol_CheckMark, ImVec4(cc.r, cc.g, cc.b, 1.f));
+                char clabel[64];
+                snprintf(clabel, sizeof(clabel), "Cluster %d  (%d átomos)", c, hr.counts[c]);
+                bool vis = app.cluster_visible.count(c) ? app.cluster_visible[c] : true;
+                if (ImGui::Checkbox(clabel, &vis)) {
+                    app.cluster_visible[c] = vis;
+                    buildGpuData(app, rend);
+                }
+                ImGui::PopStyleColor();
+            }
+            ImGui::EndChild();
+        }
+
+        // Noise toggle
+        {
+            bool sn = app.show_noise;
+            ImGui::PushStyleColor(ImGuiCol_CheckMark, ImVec4(0.5f,0.5f,0.5f,1.f));
+            if (ImGui::Checkbox("Mostrar ruido##noise", &sn)) {
+                app.show_noise = sn;
+                buildGpuData(app, rend);
+            }
+            ImGui::PopStyleColor();
+        }
+
+        // Invalidate if primary filters change
+        if (changed) app.clustering_valid = false;
+    } else if (app.hdbscan_result.n_clusters > 0) {
+        ImGui::TextColored({1.f,0.6f,0.3f,1.f},
+            "Resultado desactualizado.\nCorré HDBSCAN de nuevo.");
+    }
+
+    ImGui::Separator();
+
     // ── Color mode ────────────────────────────────────────────────────────
     ImGui::TextDisabled("COLOR BY");
-    const char* cmodes[] = {"dist_to_ref","defect_type","atom_type","defect_prob"};
+    const char* cmodes[] = {"dist_to_ref","defect_type","atom_type","defect_prob","cluster"};
     int cm = (int)app.color_mode;
-    if (ImGui::Combo("##color", &cm, cmodes, 4)) {
+    if (ImGui::Combo("##color", &cm, cmodes, 5)) {
         app.color_mode = (ColorMode)cm;
         changed = true;
     }
@@ -1437,8 +1750,9 @@ static void drawVisualizationUI(App& app, Renderer& rend) {
     ImGui::Separator();
 
     // ── Selected atom info ────────────────────────────────────────────────
-    if (app.selected_idx >= 0 && app.selected_idx < (int)app.visible_indices.size()) {
-        const auto& a = app.all_atoms[app.visible_indices[app.selected_idx]];
+    if (app.selected_idx >= 0 && app.selected_idx < (int)app.gpu_to_vis.size()) {
+        int vi = app.gpu_to_vis[app.selected_idx];
+        const auto& a = app.all_atoms[app.visible_indices[vi]];
         ImGui::TextDisabled("SELECTED ATOM");
         ImGui::Text("id     : %d",    a.id);
         ImGui::Text("type   : %d",    a.type);
@@ -1446,85 +1760,24 @@ static void drawVisualizationUI(App& app, Renderer& rend) {
         ImGui::Text("dist   : %.6f", a.dist_to_ref);
         ImGui::Text("prob   : %.6f", a.defect_prob);
         ImGui::Text("defect : %s",   defectName(a.defect_label));
+        if (app.clustering_valid) {
+            int cl = app.hdbscan_result.labels[vi];
+            if (cl < 0) ImGui::Text("cluster: ruido");
+            else        ImGui::Text("cluster: %d",  cl);
+        }
     }
 
     // ── Vacancy cluster size histogram ────────────────────────────────────
-    if (!app.vac_hist_raw.empty() &&
-        ImGui::CollapsingHeader("Distribución clusters vacancias",
-                                ImGuiTreeNodeFlags_DefaultOpen)) {
+    if (!app.vac_hist_raw.empty()) {
         int total = (int)app.vac_cluster_sizes.size();
-        int max_sz = total > 0
-            ? *std::max_element(app.vac_cluster_sizes.begin(),
-                                app.vac_cluster_sizes.end())
-            : 0;
-        ImGui::Text("%d clusters  |  max tamaño: %d", total, max_sz);
-
-        const float hist_h = 90.f;
-        ImVec2 cp = ImGui::GetCursorScreenPos();
-        float  aw = ImGui::GetContentRegionAvail().x;
-
-        ImGui::InvisibleButton("##vachist", {aw, hist_h});
-        bool hov = ImGui::IsItemHovered();
-
-        auto* dl = ImGui::GetWindowDrawList();
-        dl->AddRectFilled(cp, {cp.x + aw, cp.y + hist_h}, IM_COL32(22, 22, 32, 255));
-
-        int mx_count = *std::max_element(app.vac_hist_raw.begin(), app.vac_hist_raw.end());
-        float bar_w  = aw / VAC_HIST_BINS;
-
-        int hov_bin = -1;
-        if (hov) {
-            hov_bin = (int)((ImGui::GetIO().MousePos.x - cp.x) / bar_w);
-            hov_bin = std::clamp(hov_bin, 0, VAC_HIST_BINS - 1);
-        }
-
-        for (int i = 0; i < VAC_HIST_BINS; ++i) {
-            if (app.vac_hist_raw[i] == 0) continue;
-            float h  = (float)app.vac_hist_raw[i] / mx_count * (hist_h - 2.f);
-            float x0 = cp.x + i * bar_w;
-            float x1 = x0 + std::max(bar_w - 0.5f, 1.f);
-            float y0 = cp.y + hist_h - h;
-            float y1 = cp.y + hist_h;
-            ImU32 col;
-            if (i == VAC_HIST_BINS - 1)  // >110 bin — orange
-                col = (hov_bin == i) ? IM_COL32(255, 160, 80, 255)
-                                     : IM_COL32(200, 110, 40, 255);
-            else
-                col = (hov_bin == i) ? IM_COL32(110, 210, 255, 255)
-                                     : IM_COL32(60, 140, 220, 255);
-            dl->AddRectFilled({x0, y0}, {x1, y1}, col);
-        }
-
-        // X-axis tick labels drawn with drawlist text
-        ImFont* font = ImGui::GetFont();
-        float fs = ImGui::GetFontSize() * 0.75f;
-        auto drawLabel = [&](int bin, const char* txt) {
-            float lx = cp.x + bin * bar_w;
-            dl->AddText(font, fs, {lx, cp.y + hist_h - fs - 1.f},
-                        IM_COL32(160, 160, 160, 200), txt);
-        };
-        drawLabel(0,   "1");
-        drawLabel(24,  "25");
-        drawLabel(49,  "50");
-        drawLabel(74,  "75");
-        drawLabel(99,  "100");
-        // ">110" label near the last bin
-        {
-            float lx = cp.x + 109 * bar_w;
-            dl->AddText(font, fs, {lx - 2.f, cp.y + hist_h - fs - 1.f},
-                        IM_COL32(220, 140, 80, 200), ">110");
-        }
-
-        if (hov && hov_bin >= 0) {
-            int cnt = app.vac_hist_raw[hov_bin];
-            if (hov_bin < 110)
-                ImGui::SetTooltip("Tamaño %d: %d cluster%s", hov_bin + 1, cnt, cnt == 1 ? "" : "s");
-            else
-                ImGui::SetTooltip("Tamaño >110: %d cluster%s", cnt, cnt == 1 ? "" : "s");
-        }
-
-        // Advance cursor past the histogram
-        ImGui::SetCursorScreenPos({cp.x, cp.y + hist_h + 4.f});
+        ImGui::Text("Clusters vacancias: %d", total);
+        ImGui::SameLine();
+        const char* lbl = app.show_vac_hist ? "[ Histograma ]" : "  Histograma  ";
+        ImGui::PushStyleColor(ImGuiCol_Button,
+            app.show_vac_hist ? ImVec4(0.20f,0.45f,0.70f,1.f)
+                              : ImVec4(0.18f,0.18f,0.22f,1.f));
+        if (ImGui::SmallButton(lbl)) app.show_vac_hist = !app.show_vac_hist;
+        ImGui::PopStyleColor();
         ImGui::Spacing();
     }
 
@@ -1605,6 +1858,113 @@ static void loadReadme(App& app) {
         if (!line.empty() && line.back() == '\r') line.pop_back();
         app.readme_lines.push_back(std::move(line));
     }
+}
+
+// ── Vacancy cluster histogram floating window ─────────────────────────────────
+static void drawVacHistWindow(App& app) {
+    if (!app.show_vac_hist || app.vac_hist_raw.empty()) return;
+
+    ImGui::SetNextWindowSize({820, 460}, ImGuiCond_FirstUseEver);
+    ImGui::SetNextWindowPos({360, 80},  ImGuiCond_FirstUseEver);
+
+    bool open = true;
+    ImGui::Begin("Distribución de clusters de vacancias", &open,
+                 ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse);
+    if (!open) { app.show_vac_hist = false; ImGui::End(); return; }
+
+    int total  = (int)app.vac_cluster_sizes.size();
+    int max_sz = total > 0
+        ? *std::max_element(app.vac_cluster_sizes.begin(), app.vac_cluster_sizes.end())
+        : 0;
+    float median_sz = 0.f;
+    if (total > 0) {
+        std::vector<int> sorted = app.vac_cluster_sizes;
+        std::sort(sorted.begin(), sorted.end());
+        median_sz = (sorted.size() % 2 == 0)
+            ? 0.5f * (sorted[sorted.size()/2 - 1] + sorted[sorted.size()/2])
+            : (float)sorted[sorted.size()/2];
+    }
+
+    ImGui::Text("Clusters: %d   |   Max tamaño: %d   |   Mediana: %.0f", total, max_sz, median_sz);
+    ImGui::Spacing();
+
+    // Canvas: fill remaining window space minus bottom padding
+    ImVec2 avail = ImGui::GetContentRegionAvail();
+    const float pad_bottom = 28.f;   // space for x-axis labels
+    const float hist_h = avail.y - pad_bottom;
+    const float hist_w = avail.x;
+
+    ImVec2 cp = ImGui::GetCursorScreenPos();
+    ImGui::InvisibleButton("##vachist_win", {hist_w, hist_h + pad_bottom});
+    bool hov = ImGui::IsItemHovered();
+
+    auto* dl = ImGui::GetWindowDrawList();
+    // Background
+    dl->AddRectFilled(cp, {cp.x + hist_w, cp.y + hist_h}, IM_COL32(18, 20, 30, 255));
+
+    int mx_count = *std::max_element(app.vac_hist_raw.begin(), app.vac_hist_raw.end());
+    float bar_w  = hist_w / VAC_HIST_BINS;
+
+    int hov_bin = -1;
+    if (hov) {
+        hov_bin = (int)((ImGui::GetIO().MousePos.x - cp.x) / bar_w);
+        hov_bin = std::clamp(hov_bin, 0, VAC_HIST_BINS - 1);
+    }
+
+    for (int i = 0; i < VAC_HIST_BINS; ++i) {
+        if (app.vac_hist_raw[i] == 0) continue;
+        float h  = (float)app.vac_hist_raw[i] / mx_count * (hist_h - 4.f);
+        float x0 = cp.x + i * bar_w + 0.5f;
+        float x1 = x0 + std::max(bar_w - 1.f, 1.f);
+        float y0 = cp.y + hist_h - h;
+        float y1 = cp.y + hist_h;
+        ImU32 col;
+        if (i == VAC_HIST_BINS - 1)
+            col = (hov_bin == i) ? IM_COL32(255, 160, 80, 255) : IM_COL32(200, 110, 40, 255);
+        else
+            col = (hov_bin == i) ? IM_COL32(110, 210, 255, 255) : IM_COL32(60, 140, 220, 255);
+        dl->AddRectFilled({x0, y0}, {x1, y1}, col);
+    }
+
+    // Median line
+    if (median_sz >= 1.f && median_sz <= VAC_HIST_BINS) {
+        float mx = cp.x + (median_sz - 0.5f) * bar_w;
+        dl->AddLine({mx, cp.y}, {mx, cp.y + hist_h}, IM_COL32(240, 80, 80, 220), 2.f);
+        dl->AddText(ImGui::GetFont(), ImGui::GetFontSize() * 0.85f,
+                    {mx + 3.f, cp.y + 4.f}, IM_COL32(240, 100, 100, 255),
+                    ("md=" + std::to_string((int)median_sz)).c_str());
+    }
+
+    // X-axis labels below the canvas
+    ImFont* font = ImGui::GetFont();
+    float   fs   = ImGui::GetFontSize() * 0.85f;
+    float   ly   = cp.y + hist_h + 4.f;
+    auto drawXLabel = [&](int bin, const char* txt, ImU32 col = IM_COL32(180,180,180,220)) {
+        float lx = cp.x + bin * bar_w;
+        dl->AddText(font, fs, {lx, ly}, col, txt);
+    };
+    drawXLabel(0,   "1");
+    drawXLabel(9,   "10");
+    drawXLabel(19,  "20");
+    drawXLabel(29,  "30");
+    drawXLabel(39,  "40");
+    drawXLabel(49,  "50");
+    drawXLabel(59,  "60");
+    drawXLabel(69,  "70");
+    drawXLabel(79,  "80");
+    drawXLabel(89,  "90");
+    drawXLabel(99,  "100");
+    drawXLabel(109, ">110", IM_COL32(220, 140, 80, 220));
+
+    if (hov && hov_bin >= 0) {
+        int cnt = app.vac_hist_raw[hov_bin];
+        if (hov_bin < VAC_HIST_BINS - 1)
+            ImGui::SetTooltip("Tamaño %d: %d cluster%s", hov_bin + 1, cnt, cnt == 1 ? "" : "s");
+        else
+            ImGui::SetTooltip("Tamaño >110: %d cluster%s", cnt, cnt == 1 ? "" : "s");
+    }
+
+    ImGui::End();
 }
 
 // ── README floating window ────────────────────────────────────────────────────
@@ -1828,6 +2188,7 @@ int main(int argc, char* argv[]) {
         ImGui::NewFrame();
 
         drawUI(app, rend);
+        drawVacHistWindow(app);
         drawReadmeWindow(app);
 
         ImGui::Render();

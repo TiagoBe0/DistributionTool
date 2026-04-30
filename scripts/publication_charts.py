@@ -10,6 +10,9 @@ Formatos CSV soportados:
   pca_output*.csv       → espacio PCA coloreado por tipo + distribución dist_to_ref
   hist_output*.csv      → histograma de distancias a referencia (lineal + semilog)
   vacancies_output*.csv → proyecciones espaciales de vacancias detectadas
+  ws_output*.csv        → resumen Wigner-Seitz por átomo
+  ws_sites_output*.csv  → ocupación de sitios Wigner-Seitz
+  interstitials*.csv    → intersticiales Wigner-Seitz
 
 Uso:
   python publication_charts.py output.csv
@@ -111,6 +114,12 @@ DEFECT_COLORS = {
 def detect_csv_type(path: Path) -> str:
     """Detecta el tipo de CSV por nombre de archivo y, si es necesario, por cabecera."""
     name = path.stem.lower()
+    if name.startswith('ws_sites'):
+        return 'ws_sites'
+    if name.startswith('ws'):
+        return 'ws_atoms'
+    if name.startswith('interstitials'):
+        return 'interstitials'
     if name.startswith('vacancies'):
         return 'vacancies'
     if name.startswith('hist'):
@@ -128,6 +137,12 @@ def detect_csv_type(path: Path) -> str:
         return 'hist'
     if 'defect_prob' in header:
         return 'output'
+    if {'ws_ref_id', 'ws_dist', 'ws_occ', 'ws_type'}.issubset(header):
+        return 'ws_atoms'
+    if {'ref_id', 'occupancy', 'min_dist', 'site_type'}.issubset(header):
+        return 'ws_sites'
+    if {'ref_id', 'occupancy', 'n_extra'}.issubset(header):
+        return 'interstitials'
     if set(header) <= {'x', 'y', 'z'}:
         return 'vacancies'
     return 'unknown'
@@ -157,6 +172,26 @@ def load_vacancies_csv(path: Path) -> pd.DataFrame:
     col_names = ['x', 'y', 'z', 'd_near_max', 'n_grid_pts']
     df.columns = col_names[:len(df.columns)]   # safe for old 3-col and new 5-col files
     return df
+
+
+def load_ws_atoms_csv(path: Path) -> pd.DataFrame:
+    cols = ['id', 'type', 'x', 'y', 'z', 'ws_ref_id', 'ws_dist',
+            'ws_occ', 'ws_type']
+    df = pd.read_csv(path, sep=r'\s+', comment='#', header=None, names=cols)
+    df['ws_type'] = df['ws_type'].astype(str)
+    return df
+
+
+def load_ws_sites_csv(path: Path) -> pd.DataFrame:
+    cols = ['ref_id', 'x', 'y', 'z', 'occupancy', 'min_dist', 'site_type']
+    df = pd.read_csv(path, sep=r'\s+', comment='#', header=None, names=cols)
+    df['site_type'] = df['site_type'].astype(str)
+    return df
+
+
+def load_interstitials_csv(path: Path) -> pd.DataFrame:
+    cols = ['ref_id', 'x', 'y', 'z', 'occupancy', 'n_extra']
+    return pd.read_csv(path, sep=r'\s+', comment='#', header=None, names=cols)
 
 
 # ─── Utilidades gráficas ──────────────────────────────────────────────────────
@@ -307,7 +342,7 @@ def plot_output(df: pd.DataFrame, label: str, threshold: float,
         sub = sample50k[sample50k['defect_type'] == dt]
         is_lattice = dt == 'Lattice'
         ax3.scatter(sub['x'], sub['z'],
-                    c=cmap[dt], s=0.8 if is_lattice else 5,
+                    color=cmap[dt], s=0.8 if is_lattice else 5,
                     alpha=0.35 if is_lattice else 0.85,
                     zorder=1 if is_lattice else 3,
                     rasterized=True)
@@ -402,7 +437,7 @@ def plot_pca(df: pd.DataFrame, label: str, threshold: float,
         sub = sample80k[sample80k['defect_type'] == dt]
         is_lattice = dt == 'Lattice'
         ax0.scatter(sub['pc1'], sub['pc2'],
-                    c=cmap[dt],
+                    color=cmap[dt],
                     s=1.5 if is_lattice else 8,
                     alpha=0.35 if is_lattice else 0.85,
                     zorder=1 if is_lattice else 3,
@@ -686,6 +721,413 @@ def plot_vacancies(df: pd.DataFrame, label: str, outdir: Path, stem: str):
     save_figure(fig, f'{stem}_vacancies', outdir)
     plt.close(fig)
 
+    # Figura independiente y grande para el histograma de clusters
+    plot_vacancy_cluster_hist(df, label, outdir, stem)
+
+
+# ─── Figura 4b: histograma standalone de clusters de vacancias ───────────────
+
+def plot_vacancy_cluster_hist(df: pd.DataFrame, label: str, outdir: Path, stem: str):
+    """
+    Figura independiente y grande para la distribución de tamaño de clusters
+    de vacancias (n_grid_pts). Se genera además del panel dentro de plot_vacancies.
+    """
+    has_cluster_cols = ('d_near_max' in df.columns and 'n_grid_pts' in df.columns
+                        and df['d_near_max'].notna().any())
+    if not has_cluster_cols:
+        return
+
+    set_publication_style()
+
+    n_pts = df['n_grid_pts'].values
+    n_total = len(n_pts)
+    med = float(np.median(n_pts))
+    mean_val = float(np.mean(n_pts))
+
+    OVF = 101
+    n_clipped = np.where(n_pts > 100, OVF, n_pts)
+    bins = np.arange(0.5, OVF + 1.5, 1)
+
+    overflow_n = int((n_pts > 100).sum())
+    pct_overflow = 100.0 * overflow_n / n_total if n_total > 0 else 0.0
+
+    fig, ax = plt.subplots(figsize=(12, 6))
+    fig.subplots_adjust(left=0.09, right=0.97, top=0.88, bottom=0.13)
+
+    counts_hist, _ = np.histogram(n_clipped, bins=bins)
+    bar_colors = np.where(
+        np.arange(1, OVF + 1) == OVF, '#d73027', '#2166ac'
+    )
+    ax.bar(np.arange(1, OVF + 1), counts_hist,
+           color=bar_colors, edgecolor='white', linewidth=0.25,
+           width=1.0, align='center', rasterized=True, zorder=3)
+
+    # Línea de mediana
+    if med <= 100:
+        ax.axvline(med, color='#d73027', lw=1.8, ls='--',
+                   label=f'Mediana = {med:.0f}')
+    # Línea de media
+    mean_pos = min(mean_val, OVF)
+    ax.axvline(mean_pos, color='#1a9641', lw=1.6, ls=':',
+               label=f'Media = {mean_val:.1f}')
+
+    # Separador overflow
+    ax.axvline(OVF - 0.5, color='#888888', lw=1.0, ls=':', zorder=4)
+
+    # Etiqueta sobre la barra de overflow
+    if overflow_n > 0:
+        bar_h = counts_hist[-1]
+        ax.text(OVF, bar_h * 1.025, f'{overflow_n}\n({pct_overflow:.1f} %)',
+                ha='center', va='bottom', fontsize=8.5, color='#d73027',
+                fontweight='bold')
+
+    # Cuadro de estadísticas
+    stats_text = (
+        f'N clusters = {n_total:,}\n'
+        f'Mediana = {med:.0f} pts\n'
+        f'Media = {mean_val:.1f} pts\n'
+        f'Máx = {int(n_pts.max())} pts\n'
+        f'> 100 pts: {overflow_n:,} ({pct_overflow:.1f} %)'
+    )
+    ax.text(0.98, 0.97, stats_text, transform=ax.transAxes,
+            ha='right', va='top', fontsize=9,
+            bbox=dict(boxstyle='round,pad=0.45', facecolor='white',
+                      edgecolor='#bbbbbb', alpha=0.93))
+
+    # Ejes y etiquetas
+    tick_pos    = list(range(10, 101, 10)) + [OVF]
+    tick_labels = [str(t) for t in range(10, 101, 10)] + ['100+']
+    ax.set_xticks(tick_pos)
+    ax.set_xticklabels(tick_labels, fontsize=9)
+    ax.set_xlim(0.5, OVF + 0.5)
+    ax.set_xlabel('Puntos de grilla por cluster de vacancia (n_grid_pts)', fontsize=11)
+    ax.set_ylabel('Número de clusters', fontsize=11)
+    ax.tick_params(labelsize=9)
+
+    ax.legend(fontsize=10, handlelength=1.6, loc='upper right',
+              bbox_to_anchor=(0.97, 0.80))
+
+    fig.suptitle(
+        f'{label} — Distribución de tamaño de clusters de vacancias  (N = {n_total:,})',
+        fontsize=13, y=0.97
+    )
+
+    save_figure(fig, f'{stem}_vacancies_cluster_hist', outdir)
+    plt.close(fig)
+
+
+# ─── Figura 5: ws_output*.csv ────────────────────────────────────────────────
+
+def plot_ws_atoms(df: pd.DataFrame, label: str, outdir: Path, stem: str):
+    """
+    6-panel figure para clasificación Wigner-Seitz por átomo:
+      [0,0] Proyección XY coloreada por tipo WS
+      [0,1] Proyección XZ coloreada por distancia al sitio WS
+      [1,0] Histograma de ws_dist por tipo WS
+      [1,1] Boxplot de ws_dist por tipo WS
+      [2,0] Recuento por tipo WS
+      [2,1] Recuento por ocupación del sitio asignado
+    """
+    set_publication_style()
+
+    ws_types = sorted(df['ws_type'].unique())
+    cmap = get_color_map(ws_types)
+    sample80k = _sample(df, 80_000)
+
+    fig = plt.figure(figsize=(10, 11))
+    gs = gridspec.GridSpec(3, 2, figure=fig, hspace=0.55, wspace=0.40)
+
+    ax0 = fig.add_subplot(gs[0, 0])
+    for wt in ws_types:
+        sub = sample80k[sample80k['ws_type'] == wt]
+        is_lattice = wt == 'Lattice'
+        ax0.scatter(sub['x'], sub['y'], color=cmap[wt],
+                    s=0.8 if is_lattice else 5,
+                    alpha=0.35 if is_lattice else 0.85,
+                    zorder=1 if is_lattice else 3,
+                    rasterized=True)
+    handles0 = [Line2D([0], [0], marker='o', color='w',
+                       markerfacecolor=cmap[wt], markersize=5,
+                       label=f'{wt}  (n={len(df[df["ws_type"] == wt]):,})')
+                for wt in ws_types]
+    ax0.legend(handles=handles0, loc='best', handlelength=1.0)
+    ax0.set_xlabel('x (Å)')
+    ax0.set_ylabel('y (Å)')
+    ax0.set_title('Proyección XY — tipo WS')
+    ax0.set_aspect('equal', adjustable='box')
+
+    ax1 = fig.add_subplot(gs[0, 1])
+    vmax = sample80k['ws_dist'].quantile(0.99)
+    sc = ax1.scatter(sample80k['x'], sample80k['z'],
+                     c=sample80k['ws_dist'], cmap='viridis',
+                     s=0.8, alpha=0.6, vmin=0, vmax=vmax,
+                     rasterized=True)
+    add_colorbar(fig, ax1, sc, label='distancia al sitio WS (Å)')
+    ax1.set_xlabel('x (Å)')
+    ax1.set_ylabel('z (Å)')
+    ax1.set_title('Proyección XZ — desplazamiento WS')
+    ax1.set_aspect('equal', adjustable='box')
+
+    ax2 = fig.add_subplot(gs[1, 0])
+    xmax = df['ws_dist'].quantile(0.999)
+    bins = np.linspace(0, xmax, 80)
+    x_grid = np.linspace(0, xmax, 400)
+    for wt in ws_types:
+        vals = df[df['ws_type'] == wt]['ws_dist'].values
+        ax2.hist(vals, bins=bins, alpha=0.55, color=cmap[wt],
+                 density=True, histtype='stepfilled', edgecolor='none')
+        kde_y = kde_curve(vals, x_grid)
+        if kde_y is not None:
+            ax2.plot(x_grid, kde_y, color=cmap[wt], lw=1.4)
+    ax2.set_xlabel('distancia al sitio WS (Å)')
+    ax2.set_ylabel('Densidad')
+    ax2.set_title('Distribución de desplazamientos WS')
+    ax2.set_xlim(0, xmax)
+
+    ax3 = fig.add_subplot(gs[1, 1])
+    groups = [df[df['ws_type'] == wt]['ws_dist'].values for wt in ws_types]
+    bp = ax3.boxplot(groups, positions=range(len(ws_types)),
+                     patch_artist=True, widths=0.55, showfliers=False,
+                     medianprops=dict(color='black', lw=1.4),
+                     whiskerprops=dict(lw=0.8), capprops=dict(lw=0.8))
+    for patch, wt in zip(bp['boxes'], ws_types):
+        patch.set_facecolor(cmap[wt])
+        patch.set_alpha(0.70)
+    ax3.set_xticks(range(len(ws_types)))
+    ax3.set_xticklabels(ws_types, rotation=18, ha='right')
+    ax3.set_ylabel('distancia al sitio WS (Å)')
+    ax3.set_title('Desplazamiento por tipo WS')
+
+    ax4 = fig.add_subplot(gs[2, 0])
+    counts = df['ws_type'].value_counts().reindex(ws_types).fillna(0).astype(int)
+    xpos = np.arange(len(ws_types))
+    bars = ax4.bar(xpos, counts.values, color=[cmap[wt] for wt in ws_types],
+                   edgecolor='white', linewidth=0.5, zorder=3)
+    for bar, val in zip(bars, counts.values):
+        ax4.text(bar.get_x() + bar.get_width() / 2, bar.get_height() * 1.015,
+                 f'{val:,}', ha='center', va='bottom', fontsize=7.5)
+    ax4.set_xticks(xpos)
+    ax4.set_xticklabels(ws_types, rotation=18, ha='right')
+    ax4.set_ylabel('Número de átomos')
+    ax4.set_title('Recuento por clasificación WS')
+
+    ax5 = fig.add_subplot(gs[2, 1])
+    occ_counts = df['ws_occ'].value_counts().sort_index()
+    occ_labels = [str(int(v)) for v in occ_counts.index]
+    bars5 = ax5.bar(np.arange(len(occ_counts)), occ_counts.values,
+                    color='#4393c3', edgecolor='white', linewidth=0.5, zorder=3)
+    for bar, val in zip(bars5, occ_counts.values):
+        ax5.text(bar.get_x() + bar.get_width() / 2, bar.get_height() * 1.015,
+                 f'{int(val):,}', ha='center', va='bottom', fontsize=7.5)
+    ax5.set_xticks(np.arange(len(occ_counts)))
+    ax5.set_xticklabels(occ_labels)
+    ax5.set_xlabel('Ocupación del sitio WS asignado')
+    ax5.set_ylabel('Número de átomos')
+    ax5.set_title('Ocupación WS por átomo')
+
+    ndef = len(df[df['ws_type'] != 'Lattice'])
+    fig.suptitle(
+        f'{label} — Wigner-Seitz por átomo\n'
+        f'N = {len(df):,} átomos  |  No-lattice: {ndef:,} ({100 * ndef / len(df):.2f} %)',
+        fontsize=11, y=1.01
+    )
+    save_figure(fig, f'{stem}_ws_atoms', outdir)
+    plt.close(fig)
+
+
+# ─── Figura 6: ws_sites_output*.csv ──────────────────────────────────────────
+
+def plot_ws_sites(df: pd.DataFrame, label: str, outdir: Path, stem: str):
+    """
+    6-panel figure para sitios Wigner-Seitz:
+      [0,0] Proyección XY por tipo de sitio
+      [0,1] Proyección XZ por ocupación
+      [1,0] Histograma de min_dist por tipo de sitio
+      [1,1] Boxplot de min_dist por tipo de sitio
+      [2,0] Recuento por tipo de sitio
+      [2,1] Recuento por ocupación
+    """
+    set_publication_style()
+
+    site_types = sorted(df['site_type'].unique())
+    cmap = get_color_map(site_types)
+    sample80k = _sample(df, 80_000)
+
+    fig = plt.figure(figsize=(10, 11))
+    gs = gridspec.GridSpec(3, 2, figure=fig, hspace=0.55, wspace=0.40)
+
+    ax0 = fig.add_subplot(gs[0, 0])
+    for st in site_types:
+        sub = sample80k[sample80k['site_type'] == st]
+        is_normal = st == 'Normal'
+        ax0.scatter(sub['x'], sub['y'], color=cmap[st],
+                    s=0.8 if is_normal else 5,
+                    alpha=0.35 if is_normal else 0.85,
+                    zorder=1 if is_normal else 3,
+                    rasterized=True)
+    handles0 = [Line2D([0], [0], marker='o', color='w',
+                       markerfacecolor=cmap[st], markersize=5,
+                       label=f'{st}  (n={len(df[df["site_type"] == st]):,})')
+                for st in site_types]
+    ax0.legend(handles=handles0, loc='best', handlelength=1.0)
+    ax0.set_xlabel('x (Å)')
+    ax0.set_ylabel('y (Å)')
+    ax0.set_title('Proyección XY — tipo de sitio')
+    ax0.set_aspect('equal', adjustable='box')
+
+    ax1 = fig.add_subplot(gs[0, 1])
+    sc = ax1.scatter(sample80k['x'], sample80k['z'],
+                     c=sample80k['occupancy'], cmap='magma_r',
+                     s=0.8, alpha=0.6, rasterized=True)
+    add_colorbar(fig, ax1, sc, label='ocupación')
+    ax1.set_xlabel('x (Å)')
+    ax1.set_ylabel('z (Å)')
+    ax1.set_title('Proyección XZ — ocupación WS')
+    ax1.set_aspect('equal', adjustable='box')
+
+    ax2 = fig.add_subplot(gs[1, 0])
+    xmax = df['min_dist'].quantile(0.999)
+    bins = np.linspace(0, xmax, 80)
+    x_grid = np.linspace(0, xmax, 400)
+    for st in site_types:
+        vals = df[df['site_type'] == st]['min_dist'].values
+        ax2.hist(vals, bins=bins, alpha=0.55, color=cmap[st],
+                 density=True, histtype='stepfilled', edgecolor='none')
+        kde_y = kde_curve(vals, x_grid)
+        if kde_y is not None:
+            ax2.plot(x_grid, kde_y, color=cmap[st], lw=1.4)
+    ax2.set_xlabel('distancia mínima al átomo asignado (Å)')
+    ax2.set_ylabel('Densidad')
+    ax2.set_title('Distribución de distancias por sitio')
+    ax2.set_xlim(0, xmax)
+
+    ax3 = fig.add_subplot(gs[1, 1])
+    groups = [df[df['site_type'] == st]['min_dist'].values for st in site_types]
+    bp = ax3.boxplot(groups, positions=range(len(site_types)),
+                     patch_artist=True, widths=0.55, showfliers=False,
+                     medianprops=dict(color='black', lw=1.4),
+                     whiskerprops=dict(lw=0.8), capprops=dict(lw=0.8))
+    for patch, st in zip(bp['boxes'], site_types):
+        patch.set_facecolor(cmap[st])
+        patch.set_alpha(0.70)
+    ax3.set_xticks(range(len(site_types)))
+    ax3.set_xticklabels(site_types, rotation=18, ha='right')
+    ax3.set_ylabel('distancia mínima (Å)')
+    ax3.set_title('Distancia por tipo de sitio')
+
+    ax4 = fig.add_subplot(gs[2, 0])
+    counts = df['site_type'].value_counts().reindex(site_types).fillna(0).astype(int)
+    xpos = np.arange(len(site_types))
+    bars = ax4.bar(xpos, counts.values, color=[cmap[st] for st in site_types],
+                   edgecolor='white', linewidth=0.5, zorder=3)
+    for bar, val in zip(bars, counts.values):
+        ax4.text(bar.get_x() + bar.get_width() / 2, bar.get_height() * 1.015,
+                 f'{val:,}', ha='center', va='bottom', fontsize=7.5)
+    ax4.set_xticks(xpos)
+    ax4.set_xticklabels(site_types, rotation=18, ha='right')
+    ax4.set_ylabel('Número de sitios')
+    ax4.set_title('Recuento por tipo de sitio')
+
+    ax5 = fig.add_subplot(gs[2, 1])
+    occ_counts = df['occupancy'].value_counts().sort_index()
+    bars5 = ax5.bar(np.arange(len(occ_counts)), occ_counts.values,
+                    color='#9970ab', edgecolor='white', linewidth=0.5, zorder=3)
+    for bar, val in zip(bars5, occ_counts.values):
+        ax5.text(bar.get_x() + bar.get_width() / 2, bar.get_height() * 1.015,
+                 f'{int(val):,}', ha='center', va='bottom', fontsize=7.5)
+    ax5.set_xticks(np.arange(len(occ_counts)))
+    ax5.set_xticklabels([str(int(v)) for v in occ_counts.index])
+    ax5.set_xlabel('Ocupación')
+    ax5.set_ylabel('Número de sitios')
+    ax5.set_title('Distribución de ocupación WS')
+
+    n_empty = int((df['occupancy'] == 0).sum())
+    n_over = int((df['occupancy'] > 1).sum())
+    fig.suptitle(
+        f'{label} — Sitios Wigner-Seitz\n'
+        f'N = {len(df):,} sitios  |  Vacantes: {n_empty:,}  |  Ocupados >1: {n_over:,}',
+        fontsize=11, y=1.01
+    )
+    save_figure(fig, f'{stem}_ws_sites', outdir)
+    plt.close(fig)
+
+
+# ─── Figura 7: interstitials_output*.csv ─────────────────────────────────────
+
+def plot_interstitials(df: pd.DataFrame, label: str, outdir: Path, stem: str):
+    """
+    4-panel figure para sitios intersticiales Wigner-Seitz:
+      [0,0] Proyección XY — color = n_extra, tamaño = occupancy
+      [0,1] Proyección XZ
+      [1,0] Proyección YZ
+      [1,1] Recuentos por n_extra y occupancy
+    """
+    set_publication_style()
+
+    x, y, z = df['x'].values, df['y'].values, df['z'].values
+    marker_size = 18 + 16 * (df['occupancy'].values.astype(float) - 2)
+    color_vals = df['n_extra'].values
+
+    fig = plt.figure(figsize=(11, 9))
+    gs = gridspec.GridSpec(2, 2, figure=fig, hspace=0.44, wspace=0.38)
+    scatter_kw = dict(c=color_vals, s=marker_size, cmap='inferno_r',
+                      alpha=0.80, rasterized=True)
+
+    ax0 = fig.add_subplot(gs[0, 0])
+    sc0 = ax0.scatter(x, y, **scatter_kw)
+    add_colorbar(fig, ax0, sc0, label='n_extra')
+    ax0.set_xlabel('x (Å)')
+    ax0.set_ylabel('y (Å)')
+    ax0.set_title('Proyección XY')
+    ax0.set_aspect('equal', adjustable='box')
+
+    ax1 = fig.add_subplot(gs[0, 1])
+    sc1 = ax1.scatter(x, z, **scatter_kw)
+    add_colorbar(fig, ax1, sc1, label='n_extra')
+    ax1.set_xlabel('x (Å)')
+    ax1.set_ylabel('z (Å)')
+    ax1.set_title('Proyección XZ')
+    ax1.set_aspect('equal', adjustable='box')
+
+    ax2 = fig.add_subplot(gs[1, 0])
+    sc2 = ax2.scatter(y, z, **scatter_kw)
+    add_colorbar(fig, ax2, sc2, label='n_extra')
+    ax2.set_xlabel('y (Å)')
+    ax2.set_ylabel('z (Å)')
+    ax2.set_title('Proyección YZ')
+    ax2.set_aspect('equal', adjustable='box')
+
+    ax3 = fig.add_subplot(gs[1, 1])
+    n_extra_counts = df['n_extra'].value_counts().sort_index()
+    occ_counts = df['occupancy'].value_counts().sort_index()
+    values = sorted(set(n_extra_counts.index.astype(int)).union(
+        set(occ_counts.index.astype(int))))
+    extra_heights = [int(n_extra_counts.get(v, 0)) for v in values]
+    occ_heights = [int(occ_counts.get(v, 0)) for v in values]
+    xpos = np.arange(len(values))
+    width = 0.36
+    ax3.bar(xpos - width / 2, extra_heights, width=width,
+            color='#d73027', edgecolor='white', linewidth=0.5,
+            label='n_extra', zorder=3)
+    ax3.bar(xpos + width / 2, occ_heights, width=width,
+            color='#4575b4', edgecolor='white', linewidth=0.5,
+            label='occupancy', zorder=3)
+    ax3.set_xticks(xpos)
+    ax3.set_xticklabels([str(v) for v in values])
+    ax3.set_xlabel('Valor')
+    ax3.set_ylabel('Número de sitios')
+    ax3.set_title('Multiplicidad de intersticiales')
+    ax3.legend(handlelength=1.2)
+
+    Lx, Ly, Lz = x.max() - x.min(), y.max() - y.min(), z.max() - z.min()
+    fig.suptitle(
+        f'{label} — Intersticiales Wigner-Seitz  (N = {len(df):,})\n'
+        f'Caja ocupada: {Lx:.1f} × {Ly:.1f} × {Lz:.1f} Å',
+        fontsize=11, y=1.02
+    )
+    save_figure(fig, f'{stem}_interstitials', outdir)
+    plt.close(fig)
+
 
 # ─── Dispatcher y CLI ─────────────────────────────────────────────────────────
 
@@ -716,6 +1158,23 @@ def process_file(csv_path: Path, threshold: float, label: str, outdir: Path):
         df = load_vacancies_csv(csv_path)
         print(f"    {len(df):,} vacancias")
         plot_vacancies(df, lbl, outdir, csv_path.stem)
+
+    elif csv_type == 'ws_atoms':
+        df = load_ws_atoms_csv(csv_path)
+        print(f"    {len(df):,} átomos WS  |  tipos: "
+              f"{dict(df['ws_type'].value_counts())}")
+        plot_ws_atoms(df, lbl, outdir, csv_path.stem)
+
+    elif csv_type == 'ws_sites':
+        df = load_ws_sites_csv(csv_path)
+        print(f"    {len(df):,} sitios WS  |  tipos: "
+              f"{dict(df['site_type'].value_counts())}")
+        plot_ws_sites(df, lbl, outdir, csv_path.stem)
+
+    elif csv_type == 'interstitials':
+        df = load_interstitials_csv(csv_path)
+        print(f"    {len(df):,} intersticiales")
+        plot_interstitials(df, lbl, outdir, csv_path.stem)
 
     else:
         print(f"    AVISO: tipo no reconocido, se omite.")
