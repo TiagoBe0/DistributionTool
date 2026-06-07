@@ -1,1 +1,0 @@
-/usr/bin/c++ -O2 -DNDEBUG CMakeFiles/distool_viewer.dir/main.cpp.o -o distool_viewer  _deps/glad-build/libglad.a _deps/glfw-build/src/libglfw3.a libimgui_lib.a _deps/glm-build/glm/libglm.a -ldl _deps/glfw-build/src/libglfw3.a /usr/lib/x86_64-linux-gnu/librt.a -lm -ldl /usr/lib/x86_64-linux-gnu/libGLX.so /usr/lib/x86_64-linux-gnu/libOpenGL.so 

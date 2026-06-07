@@ -19,14 +19,42 @@ void PCA::fit(const std::vector<Atom>& atoms) {
         for (int j = 0; j < d; ++j) mean_(j) += a.dv[j];
     mean_ /= n;
 
-    // ── Build centred data matrix X  [n × d] ─────────────────────────────────
-    Eigen::MatrixXd X(n, d);
-    for (int i = 0; i < n; ++i)
-        for (int j = 0; j < d; ++j)
-            X(i, j) = atoms[i].dv[j] - mean_(j);
+    // ── Covariance matrix  C = Σᵢ (xᵢ−μ)(xᵢ−μ)ᵀ / (n−1),  [d × d] ───────────
+    // Accumulated incrementally via symmetric rank-1 updates. This avoids
+    // materialising the centred data matrix X [n × d], which for a full MD
+    // frame (n ~ 10⁶, d = 450) is several GB and previously crashed the
+    // process. Only the d × d covariance (a few MB) is ever held in memory.
+    Eigen::MatrixXd C = Eigen::MatrixXd::Zero(d, d);
 
-    // ── Covariance matrix  C = XᵀX / (n−1),  [d × d] ────────────────────────
-    Eigen::MatrixXd C = (X.transpose() * X) / static_cast<double>(n - 1);
+#ifdef USE_OPENMP
+    #pragma omp parallel
+    {
+        // Per-thread accumulator → combined after the loop. Eigen objects are
+        // not directly OpenMP-reducible, so accumulate locally then merge in a
+        // critical section.
+        Eigen::MatrixXd C_local = Eigen::MatrixXd::Zero(d, d);
+        Eigen::VectorXd x(d);
+
+        #pragma omp for schedule(static)
+        for (int i = 0; i < n; ++i) {
+            for (int j = 0; j < d; ++j) x(j) = atoms[i].dv[j] - mean_(j);
+            C_local.selfadjointView<Eigen::Lower>().rankUpdate(x);
+        }
+
+        #pragma omp critical
+        C += C_local;
+    }
+#else
+    Eigen::VectorXd x(d);
+    for (int i = 0; i < n; ++i) {
+        for (int j = 0; j < d; ++j) x(j) = atoms[i].dv[j] - mean_(j);
+        C.selfadjointView<Eigen::Lower>().rankUpdate(x);
+    }
+#endif
+
+    // rankUpdate writes only the lower triangle — mirror it, then normalise.
+    C = C.selfadjointView<Eigen::Lower>();
+    C /= static_cast<double>(n - 1);
 
     // ── Eigen-decomposition (symmetric → real eigenvalues) ───────────────────
     Eigen::SelfAdjointEigenSolver<Eigen::MatrixXd> solver(C);

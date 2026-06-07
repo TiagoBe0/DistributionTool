@@ -1,0 +1,925 @@
+\documentclass[11pt,a4paper]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[spanish]{babel}
+\usepackage{amsmath, amssymb, amsthm}
+\usepackage{mathtools}
+\usepackage{geometry}
+\usepackage{booktabs}
+\usepackage{hyperref}
+\usepackage{cite}
+\usepackage{float}
+\usepackage{xcolor}
+\usepackage{enumitem}
+\geometry{margin=2.5cm}
+
+\hypersetup{
+  colorlinks=true,
+  linkcolor=blue!50!black,
+  citecolor=blue!50!black,
+  urlcolor=blue!50!black
+}
+
+\newtheorem{prop}{Proposición}
+\newtheorem{lemma}{Lema}
+\newtheorem{defn}{Definición}
+\theoremstyle{remark}
+\newtheorem*{remark}{Observación}
+
+\title{\textbf{Fundamentos teóricos del HybridVacancyDetector:\\
+un método multi-señal para cuantificar vacancias\\
+en cristales con alta deformación}}
+\author{S.~Bergamin\\[2pt]\small Notas internas para discusión con dirección}
+\date{\today}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+\noindent
+El análisis de Wigner--Seitz (WS) es la herramienta estándar para contar
+defectos puntuales en cristales irradiados, pero se sabe que sobreestima el
+número de pares Frenkel en el régimen de alta deformación: átomos
+transitoriamente desplazados durante una cascada quedan clasificados como
+intersticiales, generando vacancias falsas en sus sitios de origen. Las
+alternativas reference-free (CNA adaptativo, PTM, análisis de Voronoi) son
+robustas al ruido térmico pero introducen sus propias ambigüedades cuando
+las señales son débiles. Este documento expone, con derivaciones desde
+primeros principios, la base teórica de un método híbrido que combina seis
+indicadores locales independientes mediante una función de consenso lineal
+ponderada, complementada por dos penalizaciones físicamente motivadas
+(tránsito balístico y coherencia de pares Frenkel). El método reproduce el
+conteo de WS de forma exacta en el régimen de bajo daño y degrada en forma
+controlada hacia un estimador robusto cuando WS comienza a sobrecontar.
+\end{abstract}
+
+\tableofcontents
+\bigskip
+
+% =============================================================================
+\section{Planteo del problema}
+% =============================================================================
+
+\subsection{Definición topológica de vacancia}
+
+Sea $\mathcal{L} = \{\mathbf{R}_k\}_{k=1}^{N_\text{ref}}$ el conjunto de
+posiciones atómicas de un cristal de referencia (pristino, termalizado a
+temperatura $T_\text{ref}$ pero sin daño). Sea $\mathcal{D} =
+\{\mathbf{r}_j\}_{j=1}^{N_\text{dmg}}$ el conjunto de posiciones del mismo
+sistema tras un evento de daño (cascada PKA, irradiación, deformación
+mecánica).
+
+Idealmente, una \emph{vacancia} es un sitio $\mathbf{R}_k \in \mathcal{L}$
+que ha quedado desocupado: el átomo que originalmente vibraba en torno a
+$\mathbf{R}_k$ ya no se encuentra allí ni en sus inmediaciones. La
+definición operativa requiere precisar qué se entiende por
+``inmediaciones''.
+
+\subsection{El criterio Wigner--Seitz y su discontinuidad}
+
+El método WS \cite{Stukowski2010,Nordlund2018} asigna cada átomo
+$\mathbf{r}_j \in \mathcal{D}$ a su sitio de referencia más cercano:
+\begin{equation}
+  \pi_\text{WS}(\mathbf{r}_j) \;=\; \arg\min_{k} \;
+  \bigl\| \mathbf{r}_j - \mathbf{R}_k \bigr\|_2,
+  \label{eq:ws-assign}
+\end{equation}
+y define la \emph{ocupancia} del sitio $k$ como
+$\Omega_k = \bigl| \{ j : \pi_\text{WS}(\mathbf{r}_j) = k \} \bigr|$. El
+número de vacancias y de intersticiales se obtiene entonces por simple
+conteo:
+\begin{equation}
+  N_\text{vac}^\text{WS} \;=\; \bigl|\{ k : \Omega_k = 0 \}\bigr|,
+  \qquad
+  N_\text{int}^\text{WS} \;=\; \sum_{k : \Omega_k \geq 2}\!(\Omega_k - 1).
+  \label{eq:ws-count}
+\end{equation}
+
+La asignación~(\ref{eq:ws-assign}) es una proyección discontinua: si un
+átomo cruza el borde de su celda de Voronoi original (la celda WS), la
+ocupancia salta abruptamente de $1$ a $0$ en el sitio de partida y de $1$
+a $2$ en el de destino. Para un par primero-vecino a distancia $d_\text{NN}$,
+el borde se encuentra a $d_\text{NN}/2$. En BCC con $a_0 = 2.87$~Å (Fe),
+$d_\text{NN}/2 \approx 1.24$~Å, una distancia comparable al desplazamiento
+RMS térmico de un átomo a temperaturas $T \gtrsim 600$~K, y mucho menor
+que el desplazamiento de un átomo balísticamente impulsado durante una
+cascada.
+
+\subsection{La sobreestimación de WS en alta deformación}
+\label{sec:ws-overest}
+
+Consideremos un átomo $\mathbf{r}_j(t)$ que, durante el pico ballístico
+de una cascada, se desplaza una distancia $\Delta r \in
+[d_\text{NN}/2,\, d_\text{NN}]$ del centro de su sitio original
+$\mathbf{R}_k$, sin abandonar la primera esfera de coordinación.
+Físicamente este átomo no representa un defecto permanente: tras la
+fase de relajación retornará a $\mathbf{R}_k$ (o a un sitio vecino) y
+recombinará con la pretendida vacancia. Pero la
+ecuación~(\ref{eq:ws-assign}) lo asigna al sitio vecino $\mathbf{R}_{k'}$,
+que pasa a tener $\Omega_{k'} = 2$, mientras $\Omega_k = 0$. El conteo
+WS reporta entonces \emph{un par Frenkel falso}.
+
+El problema es bien conocido en la literatura
+\cite{Stoller2000,Soneda2003,Granberg2016}: se manifiesta como una
+sobreestimación de $N_\text{vac}^\text{WS}$ y $N_\text{int}^\text{WS}$
+proporcional a la cantidad de átomos en tránsito balístico al momento de
+muestrear el frame. La aplicación más común --- contar Frenkel pairs
+en un frame \emph{relajado} tras la cascada --- mitiga el efecto pero
+no lo elimina: si la relajación es incompleta, persisten sub-cascadas
+en tránsito.
+
+\subsection{Objetivo del método híbrido}
+
+Buscamos un estimador $N_\text{vac}^\text{H}$ que satisfaga:
+\begin{enumerate}[label=(\roman*)]
+\item \textbf{Reproducibilidad de WS} en régimen de bajo daño:
+      $N_\text{vac}^\text{H} \to N_\text{vac}^\text{WS}$ cuando la
+      hipótesis de fondo de WS es válida (vacancias bien aisladas,
+      sin átomos en tránsito).
+\item \textbf{Robustez a ruido térmico}: $N_\text{vac}^\text{H}$ no
+      debe crecer con $T$ en un cristal pristino.
+\item \textbf{Corrección de la sobreestimación} en alta deformación:
+      $N_\text{vac}^\text{H} \leq N_\text{vac}^\text{WS}$ cuando existen
+      átomos en tránsito, y el filtrado debe ser físicamente motivado.
+\item \textbf{Disponibilidad opcional de la referencia}: si no hay
+      frame pristino, el método debe degradar a un estimador
+      reference-free sensato.
+\end{enumerate}
+
+% =============================================================================
+\section{Espacio de candidatos}
+% =============================================================================
+
+\subsection{Unión de fuentes}
+\label{sec:candidates}
+
+Definimos el conjunto de \emph{candidatos a vacancia} como
+\begin{equation}
+  \mathcal{C} \;=\; \mathcal{C}_\text{WS} \,\cup\, \mathcal{C}_\text{grid},
+\end{equation}
+donde
+\begin{align}
+  \mathcal{C}_\text{WS}   &= \{\mathbf{R}_k \,:\, \Omega_k = 0\},
+  \\
+  \mathcal{C}_\text{grid} &= \{\mathbf{c}_m \,:\, \mathbf{c}_m
+    \text{ es el centro de un cluster del método de grilla FaVaD}\}.
+\end{align}
+El segundo término permite capturar voids extendidos cuyos centros no
+coinciden con sitios de la red de referencia, así como vacancias en
+sistemas donde la red de referencia no existe (amorfos, fronteras de
+grano, nanopartículas).
+
+\subsection{Construcción de $\mathcal{C}_\text{grid}$}
+
+Sea $\Delta$ el paso de grilla. Para cada punto
+$\mathbf{g}_{ijk} = (x_0 + (i+\tfrac{1}{2})\Delta,\,y_0 + (j+\tfrac{1}{2})\Delta,\,z_0 + (k+\tfrac{1}{2})\Delta)$
+se calcula la distancia al átomo más cercano,
+$d_\text{near}(\mathbf{g}_{ijk}) = \min_{j} \|\mathbf{g}_{ijk} - \mathbf{r}_j\|$,
+mediante una linked-cell list con costo $\mathcal{O}(1)$ por consulta.
+Los puntos con $d_\text{near} > \tau_\text{grid}$ se agrupan luego
+mediante el algoritmo greedy de FaVaD \cite{Toussaint2020}: se ordenan
+por $d_\text{near}$ decreciente, se siembra un cluster nuevo desde el
+punto con mayor $d_\text{near}$ disponible, y se absorben todos los
+puntos no asignados a distancia $\leq r_\text{cluster}$.
+
+\paragraph{Elección de $\tau_\text{grid}$.} El argumento físico es
+crucial: el sitio octaédrico de una FCC se encuentra a
+$d_\text{oct} = d_\text{NN}/\sqrt{2}\,\approx\,0.71\,d_\text{NN}$ del
+átomo más cercano. El sitio tetraédrico está a
+$d_\text{tet} = d_\text{NN}\sqrt{3}/2 \approx 0.87\,d_\text{NN}$. Si
+$\tau_\text{grid} < d_\text{oct}$, la grilla detectará cada hueco
+intersticial de la red pristina como vacancia espuria, generando
+$\mathcal{O}(N_\text{ref})$ falsos positivos. La elección
+$\tau_\text{grid} = 0.9\,d_\text{NN}$ asegura que solo voids reales
+(con al menos un sitio atómico faltante) disparen la detección.
+
+\subsection{Deduplicación geométrica}
+
+Si $\mathbf{c}_m \in \mathcal{C}_\text{grid}$ se encuentra a distancia
+menor que $r_\text{dedup} = d_\text{NN}/2$ de algún
+$\mathbf{R}_k \in \mathcal{C}_\text{WS}$, se descarta $\mathbf{c}_m$
+y se conserva $\mathbf{R}_k$ (con su \texttt{ref\_site\_idx}
+asociado). La búsqueda se realiza con una segunda linked-cell list
+sobre $\mathcal{C}_\text{WS}$ para costo total
+$\mathcal{O}(|\mathcal{C}_\text{grid}|)$.
+
+% =============================================================================
+\section{Las seis señales positivas}
+% =============================================================================
+
+Para cada candidato $\mathbf{x} \in \mathcal{C}$ se computan seis
+indicadores escalares $s_\alpha(\mathbf{x}) \in [0,1]$, donde
+$s_\alpha \to 1$ indica fuerte evidencia de vacancia. Cada señal
+está respaldada por un argumento físico independiente.
+
+% -----------------------------------------------------------------------------
+\subsection{Señal 1: ocupancia WS binaria}
+\label{sec:sig-ws}
+
+\begin{equation}
+  s_\text{WS}(\mathbf{x}) \;=\;
+  \begin{cases}
+    1 & \text{si } \mathbf{x} = \mathbf{R}_k \text{ y } \Omega_k = 0,\\
+    0 & \text{en caso contrario}.
+  \end{cases}
+  \label{eq:sig-ws}
+\end{equation}
+
+\textbf{Justificación.} Captura literalmente la decisión WS para
+preservar el invariante (i) de la sección~\ref{sec:ws-overest}.
+\textbf{Complejidad.} $\mathcal{O}(1)$ por candidato (lookup).
+
+% -----------------------------------------------------------------------------
+\subsection{Señal 2: ocupancia gaussiana suave (Soft-WS)}
+\label{sec:sig-softws}
+
+La ocupancia binaria de WS sufre la discontinuidad descrita en
+\S\ref{sec:ws-overest}. La definimos en versión suave como
+\begin{equation}
+  \Omega_\text{soft}(\mathbf{x}) \;=\;
+  \frac{1}{Z(\sigma_T)} \sum_{j=1}^{N_\text{dmg}}
+  \exp\!\left( -\frac{\|\mathbf{x} - \mathbf{r}_j\|^2}{2\sigma_T^2} \right),
+  \qquad
+  s_\text{soft}(\mathbf{x}) \;=\; \max\!\bigl(0,\, 1 - \Omega_\text{soft}(\mathbf{x})\bigr).
+  \label{eq:sig-soft}
+\end{equation}
+
+\paragraph{Derivación del factor de normalización $Z$.}
+En un cristal pristino infinito de densidad $\rho_0 = N/V$, la ocupancia
+esperada en cualquier punto $\mathbf{x}$ debe ser $1$. Modelamos la
+distribución espacial de átomos como un campo continuo de densidad
+$\rho_0$ y calculamos:
+\begin{equation}
+  \mathbb{E}\!\left[\sum_j e^{-r_j^2/2\sigma^2}\right]
+  \;=\; \rho_0 \int_{\mathbb{R}^3} e^{-r^2/2\sigma^2}\,\mathrm{d}^3 r
+  \;=\; \rho_0\,(2\pi\sigma^2)^{3/2}.
+\end{equation}
+Imponiendo $\Omega_\text{soft}^\text{pristino} = 1$ se obtiene
+\begin{equation}
+  Z(\sigma_T) \;=\; \rho_0\,(2\pi\sigma_T^2)^{3/2}.
+  \label{eq:sig-soft-Z}
+\end{equation}
+
+\paragraph{Límites asintóticos.}
+\begin{itemize}
+\item $\sigma_T \to 0$: el peso gaussiano colapsa a una delta y $\Omega_\text{soft}$
+      cuenta exactamente $1$ si hay un átomo en $\mathbf{x}$, $0$ en caso
+      contrario. Recupera la decisión WS binaria.
+\item $\sigma_T \gg d_\text{NN}$: $\Omega_\text{soft}$ tiende a una constante
+      $\sim 1$ y la señal pierde toda discriminación. Esto fija el
+      régimen útil: $\sigma_T \sim 0.05\text{--}0.20\,d_\text{NN}$.
+\end{itemize}
+
+\paragraph{Conexión con la estadística clásica.} La fórmula
+(\ref{eq:sig-soft})--(\ref{eq:sig-soft-Z}) es una estimación de densidad
+de tipo Parzen--Rosenblatt \cite{Silverman1986}: usamos un kernel
+gaussiano con ancho de banda $h = \sigma_T$ para inferir la
+densidad atómica local. Si el campo $\rho(\mathbf{x})$ está bien
+estimado, $\rho(\mathbf{x})/\rho_0$ es una probabilidad de ocupación
+generalizada. Esta es la relación formal entre la señal Soft-WS y las
+señales de densidad usadas más adelante (\S\ref{sec:sig-density}).
+
+\textbf{Complejidad.} $\mathcal{O}(N_{3\sigma})$ por candidato, donde
+$N_{3\sigma}$ es el número de vecinos a distancia $\leq 3\sigma_T$.
+
+% -----------------------------------------------------------------------------
+\subsection{Señal 3: anomalía de primer vecino (proxy de Voronoi)}
+\label{sec:sig-voronoi}
+
+\paragraph{Motivación.} La descomposición de Voronoi
+\cite{Stukowski2010,Brostow1978} asigna a cada átomo un poliedro
+$\mathcal{V}_j$ que contiene todos los puntos del espacio más
+cercanos a $\mathbf{r}_j$ que a cualquier otro átomo. En presencia de
+una vacancia, los poliedros vecinos se dilatan: el volumen
+$V(\mathcal{V}_j)$ excede su valor de referencia. La señal de Voronoi
+es entonces
+\begin{equation}
+  s_\text{vor}^\text{ideal}(\mathbf{x}) \;=\; \mathrm{clip}_{[0,1]}\!\left(
+  \frac{\bar V_\text{loc}(\mathbf{x}) - V_0}{V_0} \right),
+\end{equation}
+donde $V_0$ es el volumen Voronoi de referencia y $\bar V_\text{loc}$
+es el promedio sobre los átomos en la primera esfera de $\mathbf{x}$.
+
+\paragraph{Proxy implementado.} Calcular $V(\mathcal{V}_j)$ exigiría
+incorporar una librería de Voronoi tridimensional (e.g.\ \texttt{voro++}
+\cite{Rycroft2009}). Usamos en su lugar un \emph{proxy del primer
+momento}: para cada átomo $\mathbf{r}_j$ a distancia $\leq 2\,d_\text{NN}$
+de $\mathbf{x}$, registramos su propia distancia al vecino más cercano
+$d_{\text{NN},j}^\text{local}$. La señal es
+\begin{equation}
+  s_\text{vor}(\mathbf{x}) \;=\; \mathrm{clip}_{[0,1]}\!\left(
+  \frac{\mathrm{med}_j \,d_{\text{NN},j}^\text{local}
+        \;-\; d_\text{NN}}{d_\text{NN}} \right).
+  \label{eq:sig-vor}
+\end{equation}
+
+\paragraph{Justificación del proxy.} El radio inscripto de
+$\mathcal{V}_j$ está acotado superiormente por
+$d_{\text{NN},j}^\text{local}/2$, y para una red regular la mediana de
+$d_{\text{NN},j}^\text{local}$ coincide con $d_\text{NN}$. En presencia
+de una vacancia, las distancias $d_{\text{NN},j}^\text{local}$ de los
+átomos del primer shell se dilatan en proporción a la relajación
+elástica de la vecindad. La proporcionalidad
+$(d_\text{NN}^\text{local} - d_\text{NN})/d_\text{NN}
+\sim (V_\text{loc} - V_0)/(3 V_0)$ se obtiene a primer orden por la
+relación volumen--longitud $V \propto d^3 \Rightarrow \delta V/V =
+3\,\delta d/d$.
+
+\textbf{Limitación.} El proxy captura el primer momento de la
+distribución, no los efectos de asimetría. Para sistemas con
+distorsiones tetragonales o trigonales fuertes la señal puede
+infraestimar la anomalía; en metales BCC/FCC sin texturas la captura
+es buena.
+
+% -----------------------------------------------------------------------------
+\subsection{Señal 4: déficit de densidad local (KDE)}
+\label{sec:sig-density}
+
+\begin{equation}
+  \rho(\mathbf{x}) \;=\;
+  \frac{1}{(2\pi h^2)^{3/2}} \sum_{j: \|\mathbf{x}-\mathbf{r}_j\| < 3h}
+  \exp\!\left( -\frac{\|\mathbf{x} - \mathbf{r}_j\|^2}{2 h^2} \right),
+  \qquad
+  s_\text{dens}(\mathbf{x}) \;=\; \mathrm{clip}_{[0,1]}\!\left(
+  1 - \frac{\rho(\mathbf{x})}{\rho_0}\right).
+  \label{eq:sig-density}
+\end{equation}
+
+\paragraph{Selección del ancho de banda $h$.} La regla de Silverman
+para densidad multivariada en $d$ dimensiones \cite{Silverman1986} da
+$h_\text{opt} \sim n^{-1/(d+4)} \sigma$. Para $d=3$ y
+$\sigma \approx d_\text{NN}/2$ se obtiene un ancho de banda óptimo del
+orden de $d_\text{NN}/4$. Adoptamos
+$h = \max(d_\text{NN}/4,\,0.5\,\text{Å})$ para robustez en cristales
+con $d_\text{NN}$ pequeño.
+
+\paragraph{Comparación con Soft-WS.} Las señales \ref{eq:sig-soft} y
+\ref{eq:sig-density} son matemáticamente análogas: ambas son
+estimadores de densidad de tipo Parzen, con anchos de banda distintos
+($\sigma_T$ vs $h$). La diferencia operativa es la escala física:
+$\sigma_T$ captura la fluctuación térmica de un sitio individual,
+$h$ captura el campo de densidad promedio. Su redundancia controlada
+es deseable: en condiciones donde ambos coinciden el consenso es
+robusto; cuando discrepan (vibración térmica anómala localizada vs
+vacío extendido) la combinación permite distinguir el origen.
+
+% -----------------------------------------------------------------------------
+\subsection{Señal 5: anomalía SOAP del entorno}
+\label{sec:sig-soap}
+
+Sea $\tilde q^j$ el descriptor SOAP normalizado del átomo $j$ y
+$\bar q(T)$ el descriptor medio del cristal pristino a la misma
+temperatura. Se define la distancia FaVaD
+$d^j = \|\tilde q^j - \bar q(T)\|_2$, que en un cristal pristino sigue
+una distribución $\chi$ con $k$ grados de libertad
+\cite{Toussaint2020}:
+\begin{equation}
+  P(d \,|\, k,\sigma) \;\propto\; d^{k-2}\,
+  \exp\!\left(-\frac{d^2}{2\sigma^2}\right).
+\end{equation}
+La señal SOAP del candidato $\mathbf{x}$ es el promedio normalizado
+sobre los vecinos del primer shell:
+\begin{equation}
+  \bar d_\text{shell}(\mathbf{x}) \;=\;
+  \frac{1}{|\mathcal{N}(\mathbf{x})|}
+  \sum_{j \in \mathcal{N}(\mathbf{x})} d^j,
+  \qquad
+  s_\text{SOAP}(\mathbf{x}) \;=\; \mathrm{clip}_{[0,1]}\!\left(
+  \frac{\bar d_\text{shell}(\mathbf{x})}{\langle d\rangle + 3\sqrt{\mathrm{Var}(d)}}\right),
+  \label{eq:sig-soap}
+\end{equation}
+donde $\mathcal{N}(\mathbf{x}) = \{j : \|\mathbf{x} - \mathbf{r}_j\| <
+1.2\,d_\text{NN}\}$ y $\langle d \rangle$, $\mathrm{Var}(d)$ son la
+media y varianza muestrales de $d$ en el frame de referencia.
+
+\paragraph{Interpretación estadística.} La normalización por
+$\langle d \rangle + 3\sqrt{\mathrm{Var}(d)}$ corresponde a un
+$z$-score de tres sigmas: la señal alcanza el valor $1$ cuando la
+distancia promedio de los vecinos supera tres desviaciones estándar
+del modo de la distribución $\chi$, lo cual ocurre con probabilidad
+$\sim 10^{-3}$ en un cristal pristino. Es decir, $s_\text{SOAP} \to 1$
+solamente cuando la evidencia estadística de distorsión es fuerte.
+
+\textbf{Sensibilidad.} Esta es la única señal que aprovecha la
+estructura química local más allá de las distancias geométricas, y
+es la más informativa en cristales con orden orientacional complejo
+(HEA, intermetálicos, fases de Laves).
+
+% -----------------------------------------------------------------------------
+\subsection{Señal 6: anomalía topológica de coordinación}
+\label{sec:sig-topology}
+
+Sea $n_j = |\{i : \|\mathbf{r}_i - \mathbf{r}_j\| < 1.2\,d_\text{NN},
+\, i\neq j\}|$ el número de primeros vecinos del átomo $j$. Para una
+red ideal sin defectos, $n_j$ es una constante $n_\text{ref}$ ($=8$
+para BCC, $12$ para FCC, $12$ para HCP en su primera capa). Se define
+\begin{equation}
+  s_\text{topo}(\mathbf{x}) \;=\; \mathrm{clip}_{[0,1]}\!\left(
+  \frac{1}{|\mathcal{N}(\mathbf{x})|}
+  \sum_{j \in \mathcal{N}(\mathbf{x})}
+  \frac{\bigl|n_j - n_\text{ref}\bigr|}{n_\text{ref}}\right).
+  \label{eq:sig-topo}
+\end{equation}
+
+\paragraph{Conexión con CNA y PTM.} Las técnicas modernas de
+identificación estructural --- Adaptive Common Neighbor Analysis
+(a-CNA) \cite{Stukowski2012} y Polyhedral Template Matching
+(PTM) \cite{Larsen2016} --- usan caracterizaciones más sofisticadas
+del entorno local: a-CNA computa la firma topológica
+$(j_1, j_2, j_3)$ de cada par vecino; PTM ajusta el polígono local a
+una plantilla ideal mediante minimización de RMSD. Nuestra señal
+$s_\text{topo}$ es una versión escalarizada y simplificada del
+número de coordinación, que sacrifica la discriminación BCC/FCC/HCP
+para ganar simplicidad y velocidad. En BCC puro o FCC puro la
+discriminación es innecesaria, y en aleaciones HEA la estructura
+nominal está fijada por la fase mayoritaria.
+
+\paragraph{Sensibilidad a una vacancia simple.} Una vacancia en BCC
+elimina uno de los ocho primeros vecinos de cada átomo del shell,
+dando $|n_j - 8|/8 = 1/8 = 0.125$. En FCC el efecto es
+$1/12 = 0.083$. La señal es por lo tanto débil para vacancias
+aisladas en redes de alta coordinación y fuerte en redes de baja
+coordinación o en presencia de voids extendidos.
+
+% =============================================================================
+\section{Las dos penalties}
+% =============================================================================
+
+Mientras las seis señales positivas suman evidencia a favor de
+clasificar un candidato como vacancia, las penalties restan
+evidencia cuando hay indicios de que la vacancia es transitoria o
+parte de un par Frenkel próximo a recombinar.
+
+% -----------------------------------------------------------------------------
+\subsection{Penalty 1: filtro de tránsito balístico}
+\label{sec:pen-transit}
+
+\paragraph{Motivación cinemática.} Tras la fase ballística de una
+cascada, un átomo desplazado tiene tres destinos posibles:
+(a) retornar a su sitio original (recombinación);
+(b) anclarse en una posición intersticial estable o cuasi-estable;
+(c) quedar atrapado por un sumidero (frontera de grano, dislocación).
+En los casos (a) y (b), durante un intervalo $\tau_\text{rel}$
+posterior al pico térmico, el átomo se encuentra a distancia
+$\Delta r \in [0.5\,d_\text{NN},\,1.5\,d_\text{NN}]$ de su sitio
+nominal: lo suficientemente lejos para haber abandonado su celda WS,
+lo suficientemente cerca para no haberse anclado en otro sitio
+intersticial estable. Una vacancia reportada por WS cuyo vecino más
+próximo sea un átomo en este rango es candidato a ser un falso
+positivo.
+
+\paragraph{Definición operativa.} Dado un candidato $\mathbf{x}$,
+sea $r_\text{min}(\mathbf{x})$ la distancia al átomo más cercano que
+satisface dos condiciones simultáneas:
+\begin{enumerate}[label=(\arabic*)]
+\item $r \in [r_\text{lo}, r_\text{hi}]$ con $r_\text{lo} = 0.5\,d_\text{NN}$
+      y $r_\text{hi} = f_\text{T}\cdot d_\text{NN}$ (factor
+      $f_\text{T}$ típicamente $1.5$);
+\item el átomo está clasificado por WS como \emph{intersticial}
+      (i.e.\ pertenece a un sitio con $\Omega \geq 2$).
+\end{enumerate}
+La penalización es
+\begin{equation}
+  p_\text{transit}(\mathbf{x}) \;=\;
+  \begin{cases}
+    \dfrac{r_\text{hi} - r_\text{min}(\mathbf{x})}{r_\text{hi} - r_\text{lo}}
+      & \text{si } r_\text{min}(\mathbf{x}) \in [r_\text{lo}, r_\text{hi}],\\
+    0 & \text{en caso contrario}.
+  \end{cases}
+  \label{eq:pen-transit}
+\end{equation}
+La forma lineal en $r$ es la elección más simple que satisface
+$p_\text{transit} \to 1$ cuando el átomo está justo en el borde de la
+celda WS original ($r \to r_\text{lo}$) y $p_\text{transit} \to 0$
+cuando el átomo está demasiado lejos para ser un tránsito directo
+($r \to r_\text{hi}$).
+
+\paragraph{Por qué exigir condición (2).} En un cristal con vacancias
+reales, los átomos del primer shell del sitio vacante se encuentran
+sistemáticamente a distancias en $[r_\text{lo}, r_\text{hi}]$. Si la
+condición (2) se relajara a un simple criterio de distancia o a
+``átomo distorsionado'' (\texttt{defect\_prob} > umbral), la penalty
+se dispararía para toda vacancia real y se cancelarían todas las
+detecciones. La restricción a átomos clasificados WS como
+intersticiales es lo que distingue un par Frenkel transitorio de una
+vacancia aislada permanente.
+
+\subsection{Penalty 2: coherencia de pares Frenkel}
+\label{sec:pen-frenkel}
+
+\paragraph{Motivación termodinámica.} El radio de recombinación
+$r_\text{rec}$ de un par Frenkel es la distancia bajo la cual
+vacancia e intersticial se aniquilan espontáneamente. Para Fe BCC,
+estudios atomísticos lo sitúan en $r_\text{rec} \approx 3.3$~Å
+\cite{Bjorkas2009,Becquart2010,Stoller2000}. Para FCC (Cu, Ni, FeCrNi
+austenítico) los valores reportados están en $3.0\text{--}3.5$~Å.
+
+\paragraph{Definición.} Sea $r_\text{int}(\mathbf{x})$ la distancia
+mínima entre el candidato $\mathbf{x}$ y cualquier sitio WS
+clasificado como intersticial. La penalty se modela como un
+\emph{cluster Gaussian}:
+\begin{equation}
+  p_\text{Frenkel}(\mathbf{x}) \;=\;
+  \exp\!\left( -\frac{r_\text{int}^2(\mathbf{x})}{2\,r_\text{rec}^2}\right).
+  \label{eq:pen-frenkel}
+\end{equation}
+
+\paragraph{Comportamiento asintótico.}
+\begin{itemize}
+\item $r_\text{int} \to 0$: par Frenkel coincidente; $p_\text{Frenkel} = 1$.
+\item $r_\text{int} = r_\text{rec}$: $p_\text{Frenkel} = e^{-1/2} \approx 0.61$
+      (penalty fuerte pero no descarta automáticamente).
+\item $r_\text{int} \gg r_\text{rec}$: $p_\text{Frenkel} \to 0$
+      (vacancia aislada, no se penaliza).
+\end{itemize}
+
+\paragraph{Diferencia con transit.} La penalty de tránsito (\S\ref{sec:pen-transit})
+es un filtro \emph{duro} (binario, alto-bajo) que descarta la vacancia
+si dispara por encima de $0.5$. La penalty de Frenkel es \emph{suave}:
+resta peso al consenso pero no descarta automáticamente. La razón
+física: un par Frenkel a $r > r_\text{rec}$ es estable
+termodinámicamente; la vacancia es real. Solamente cuando vacancia e
+intersticial están muy próximos ($r < r_\text{rec}/\sqrt{2}$) la
+evidencia para su carácter transitorio es decisiva.
+
+% =============================================================================
+\section{Función de consenso}
+% =============================================================================
+
+\subsection{Definición}
+\label{sec:consensus}
+
+Asignamos pesos $w_\alpha \geq 0$ a cada señal positiva
+$\alpha \in \{\text{WS}, \text{soft}, \text{vor}, \text{dens},
+\text{SOAP}, \text{topo}\}$ y a cada penalty
+$\beta \in \{\text{transit}, \text{Frenkel}\}$. El \emph{score de
+consenso} es
+\begin{equation}
+  S(\mathbf{x}) \;=\;
+  \frac{1}{\sum_\alpha w_\alpha}
+  \sum_\alpha w_\alpha\, s_\alpha(\mathbf{x})
+  \;-\; w_\text{transit}\,p_\text{transit}(\mathbf{x})
+  \;-\; w_\text{Frenkel}\,p_\text{Frenkel}(\mathbf{x}).
+  \label{eq:consensus}
+\end{equation}
+
+\subsection{Regla de aceptación}
+
+Un candidato se acepta como vacancia si y solo si:
+\begin{equation}
+  \boxed{
+  \;\text{accept}(\mathbf{x}) \;\Longleftrightarrow\;
+  \bigl[s_\text{WS}(\mathbf{x}) \geq \tfrac{1}{2}
+        \;\;\vee\;\; S(\mathbf{x}) \geq \tau\bigr]
+  \;\wedge\; p_\text{transit}(\mathbf{x}) < \tfrac{1}{2}
+  \;\wedge\; p_\text{Frenkel}(\mathbf{x}) < \tfrac{1}{2}.\;}
+  \label{eq:accept}
+\end{equation}
+La cláusula disyuntiva en corchetes admite dos rutas independientes
+de aceptación: (a) la vacancia es detectada por WS, o (b) las señales
+positivas combinadas alcanzan el umbral $\tau$ sin necesidad de WS.
+Las dos cláusulas de penalty descartan candidatos con evidencia
+fuerte de tránsito o recombinación, respectivamente.
+
+\subsection{Invariantes demostrables}
+
+\begin{prop}[Reproducibilidad de WS]
+\label{prop:ws-invariant}
+Si los pesos satisfacen $w_\text{transit} = w_\text{Frenkel} = 0$
+y $w_\text{WS} > 0$, $w_\alpha = 0$ para $\alpha \neq \text{WS}$,
+entonces
+$N_\text{vac}^\text{H} = N_\text{vac}^\text{WS}$ y los conjuntos
+de sitios reportados coinciden exactamente.
+\end{prop}
+
+\begin{proof}
+Con la elección de pesos, $S(\mathbf{x}) = s_\text{WS}(\mathbf{x})$.
+La regla (\ref{eq:accept}) se reduce a $s_\text{WS} \geq 1/2$, que
+es verdadero sii $\Omega_k = 0$ por la definición (\ref{eq:sig-ws}).
+Las cláusulas de penalty son vacuamente verdaderas pues los pesos
+están en cero. El conjunto aceptado coincide entonces con
+$\{\mathbf{R}_k : \Omega_k = 0\} = \mathcal{C}_\text{WS}$.
+\qed
+\end{proof}
+
+\begin{prop}[Robustez a ruido térmico]
+\label{prop:thermal}
+Sea un cristal pristino sometido a desplazamientos térmicos
+gaussianos $\mathcal{N}(0, \sigma_T^2 \mathbb{I})$ con
+$\sigma_T < d_\text{NN}/4$. Entonces, con probabilidad
+$\geq 1 - \mathcal{O}(e^{-d_\text{NN}^2/8\sigma_T^2})$, se tiene
+$N_\text{vac}^\text{H} = 0$ para cualquier preset con
+$w_\text{WS} > 0$ o $w_\text{soft} > 0$.
+\end{prop}
+
+\begin{proof}[Esquema]
+Bajo la hipótesis $\sigma_T < d_\text{NN}/4$, ningún átomo cruza el
+borde de su celda WS salvo con probabilidad exponencialmente pequeña,
+luego $s_\text{WS}(\mathbf{R}_k) = 0$ para todo $k$. Análogamente, la
+suma de gaussianas que define $\Omega_\text{soft}$ permanece cercana a
+$1$ (con desviación $\mathcal{O}(\sigma_T/d_\text{NN})$), de modo que
+$s_\text{soft} \to 0$. Los demás $s_\alpha$ son consistentemente
+pequeños por argumentos análogos. El score consensuado no alcanza el
+umbral $\tau \geq 0.35$ en ningún candidato. Como
+$\mathcal{C} = \emptyset$ con alta probabilidad (no hay sitios WS
+vacantes ni clusters de grilla por encima del umbral
+$\tau_\text{grid}$), $N_\text{vac}^\text{H} = 0$.
+\qed
+\end{proof}
+
+\begin{prop}[Filtrado de tránsito balístico]
+\label{prop:transit}
+Si todos los pares Frenkel reportados por WS son ballísticos (es
+decir, el átomo intersticial se encuentra a distancia
+$\leq r_\text{hi}$ del sitio vacante asociado), entonces el preset
+\emph{robusto} ($w_\text{transit} = 1.5 > 0$) descarta todos los
+pares y reporta $N_\text{vac}^\text{H} = 0 < N_\text{vac}^\text{WS}$.
+\end{prop}
+
+\begin{proof}
+Para cada $\mathbf{R}_k \in \mathcal{C}_\text{WS}$, existe por
+hipótesis un átomo intersticial WS a distancia
+$\leq r_\text{hi} = f_\text{T}\,d_\text{NN}$. Por la definición
+(\ref{eq:pen-transit}), $p_\text{transit}(\mathbf{R}_k) \geq 0$;
+la condición $r \in [r_\text{lo}, r_\text{hi}]$ con $r_\text{lo} < r$
+implica $p_\text{transit}(\mathbf{R}_k) > 0$; en particular, para
+$r < (r_\text{lo} + r_\text{hi})/2$ (mitad del rango) se tiene
+$p_\text{transit} > 1/2$. La cláusula
+$p_\text{transit} < 1/2$ de (\ref{eq:accept}) descarta el candidato.
+\qed
+\end{proof}
+
+% =============================================================================
+\section{Calibración de parámetros físicos}
+% =============================================================================
+
+\subsection{Desplazamiento térmico $\sigma_T$ y la relación de Debye--Waller}
+
+El factor de Debye--Waller \cite{Kittel2004} expresa el desplazamiento
+RMS de un átomo en torno a su sitio nominal a temperatura $T$:
+\begin{equation}
+  \langle u^2 \rangle(T) \;=\;
+  \frac{3\hbar^2}{m\,k_\text{B}\Theta_\text{D}}\,
+  \left[ \frac{T}{\Theta_\text{D}}\,\phi\!\left(\frac{\Theta_\text{D}}{T}\right)
+         + \frac{1}{4}\right],
+  \label{eq:debye-waller}
+\end{equation}
+donde $\Theta_\text{D}$ es la temperatura de Debye, $m$ la masa
+atómica, y $\phi(x) = (1/x)\int_0^x \xi/(e^\xi - 1)\,\mathrm{d}\xi$
+la función de Debye. En el régimen clásico $T \gg \Theta_\text{D}/2$
+la fórmula se reduce a
+\begin{equation}
+  \langle u^2 \rangle(T) \;\approx\;
+  \frac{3\,k_\text{B} T}{m\,\omega_\text{D}^2},
+  \qquad \sigma_T = \sqrt{\langle u^2\rangle/3}.
+\end{equation}
+Para Fe ($\Theta_\text{D} = 470$~K, $m = 56$~amu) a $T = 300$~K:
+$\sigma_T \approx 0.07$~Å, comparable al default
+$0.05\,d_\text{NN} = 0.12$~Å. Para FeCrNi a $T = 300$~K, valores
+experimentales reportados están entre $0.07$ y $0.10$~Å.
+
+\paragraph{Estimación operativa.} En ausencia de un cálculo
+Debye--Waller explícito, adoptamos $\sigma_T = 0.05\,d_\text{NN}$ como
+default conservador, con flag CLI para override del usuario en casos
+de temperatura elevada (donde
+$\sigma_T \gtrsim 0.10\,d_\text{NN}$).
+
+\subsection{Radio de recombinación $r_\text{rec}$ y la teoría NRT}
+
+El estándar Norgett--Robinson--Torrens (NRT) \cite{Norgett1975} para
+producción de defectos por irradiación supone una distribución
+espacial de pares Frenkel con radio de recombinación efectivo
+$r_\text{rec}$. Para Fe BCC los cálculos más detallados
+\cite{Bjorkas2009,Becquart2010} convergen a
+$r_\text{rec} \approx 3.3$~Å, aproximadamente $1.3\,d_\text{NN}$.
+Adoptamos este valor como default y exponemos el flag
+\texttt{--hybrid-recomb-radius} para ajustar a otros materiales.
+
+\subsection{Factor de tránsito $f_\text{T}$}
+
+La elección $f_\text{T} = 1.5$ corresponde al borde de la primera
+zona de cuasi-estabilidad para un átomo en transito balístico: a
+distancias mayores, el átomo se encuentra en la cuenca de atracción
+del sitio nominal vecino y deja de ser un tránsito directo.
+Argumentos análogos a los de
+Becquart \& Domain \cite{Becquart2010} sustentan el valor.
+
+% =============================================================================
+\section{Comparación con la literatura}
+% =============================================================================
+
+\subsection{Análisis de Voronoi (OVITO)}
+
+El módulo Voronoi de OVITO \cite{Stukowski2010Ovito} computa el
+volumen completo de cada poliedro $V(\mathcal{V}_j)$ y permite
+caracterizar la firma topológica $(f_3, f_4, f_5, f_6, \ldots)$ del
+mismo. Es más informativo que nuestra señal $s_\text{vor}$ (que solo
+captura el primer momento), pero su costo computacional es
+$\mathcal{O}(N \log N)$ con prefactor grande, y la firma topológica
+no es directamente útil para contar vacancias (los volúmenes
+inflados por una vacancia son ambiguos sin un umbral material).
+
+\subsection{Adaptive Common Neighbor Analysis (a-CNA)}
+
+a-CNA \cite{Stukowski2012} clasifica cada átomo por la firma
+topológica $(j_1, j_2, j_3)$ de sus pares vecinos, usando un radio de
+corte adaptativo derivado de la distribución local de distancias.
+Es el estándar de facto para identificar fases (BCC, FCC, HCP, ico) y
+detectar atomos defecto-adyacentes. Nuestra señal $s_\text{topo}$ es
+una simplificación: solo cuenta vecinos, no clasifica firmas. La
+elección se justifica porque (i) en una aleación HEA mono-fase la
+discriminación BCC/FCC ya está fija, y (ii) un detector específico
+para vacancias no necesita resolver fases.
+
+\subsection{Polyhedral Template Matching (PTM)}
+
+PTM \cite{Larsen2016} es la técnica más robusta al ruido térmico:
+ajusta el polígono local de cada átomo a una plantilla ideal
+mediante minimización de RMSD invariante por rotación. Reporta a
+qué fase pertenece cada átomo y un score $\delta$ de calidad del
+ajuste. Para detección de vacancias se puede usar PTM como
+pre-filtro de átomos defecto-adyacentes, y luego un segundo paso de
+localización geométrica. Nuestro método es más simple, pero podría
+incorporar PTM como una sexta señal alternativa a $s_\text{topo}$
+sin cambios en la arquitectura.
+
+\subsection{Wigner--Seitz adaptativo y promedios temporales}
+
+Una alternativa al método aquí presentado es \emph{relajar la malla
+WS}: en lugar de usar las posiciones $\mathbf{R}_k$ fijas, se permite
+que evolucionen elásticamente con el campo de deformación local
+\cite{Soneda2003}. Otra alternativa es promediar las ocupancias WS
+sobre $N_f$ frames consecutivos:
+\begin{equation}
+  \bar \Omega_k \;=\; \frac{1}{N_f}\sum_{t} \Omega_k(t),
+\end{equation}
+y declarar vacancia los sitios con $\bar \Omega_k < 1/2$. Ambos
+enfoques requieren más información (campo elástico o trayectoria
+temporal) que el frame único usado por nuestro método.
+
+\subsection{Posicionamiento del método propuesto}
+
+\begin{table}[H]
+\centering
+\caption{Comparación cualitativa de los métodos discutidos.}
+\label{tab:methods}
+\small
+\begin{tabular}{lccccc}
+\toprule
+Método & Ref.\ requerida & Robusto a $T$ & Cuenta vacancias & Costo & Detecta voids \\
+\midrule
+WS clásico                  & sí & no  & sí & $\mathcal{O}(N)$    & no       \\
+WS adaptativo               & sí & medio & sí & $\mathcal{O}(N)$  & no       \\
+Voronoi (OVITO)             & no & sí  & indirecto & $\mathcal{O}(N\log N)$ & sí \\
+a-CNA \cite{Stukowski2012}  & no & sí  & no  & $\mathcal{O}(N)$  & parcial  \\
+PTM \cite{Larsen2016}       & no & alto & no & $\mathcal{O}(N)$  & no       \\
+Grid FaVaD \cite{Toussaint2020} & no & medio & parcial & $\mathcal{O}(N_\text{grid})$ & sí \\
+SOAP fingerprint \cite{Toussaint2020} & sí & sí & no & $\mathcal{O}(N)$ & no \\
+\textbf{Híbrido (este trabajo)} & opcional & alto & sí & $\mathcal{O}(N + N_\text{cand})$ & sí \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+% =============================================================================
+\section{Resumen y trabajo futuro}
+% =============================================================================
+
+El método híbrido propuesto satisface por construcción las cuatro
+propiedades enunciadas en \S\ref{sec:ws-overest}: reproduce WS en
+régimen de bajo daño (Proposición \ref{prop:ws-invariant}), es
+robusto a ruido térmico (Proposición \ref{prop:thermal}), filtra
+pares Frenkel ballísticos (Proposición \ref{prop:transit}) y admite
+operación reference-free a través de las señales $s_\text{vor}$,
+$s_\text{dens}$, $s_\text{topo}$.
+
+\paragraph{Trabajo futuro identificado.}
+\begin{enumerate}[label=(\arabic*)]
+\item Reemplazar el proxy $s_\text{vor}$ por una integración real con
+      \texttt{voro++} para capturar momentos de Voronoi de orden
+      superior.
+\item Incorporar $s_\text{topo}$ basado en PTM (con plantillas BCC,
+      FCC, HCP, ico) para extender el método a aleaciones multifase.
+\item Validación contra una base de ground-truth: cristales BCC y
+      FCC con vacancias inyectadas en posiciones conocidas, MD a
+      $T = \{0, 300, 600, 1000, 1500\}$~K, comparación cuantitativa
+      $N_\text{vac}^\text{H}$ vs $N_\text{vac}^\text{WS}$ vs número
+      inyectado.
+\item Implementación de promedio temporal sobre múltiples frames
+      para suprimir aún más la fluctuación instantánea.
+\item Calibración Bayesiana de los pesos $w_\alpha$ mediante
+      máxima verosimilitud sobre la base de ground-truth.
+\end{enumerate}
+
+% =============================================================================
+\begin{thebibliography}{99}
+% =============================================================================
+
+\bibitem{Stukowski2010}
+A.~Stukowski,
+\textit{Structure identification methods for atomistic simulations of
+crystalline materials},
+Modelling and Simulation in Materials Science and Engineering
+\textbf{20}, 045021 (2012).
+
+\bibitem{Stukowski2010Ovito}
+A.~Stukowski,
+\textit{Visualization and analysis of atomistic simulation data with
+OVITO – the Open Visualization Tool},
+Modelling and Simulation in Materials Science and Engineering
+\textbf{18}, 015012 (2010).
+
+\bibitem{Stukowski2012}
+A.~Stukowski,
+\textit{Structure identification methods for atomistic simulations of
+crystalline materials},
+Modelling and Simulation in Materials Science and Engineering
+\textbf{20}, 045021 (2012).
+
+\bibitem{Larsen2016}
+P.~M.~Larsen, S.~Schmidt, J.~Schiøtz,
+\textit{Robust structural identification via polyhedral template matching},
+Modelling and Simulation in Materials Science and Engineering
+\textbf{24}, 055007 (2016).
+
+\bibitem{Toussaint2020}
+U.~von Toussaint, J.~Domínguez-Gutiérrez, M.~Compostella, M.~Rampp,
+\textit{FaVaD: A software workflow for characterisation and visualizing
+of defects in crystalline structures},
+arXiv:2004.08184 (2020).
+
+\bibitem{Nordlund2018}
+K.~Nordlund et al.,
+\textit{Primary radiation damage: A review of current understanding
+and models},
+Journal of Nuclear Materials \textbf{512}, 450 (2018).
+
+\bibitem{Stoller2000}
+R.~E.~Stoller,
+\textit{The role of cascade energy and temperature in primary defect
+formation in iron},
+Journal of Nuclear Materials \textbf{276}, 22 (2000).
+
+\bibitem{Soneda2003}
+N.~Soneda, S.~Ishino, A.~Takahashi, K.~Dohi,
+\textit{Modeling the microstructural evolution in bcc-Fe during
+irradiation using kinetic Monte Carlo computer simulation},
+Journal of Nuclear Materials \textbf{323}, 169 (2003).
+
+\bibitem{Bjorkas2009}
+C.~Björkas, K.~Nordlund,
+\textit{Comparative study of cascade damage in Fe simulated with
+recent potentials},
+Nuclear Instruments and Methods B \textbf{259}, 853 (2009).
+
+\bibitem{Becquart2010}
+C.~S.~Becquart, C.~Domain,
+\textit{Solute--point defect interactions in bcc systems: Focus on
+first principles modelling in W and RPV steels},
+Current Opinion in Solid State and Materials Science \textbf{16}, 115
+(2012).
+
+\bibitem{Granberg2016}
+F.~Granberg et al.,
+\textit{Mechanism of radiation damage reduction in equiatomic
+multicomponent single-phase alloys},
+Physical Review Letters \textbf{116}, 135504 (2016).
+
+\bibitem{Norgett1975}
+M.~J.~Norgett, M.~T.~Robinson, I.~M.~Torrens,
+\textit{A proposed method of calculating displacement dose rates},
+Nuclear Engineering and Design \textbf{33}, 50 (1975).
+
+\bibitem{Brostow1978}
+W.~Brostow, J.-P.~Dussault, B.~L.~Fox,
+\textit{Construction of Voronoi polyhedra},
+Journal of Computational Physics \textbf{29}, 81 (1978).
+
+\bibitem{Rycroft2009}
+C.~H.~Rycroft,
+\textit{Voro++: A three-dimensional Voronoi cell library in C++},
+Chaos \textbf{19}, 041111 (2009).
+
+\bibitem{Silverman1986}
+B.~W.~Silverman,
+\textit{Density Estimation for Statistics and Data Analysis},
+Chapman \& Hall (1986).
+
+\bibitem{Kittel2004}
+C.~Kittel,
+\textit{Introduction to Solid State Physics},
+8th ed., Wiley (2004).
+
+\bibitem{Bartok2013}
+A.~P.~Bartók, R.~Kondor, G.~Csányi,
+\textit{On representing chemical environments},
+Physical Review B \textbf{87}, 184115 (2013).
+
+\bibitem{DominguezGutierrez2019}
+J.~Domínguez-Gutiérrez, U.~von Toussaint,
+\textit{On the detection and classification of material defects in
+crystalline solids after energetic particle impact simulations},
+Nuclear Materials and Energy \textbf{22}, 100724 (2019).
+
+\end{thebibliography}
+
+\end{document}

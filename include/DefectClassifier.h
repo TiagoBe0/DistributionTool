@@ -1,6 +1,7 @@
 #pragma once
 #include "AtomData.h"
 #include "Statistics.h"
+#include <map>
 #include <string>
 #include <vector>
 
@@ -24,6 +25,14 @@ struct ReferenceSet {
     // k ≈ number of active DV components; σ is a scale factor.
     double              k_chi     = 2.0;
     double              sigma_chi = 1.0;
+
+    // Reference distances sorted ascending — basis for the non-parametric
+    // empirical defect probability and for percentile-derived thresholds.
+    std::vector<double> sorted_dists;
+
+    // Primary classification threshold for this set (-1 = use the global
+    // classifier threshold). Set when a percentile threshold is requested.
+    double              threshold = -1.0;
 
     // Optional per-defect reference DVs (may be empty)
     std::vector<double> dv_interstitial;
@@ -64,8 +73,31 @@ class DefectClassifier {
 public:
     explicit DefectClassifier(double threshold = 0.15);
 
+    // Enable per-species references: a separate q̄(T), chi-fit and distance
+    // baseline is built and used for each atom `type`. Essential for chemically
+    // disordered systems (e.g. high-entropy alloys), where a single global
+    // reference mixes inequivalent local environments and collapses the chi-fit.
+    // Must be called BEFORE buildReference(). Default: off (single global ref).
+    void setPerSpecies(bool enabled) { per_species_ = enabled; }
+    bool perSpecies() const { return per_species_; }
+
+    // Use the non-parametric empirical CDF (percentile rank) for defect_prob
+    // instead of the parametric chi model. Robust to non-chi distance
+    // distributions (HEAs / disordered alloys). Default: off (chi model).
+    void setEmpiricalProb(bool enabled) { empirical_prob_ = enabled; }
+    bool empiricalProb() const { return empirical_prob_; }
+
+    // Derive the primary classification threshold from the p-th percentile
+    // (p ∈ [0,1]) of the reference distance distribution — per species when
+    // per-species mode is on. Negative value (default) keeps the fixed
+    // user-supplied threshold. Must be set BEFORE buildReference().
+    void setThresholdPercentile(double p) { threshold_pct_ = p; }
+    double thresholdPercentile() const { return threshold_pct_; }
+
     // Build the reference set from atoms in the pristine/thermalized frame.
     // DVs are read directly from atom.dv — no intermediate copy is made.
+    // When per-species is enabled, one ReferenceSet is built per atom type
+    // (in addition to the global reference, kept as a fallback/summary).
     void buildReference(const std::vector<Atom>& atoms);
 
     // Optionally add reference DVs for known defect types
@@ -104,9 +136,17 @@ public:
     double           threshold()  const { return threshold_; }
     const ReferenceSet& reference() const { return ref_; }
 
+    // Per-species references (empty unless per-species mode was enabled before
+    // buildReference()). Keyed by atom type.
+    const std::map<int, ReferenceSet>& referencesByType() const { return ref_by_type_; }
+
 private:
     double       threshold_;
-    ReferenceSet ref_;
+    bool         per_species_   = false;
+    bool         empirical_prob_ = false;
+    double       threshold_pct_  = -1.0;
+    ReferenceSet ref_;                        // global reference / fallback
+    std::map<int, ReferenceSet> ref_by_type_; // per-type references
 
     DefectType secondaryClassify(const Atom& atom) const;
 };

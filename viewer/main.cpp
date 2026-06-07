@@ -6,10 +6,11 @@
  *   ./distool_viewer analyzed_dump.dump    (LAMMPS dump with dist_to_ref column)
  *
  * Controls:
- *   Left-drag   : orbit camera
- *   Middle-drag : pan
- *   Scroll      : zoom
- *   Click atom  : show info
+ *   Left-drag         : orbit camera (full 360° × 350° range)
+ *   Right-drag        : pan (move sample in screen plane)
+ *   Middle-drag       : pan (same as right-drag)
+ *   Scroll            : zoom
+ *   Click atom        : show info
  */
 
 // ── OpenGL / window ──────────────────────────────────────────────────────────
@@ -267,8 +268,14 @@ struct Camera {
             std::cos(phi) * std::cos(theta));
     }
 
+    // Up vector flips when the camera crosses the top/bottom pole so that
+    // orbit() works across the full ±175° elevation range without gimbal lock.
+    glm::vec3 upVec() const {
+        return std::cos(phi) >= 0.f ? glm::vec3(0, 1, 0) : glm::vec3(0, -1, 0);
+    }
+
     glm::mat4 view() const {
-        return glm::lookAt(position(), target, glm::vec3(0, 1, 0));
+        return glm::lookAt(position(), target, upVec());
     }
 
     glm::mat4 proj(float aspect) const {
@@ -276,16 +283,20 @@ struct Camera {
     }
 
     void orbit(float dtheta, float dphi) {
-        theta += dtheta;
+        // When the camera is "upside-down" (phi past a pole), horizontal drag
+        // must be inverted to feel natural, matching the flipped up vector.
+        float sign = std::cos(phi) >= 0.f ? 1.f : -1.f;
+        theta += dtheta * sign;
         phi = glm::clamp(phi + dphi,
-                         glm::radians(-89.f), glm::radians(89.f));
+                         glm::radians(-175.f), glm::radians(175.f));
     }
 
+    // Pan uses the view-matrix axes so it is correct at any elevation.
     void pan(float dx, float dy) {
-        glm::vec3 right = glm::normalize(
-            glm::cross(target - position(), glm::vec3(0, 1, 0)));
-        glm::vec3 up = glm::vec3(0, 1, 0);
-        target += right * dx + up * dy;
+        glm::mat4 v = view();
+        glm::vec3 right(v[0][0], v[1][0], v[2][0]);
+        glm::vec3 up   (v[0][1], v[1][1], v[2][1]);
+        target -= right * dx + up * dy;
     }
 
     void zoom(float factor) {
@@ -626,13 +637,13 @@ static HDBSCANResult runHDBSCAN(
             comp_valid[ru] = sv;
             comp_label[ru] = comp_label[rv];
         } else {
-            // Both big: merge into new cluster
+            // Both big: two distinct clusters meeting — keep each atom in its own
+            // cluster, only merge the bookkeeping so future small components are
+            // correctly treated as noise relative to the combined region.
             for (int a : comp_atoms[rv]) comp_atoms[ru].push_back(a);
             comp_atoms[rv].clear();
             comp_valid[ru] += sv;
-            int id = next_id++;
-            comp_label[ru] = id;
-            for (int a : comp_atoms[ru]) atom_label[a] = id;
+            // atom_label entries are intentionally left unchanged here.
         }
     }
 
@@ -651,6 +662,79 @@ static HDBSCANResult runHDBSCAN(
     }
     return res;
 }
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// DBSCAN clustering  (no ML — pure geometry)
+// ═══════════════════════════════════════════════════════════════════════════════
+
+struct DBSCANParams {
+    float eps     = 4.0f;  // neighbourhood radius [Å]
+    int   min_pts = 3;     // min neighbours to be a core point
+};
+
+static HDBSCANResult runDBSCAN(
+    const std::vector<AtomRecord>& all_atoms,
+    const std::vector<int>&        vis_idx,
+    const DBSCANParams&            p)
+{
+    int n = (int)vis_idx.size();
+    HDBSCANResult res;
+    res.labels.assign(n, -1);
+    if (n < 2) return res;
+
+    float eps2 = p.eps * p.eps;
+    int   min_pts = std::clamp(p.min_pts, 1, n - 1);
+
+    // ── Precompute neighbour lists ──────────────────────────────────────────
+    std::vector<std::vector<int>> nbrs(n);
+    for (int i = 0; i < n; ++i) {
+        const auto& ai = all_atoms[vis_idx[i]];
+        for (int j = i + 1; j < n; ++j) {
+            const auto& aj = all_atoms[vis_idx[j]];
+            float dx = ai.x - aj.x, dy = ai.y - aj.y, dz = ai.z - aj.z;
+            if (dx*dx + dy*dy + dz*dz <= eps2) {
+                nbrs[i].push_back(j);
+                nbrs[j].push_back(i);
+            }
+        }
+    }
+
+    // ── BFS expansion from each unvisited core point ────────────────────────
+    std::vector<bool> visited(n, false);
+    int cluster_id = 0;
+
+    for (int i = 0; i < n; ++i) {
+        if (visited[i] || (int)nbrs[i].size() < min_pts) continue;
+        visited[i] = true;
+        res.labels[i] = cluster_id;
+
+        std::vector<int> queue = nbrs[i];
+        while (!queue.empty()) {
+            int cur = queue.back(); queue.pop_back();
+            if (!visited[cur]) {
+                visited[cur] = true;
+                res.labels[cur] = cluster_id;
+                if ((int)nbrs[cur].size() >= min_pts) {
+                    for (int nb : nbrs[cur]) {
+                        if (!visited[nb]) queue.push_back(nb);
+                    }
+                }
+            } else if (res.labels[cur] == -1) {
+                // border point reachable from this cluster
+                res.labels[cur] = cluster_id;
+            }
+        }
+        ++cluster_id;
+    }
+
+    res.n_clusters = cluster_id;
+    res.counts.assign(cluster_id, 0);
+    for (int l : res.labels)
+        if (l >= 0) res.counts[l]++;
+    return res;
+}
+
+enum class ClusterMethod { DBSCAN = 0, HDBSCAN = 1 };
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // Renderer
@@ -848,6 +932,7 @@ struct App {
     // Mouse state
     bool   mouse_left   = false;
     bool   mouse_mid    = false;
+    bool   mouse_right  = false;
     double last_mx = 0, last_my = 0;
     int    win_w = 1400, win_h = 900;
 
@@ -881,7 +966,9 @@ struct App {
     // al que está actualmente en curso (o falló).
     bool result_is_stale = false;
 
-    // Clustering HDBSCAN
+    // Clustering
+    ClusterMethod cluster_method    = ClusterMethod::DBSCAN;
+    DBSCANParams  dbscan_params;
     HDBSCANParams hdbscan_params;
     HDBSCANResult hdbscan_result;
     bool          clustering_valid  = false;   // result matches current filters
@@ -1285,6 +1372,8 @@ static void cbMouseBtn(GLFWwindow* w, int btn, int action, int) {
     }
     if (btn == GLFW_MOUSE_BUTTON_MIDDLE)
         g_app->mouse_mid = (action == GLFW_PRESS);
+    if (btn == GLFW_MOUSE_BUTTON_RIGHT)
+        g_app->mouse_right = (action == GLFW_PRESS);
 }
 
 static void cbCursorPos(GLFWwindow*, double mx, double my) {
@@ -1297,11 +1386,12 @@ static void cbCursorPos(GLFWwindow*, double mx, double my) {
 
     if (ImGui::GetIO().WantCaptureMouse) return;
 
-    if (g_app->mouse_left)
+    if (g_app->mouse_left) {
         g_app->camera.orbit(dx * 0.005f, -dy * 0.005f);
-    else if (g_app->mouse_mid)
-        g_app->camera.pan(-dx * g_app->camera.distance * 0.001f,
-                           dy * g_app->camera.distance * 0.001f);
+    } else if (g_app->mouse_mid || g_app->mouse_right) {
+        float scale = g_app->camera.distance * 0.001f;
+        g_app->camera.pan(dx * scale, -dy * scale);
+    }
 }
 
 static void cbFramebuffer(GLFWwindow*, int w, int h) {
@@ -1638,23 +1728,48 @@ static void drawVisualizationUI(App& app, Renderer& rend) {
         ImGui::Separator();
     }
 
-    // ── HDBSCAN Clustering ────────────────────────────────────────────────
-    ImGui::TextDisabled("CLUSTERING (HDBSCAN)");
+    // ── Clustering ───────────────────────────────────────────────────────
+    ImGui::TextDisabled("CLUSTERING");
 
-    // Parameters
-    ImGui::SliderInt("min_samples##hdb",       &app.hdbscan_params.min_samples,      1,  50);
-    if (ImGui::IsItemHovered())
-        ImGui::SetTooltip("Cantidad de vecinos para calcular la distancia de núcleo.\n"
-                          "Valores bajos = más clusters pequeños.\n"
-                          "Valores altos = clusters más densos y compactos.");
-    ImGui::SliderInt("min_cluster_size##hdb",  &app.hdbscan_params.min_cluster_size, 2, 200);
-    if (ImGui::IsItemHovered())
-        ImGui::SetTooltip("Mínimo de átomos para considerar un grupo como cluster.\n"
-                          "Grupos menores quedan como ruido.");
+    // Method selector
+    {
+        const char* methods[] = { "DBSCAN", "HDBSCAN" };
+        int cm = (int)app.cluster_method;
+        if (ImGui::Combo("Método##clust_method", &cm, methods, 2))
+            app.cluster_method = (ClusterMethod)cm;
+    }
+
+    ImGui::Spacing();
+
+    if (app.cluster_method == ClusterMethod::DBSCAN) {
+        // DBSCAN parameters
+        ImGui::SliderFloat("eps [Å]##dbs",   &app.dbscan_params.eps,     0.5f, 20.f, "%.1f");
+        if (ImGui::IsItemHovered())
+            ImGui::SetTooltip("Radio de vecindad en Å.\n"
+                              "Átomos dentro de este radio se consideran vecinos.\n"
+                              "Valor típico: distancia al 2° vecino (~3-5 Å para metales).");
+        ImGui::SliderInt("min_pts##dbs",     &app.dbscan_params.min_pts,  1,    20);
+        if (ImGui::IsItemHovered())
+            ImGui::SetTooltip("Mínimo de vecinos para que un átomo sea punto núcleo.\n"
+                              "Puntos con menos vecinos son borde o ruido.\n"
+                              "Valor bajo (2-3) agrupa defectos aislados.");
+    } else {
+        // HDBSCAN parameters
+        ImGui::SliderInt("min_samples##hdb",       &app.hdbscan_params.min_samples,      1,  50);
+        if (ImGui::IsItemHovered())
+            ImGui::SetTooltip("Cantidad de vecinos para calcular la distancia de núcleo.\n"
+                              "Valores bajos = más clusters pequeños.\n"
+                              "Valores altos = clusters más densos y compactos.");
+        ImGui::SliderInt("min_cluster_size##hdb",  &app.hdbscan_params.min_cluster_size, 2, 200);
+        if (ImGui::IsItemHovered())
+            ImGui::SetTooltip("Mínimo de átomos para considerar un grupo como cluster.\n"
+                              "Grupos menores quedan como ruido.");
+    }
 
     int  n_vis = (int)app.visible_indices.size();
     bool too_many = (n_vis > HDBSCAN_MAX_N);
 
+    ImGui::Spacing();
     if (too_many) {
         ImGui::TextColored({1.f,0.6f,0.2f,1.f},
             "Demasiados átomos visibles (%d).\nAplicá más filtros (máx %d).",
@@ -1664,14 +1779,21 @@ static void drawVisualizationUI(App& app, Renderer& rend) {
     }
 
     // Run button
+    const char* btn_label = (app.cluster_method == ClusterMethod::DBSCAN)
+                            ? "  Correr DBSCAN  " : "  Correr HDBSCAN  ";
     ImGui::BeginDisabled(too_many || n_vis < 2);
-    bool run_clicked = ImGui::Button("  Correr HDBSCAN  ");
+    bool run_clicked = ImGui::Button(btn_label);
     ImGui::EndDisabled();
 
     if (run_clicked) {
-        app.hdbscan_result  = runHDBSCAN(app.all_atoms,
-                                         app.visible_indices,
-                                         app.hdbscan_params);
+        if (app.cluster_method == ClusterMethod::DBSCAN)
+            app.hdbscan_result = runDBSCAN(app.all_atoms,
+                                           app.visible_indices,
+                                           app.dbscan_params);
+        else
+            app.hdbscan_result = runHDBSCAN(app.all_atoms,
+                                            app.visible_indices,
+                                            app.hdbscan_params);
         app.clustering_valid = true;
         // Reset cluster visibility: all clusters on, noise on
         app.cluster_visible.clear();
@@ -1728,7 +1850,7 @@ static void drawVisualizationUI(App& app, Renderer& rend) {
         if (changed) app.clustering_valid = false;
     } else if (app.hdbscan_result.n_clusters > 0) {
         ImGui::TextColored({1.f,0.6f,0.3f,1.f},
-            "Resultado desactualizado.\nCorré HDBSCAN de nuevo.");
+            "Resultado desactualizado.\nCorré el clustering de nuevo.");
     }
 
     ImGui::Separator();

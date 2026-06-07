@@ -12,43 +12,90 @@ DefectClassifier::DefectClassifier(double threshold)
     : threshold_(threshold)
 {}
 
+// ── Build a single ReferenceSet from a list of atom pointers ─────────────────
+// Shared by the global and per-species reference construction. The atoms are
+// passed by pointer so that subsets (one species) can be assembled without
+// copying descriptor vectors.
+static ReferenceSet buildReferenceSet(const std::vector<const Atom*>& atoms)
+{
+    if (atoms.empty())
+        throw std::invalid_argument("buildReferenceSet: empty atom set");
+
+    const int d  = static_cast<int>(atoms[0]->dv.size());
+    const int nd = static_cast<int>(atoms.size());
+
+    if (d == 0)
+        throw std::invalid_argument(
+            "buildReferenceSet: atoms have empty descriptor vectors — "
+            "call computeAll() before buildReference()");
+
+    ReferenceSet ref;
+
+    // Mean DV computed directly — no intermediate vector-of-vectors.
+    ref.mean_dv.assign(d, 0.0);
+    for (const Atom* a : atoms) {
+        if (static_cast<int>(a->dv.size()) != d)
+            throw std::invalid_argument(
+                "buildReferenceSet: inconsistent DV sizes (" +
+                std::to_string(a->dv.size()) + " vs " + std::to_string(d) + ")");
+        for (int i = 0; i < d; ++i) ref.mean_dv[i] += a->dv[i];
+    }
+    for (auto& v : ref.mean_dv) v /= nd;
+
+    // Compute distances once; reuse for mean/var and chi-fit.
+    std::vector<double> dists;
+    dists.reserve(nd);
+    for (const Atom* a : atoms)
+        dists.push_back(Statistics::euclidean(a->dv, ref.mean_dv));
+
+    ref.mean_dist = std::accumulate(dists.begin(), dists.end(), 0.0) / nd;
+    double var = 0.0;
+    for (double dist : dists) { const double delta = dist - ref.mean_dist; var += delta * delta; }
+    ref.var_dist = var / (nd > 1 ? nd - 1 : 1);  // sample variance (unbiased)
+
+    Statistics::fitChiParams(dists, ref.k_chi, ref.sigma_chi);
+
+    // Keep the reference distances sorted for the empirical probability model
+    // and percentile-derived thresholds.
+    std::sort(dists.begin(), dists.end());
+    ref.sorted_dists = std::move(dists);
+    return ref;
+}
+
 // ── Build reference from pristine atoms ──────────────────────────────────────
 void DefectClassifier::buildReference(const std::vector<Atom>& atoms)
 {
     if (atoms.empty())
         throw std::invalid_argument("buildReference: empty atom set");
 
-    const int d  = static_cast<int>(atoms[0].dv.size());
-    const int nd = static_cast<int>(atoms.size());
+    // Global reference (always built; used as fallback and for the summary).
+    std::vector<const Atom*> all;
+    all.reserve(atoms.size());
+    for (const auto& a : atoms) all.push_back(&a);
+    ref_ = buildReferenceSet(all);
 
-    if (d == 0)
-        throw std::invalid_argument(
-            "buildReference: atoms have empty descriptor vectors — "
-            "call computeAll() before buildReference()");
-
-    // Compute mean DV directly from atoms — no intermediate vector-of-vectors.
-    ref_.mean_dv.assign(d, 0.0);
-    for (const auto& a : atoms) {
-        if (static_cast<int>(a.dv.size()) != d)
-            throw std::invalid_argument(
-                "buildReference: inconsistent DV sizes (" +
-                std::to_string(a.dv.size()) + " vs " + std::to_string(d) + ")");
-        for (int i = 0; i < d; ++i) ref_.mean_dv[i] += a.dv[i];
+    // Per-species references: group atoms by type, build one reference each.
+    // Under-populated species (e.g. a single tagged PKA atom in a cascade dump)
+    // would yield a degenerate reference — zero-width distribution, percentile
+    // threshold 0, meaningless chi-fit — so they are skipped and fall back to
+    // the global reference in classify().
+    ref_by_type_.clear();
+    if (per_species_) {
+        constexpr size_t kMinSpeciesAtoms = 100;
+        std::map<int, std::vector<const Atom*>> by_type;
+        for (const auto& a : atoms) by_type[a.type].push_back(&a);
+        for (const auto& kv : by_type)
+            if (kv.second.size() >= kMinSpeciesAtoms)
+                ref_by_type_[kv.first] = buildReferenceSet(kv.second);
     }
-    for (auto& v : ref_.mean_dv) v /= nd;
 
-    // Compute distances once; reuse for mean/var and chi-fit.
-    std::vector<double> dists;
-    dists.reserve(nd);
-    for (const auto& a : atoms)
-        dists.push_back(Statistics::euclidean(a.dv, ref_.mean_dv));
-
-    ref_.mean_dist = std::accumulate(dists.begin(), dists.end(), 0.0) / nd;
-    double var = 0.0;
-    for (double dist : dists) { const double delta = dist - ref_.mean_dist; var += delta * delta; }
-    ref_.var_dist = var / (nd > 1 ? nd - 1 : 1);  // sample variance (unbiased)
-
-    Statistics::fitChiParams(dists, ref_.k_chi, ref_.sigma_chi);
+    // Derive per-set primary thresholds from a percentile of the reference
+    // distance distribution, if requested.
+    if (threshold_pct_ >= 0.0) {
+        ref_.threshold = Statistics::percentile(ref_.sorted_dists, threshold_pct_);
+        for (auto& kv : ref_by_type_)
+            kv.second.threshold = Statistics::percentile(kv.second.sorted_dists, threshold_pct_);
+    }
 }
 
 void DefectClassifier::setDefectReferences(
@@ -88,16 +135,32 @@ void DefectClassifier::classify(Frame& frame) const {
         throw std::runtime_error("classify: reference not built yet");
 
     for (auto& atom : frame.atoms) {
-        // Primary distance metric (Eq. 5)
-        atom.dist_to_ref = Statistics::euclidean(atom.dv, ref_.mean_dv);
+        // Select the reference for this atom's species (per-species mode), or
+        // the global reference otherwise / when the type was unseen at build time.
+        const ReferenceSet* r = &ref_;
+        if (per_species_) {
+            auto it = ref_by_type_.find(atom.type);
+            if (it != ref_by_type_.end() && it->second.isSet())
+                r = &it->second;
+        }
 
-        // Defect probability  1 − P(d^i | k, σ)  using chi-distribution model
-        double p_lattice = Statistics::chiProbability(
-            atom.dist_to_ref, ref_.k_chi, ref_.sigma_chi);
-        atom.defect_prob = 1.0 - p_lattice;
+        // Primary distance metric (Eq. 5) — against this species' q̄(T)
+        atom.dist_to_ref = Statistics::euclidean(atom.dv, r->mean_dv);
 
-        // Primary decision
-        if (atom.dist_to_ref < threshold_) {
+        // Defect probability:
+        //   empirical  → percentile rank of d within the reference population
+        //   chi model  → 1 − P(d | k, σ)
+        if (empirical_prob_) {
+            atom.defect_prob = Statistics::empiricalCdf(r->sorted_dists, atom.dist_to_ref);
+        } else {
+            double p_lattice = Statistics::chiProbability(
+                atom.dist_to_ref, r->k_chi, r->sigma_chi);
+            atom.defect_prob = 1.0 - p_lattice;
+        }
+
+        // Primary decision — per-set threshold if one was derived, else global.
+        const double thr = (r->threshold >= 0.0) ? r->threshold : threshold_;
+        if (atom.dist_to_ref < thr) {
             atom.defect_type = DefectType::Lattice;
         } else {
             // Secondary: nearest known defect reference
@@ -143,7 +206,7 @@ std::vector<VacancyPoint> DefectClassifier::findVacanciesGrid(
         const double y = box.yb[0] + (iy + 0.5) * dy;
         const double z = box.zb[0] + (iz + 0.5) * dz;
         const double d2 = cl.nearestDist2FromPoint(x, y, z);
-        if (d2 > dt2)
+        if (d2 > dt2 && d2 < 1e150)
             vacancies.push_back({{x, y, z}, std::sqrt(d2)});
     }
 

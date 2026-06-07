@@ -97,4 +97,28 @@ void Statistics::fitChiParams(const std::vector<double>& dists,
     sigma_out = std::sqrt(mean_d2 / k_out);
 }
 
+double Statistics::empiricalCdf(const std::vector<double>& sorted_asc, double d)
+{
+    const size_t n = sorted_asc.size();
+    if (n == 0) return 0.0;
+    // Count of reference samples ≤ d, divided by n.
+    const auto it = std::upper_bound(sorted_asc.begin(), sorted_asc.end(), d);
+    return static_cast<double>(it - sorted_asc.begin()) / static_cast<double>(n);
+}
+
+double Statistics::percentile(const std::vector<double>& sorted_asc, double p)
+{
+    const size_t n = sorted_asc.size();
+    if (n == 0) return 0.0;
+    if (n == 1) return sorted_asc[0];
+    if (p <= 0.0) return sorted_asc.front();
+    if (p >= 1.0) return sorted_asc.back();
+    // Linear interpolation between order statistics (NumPy 'linear' method).
+    const double pos = p * (n - 1);
+    const size_t lo  = static_cast<size_t>(pos);
+    const double frac = pos - lo;
+    if (lo + 1 >= n) return sorted_asc.back();
+    return sorted_asc[lo] + frac * (sorted_asc[lo + 1] - sorted_asc[lo]);
+}
+
 } // namespace DistTool

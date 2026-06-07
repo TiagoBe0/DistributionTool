@@ -34,6 +34,18 @@ public:
     //   sigma = sqrt(<d²> / k)
     static void fitChiParams(const std::vector<double>& dists,
                              double& k_out, double& sigma_out);
+
+    // Non-parametric anomaly score: the empirical CDF of `d` within a sorted
+    // (ascending) reference distance sample — i.e. the fraction of reference
+    // atoms whose distance is ≤ d. Returns a value in [0, 1] that behaves as a
+    // percentile rank: ~0 for a typical environment, →1 for an outlier. This is
+    // robust to non-chi-shaped distributions (e.g. chemically disordered alloys
+    // where the chi method-of-moments fit degenerates). Empty sample → 0.
+    static double empiricalCdf(const std::vector<double>& sorted_asc, double d);
+
+    // The p-th percentile of a sorted (ascending) sample, p ∈ [0,1], with
+    // linear interpolation between order statistics. Empty sample → 0.
+    static double percentile(const std::vector<double>& sorted_asc, double p);
 };
 
 } // namespace DistTool

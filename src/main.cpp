@@ -1,4 +1,5 @@
 #include "DefectClassifier.h"
+#include "HybridVacancyDetector.h"
 #include "LammpsDumpReader.h"
 #include "PCA.h"
 #include "SOAPDescriptor.h"
@@ -105,6 +106,12 @@ static void printUsage(const char* prog) {
         "  --sigma  S       Gaussian width [Å] (-1=auto) (default: -1)\n\n"
         "Classification options:\n"
         "  --threshold T                  Distance threshold for defects (default: 0.15)\n"
+        "  --per-species                  Build a separate SOAP reference per atom type\n"
+        "                                 (recommended for HEAs / disordered alloys)\n"
+        "  --empirical-prob               Use percentile-rank defect probability instead\n"
+        "                                 of the parametric chi model (robust for HEAs)\n"
+        "  --threshold-pct P              Derive the defect threshold from the P-th\n"
+        "                                 percentile of the reference distances [0-100]\n"
         "  --vacancy-detection-radius D   Min distance to nearest atom to flag a grid\n"
         "                                 point as vacant [Å]  (default: r_cut×0.4)\n"
         "  --grid-spacing G               Vacancy detection grid spacing [Å] (default: 0.5)\n"
@@ -121,6 +128,14 @@ static void printUsage(const char* prog) {
         "Wigner-Seitz comparison:\n"
         "  --ws             Run WS analysis in parallel with SOAP\n"
         "  --ws-r-cut R     WS search radius [Å] (default: same as --r-cut)\n\n"
+        "Hybrid vacancy detector (multi-signal consensus):\n"
+        "  --hybrid                    Enable HybridVacancyDetector (implies --ws)\n"
+        "  --hybrid-preset NAME        ws | robust | sensitive  (default: robust)\n"
+        "  --hybrid-weights w1,...,w8  Override weights: ws,soft,vor,dens,soap,topo,transit,frenkel\n"
+        "  --hybrid-accept T           Score threshold [0,1] (default: 0.5)\n"
+        "  --hybrid-thermal-sigma S    Thermal RMS displacement [Å] (default: 0.05·nn_ref)\n"
+        "  --hybrid-recomb-radius R    Frenkel pair recombination radius [Å] (default: 3.3)\n"
+        "  --hybrid-transit-factor F   Ballistic-transit band as F·nn_ref (default: 1.5)\n\n"
         "Output options:\n"
         "  --output   FILE  Main output CSV file         (default: output.csv)\n"
         "  --pca      [N]   Run PCA with N components    (default: 2)\n"
@@ -317,6 +332,45 @@ static void writeWSAtomCSV(
     std::cout << "  → WS atom CSV written: " << path << '\n';
 }
 
+// Hybrid vacancy CSV: every candidate, with an `accepted` flag so users can
+// inspect why a WS vacancy was filtered (transit, frenkel, or low score).
+static void writeHybridVacancyCSV(
+    const std::vector<HybridVacancy>& vacs,
+    double accept_threshold,
+    const std::string& path)
+{
+    std::ofstream f(path);
+    if (!f) throw std::runtime_error("Cannot write: " + path);
+    f << "# x y z consensus_score ws soft_ws vor dens soap topo "
+         "transit_pen frenkel_pen transit_filtered in_recomb ref_site_idx accepted\n"
+      << std::fixed << std::setprecision(8);
+
+    int n_accepted = 0;
+    for (const auto& v : vacs) {
+        const bool penalty_clear = !v.transit_filtered && !v.in_recombination;
+        const bool ws_says       = v.breakdown.ws >= 0.5;
+        const bool score_passes  = v.consensus_score >= accept_threshold;
+        const bool accepted      = penalty_clear && (ws_says || score_passes);
+        if (accepted) ++n_accepted;
+        f << v.pos[0] << ' ' << v.pos[1] << ' ' << v.pos[2] << ' '
+          << v.consensus_score        << ' '
+          << v.breakdown.ws           << ' '
+          << v.breakdown.soft_ws      << ' '
+          << v.breakdown.voronoi_anomaly << ' '
+          << v.breakdown.density_deficit << ' '
+          << v.breakdown.soap_neighbor   << ' '
+          << v.breakdown.topology_anomaly<< ' '
+          << v.breakdown.transit_penalty << ' '
+          << v.breakdown.frenkel_penalty << ' '
+          << (v.transit_filtered ? 1 : 0) << ' '
+          << (v.in_recombination ? 1 : 0) << ' '
+          << v.ref_site_idx << ' '
+          << (accepted ? 1 : 0) << '\n';
+    }
+    std::cout << "  → hybrid vacancy CSV written: " << path
+              << "  (" << n_accepted << " accepted / " << vacs.size() << " candidates)\n";
+}
+
 // Per-site WS CSV: ref_id x y z occupancy site_type
 static void writeWSSitesCSV(
     const std::vector<WSSite>& sites,
@@ -444,8 +498,15 @@ int main(int argc, char* argv[]) {
     int    pca_nc  = 2;
     bool   do_hist = false;
     int    hist_bins = 50;
+    bool   per_species = false; // per-type SOAP reference (HEA / disordered alloys)
+    bool   empirical_prob = false; // non-parametric percentile-rank defect_prob
+    double threshold_pct  = -1.0;  // -1 = use fixed --threshold; else percentile [0,1]
     bool   do_ws      = false;
     double ws_r_cut   = -1.0;  // -1 = use soap.r_cut
+    bool   do_hybrid  = false;
+    std::string hybrid_preset = "robust";
+    std::string hybrid_weights_csv;       // empty = use preset
+    HybridParams hybrid_params;
     std::string ref_file, dmg_file;
 
     // ── Parse CLI ─────────────────────────────────────────────────────────────
@@ -473,6 +534,9 @@ int main(int argc, char* argv[]) {
         else if (a == "--r-cut")     soap.r_cut   = nextDbl();
         else if (a == "--sigma")     soap.sigma   = nextDbl();
         else if (a == "--threshold")    threshold    = nextDbl();
+        else if (a == "--per-species")  per_species  = true;
+        else if (a == "--empirical-prob") empirical_prob = true;
+        else if (a == "--threshold-pct") threshold_pct = nextDbl() / 100.0;
         else if (a == "--vacancy-detection-radius" || a == "--vac-dist")
             vac_dist           = nextDbl();
         else if (a == "--grid-spacing")
@@ -497,6 +561,13 @@ int main(int argc, char* argv[]) {
         }
         else if (a == "--ws")       do_ws    = true;
         else if (a == "--ws-r-cut") ws_r_cut = nextDbl();
+        else if (a == "--hybrid") { do_hybrid = true; do_ws = true; }
+        else if (a == "--hybrid-preset")        hybrid_preset = nextStr();
+        else if (a == "--hybrid-weights")       hybrid_weights_csv = nextStr();
+        else if (a == "--hybrid-accept")        hybrid_params.accept_threshold = nextDbl();
+        else if (a == "--hybrid-thermal-sigma") hybrid_params.thermal_sigma    = nextDbl();
+        else if (a == "--hybrid-recomb-radius") hybrid_params.recomb_radius    = nextDbl();
+        else if (a == "--hybrid-transit-factor")hybrid_params.transit_factor   = nextDbl();
         else if (a[0] != '-') {
             if      (ref_file.empty()) ref_file = a;
             else if (dmg_file.empty()) dmg_file = a;
@@ -520,14 +591,64 @@ int main(int argc, char* argv[]) {
         return 1;
     }
 
+    // Resolve hybrid params: preset first, then explicit weights override.
+    if (do_hybrid) {
+        // Preserve user-set scalars (accept, thermal_sigma, recomb_radius,
+        // transit_factor) by saving them across applyPreset which overwrites
+        // accept_threshold.
+        const double saved_accept   = hybrid_params.accept_threshold;
+        const double saved_sigma    = hybrid_params.thermal_sigma;
+        const double saved_recomb   = hybrid_params.recomb_radius;
+        const double saved_transit  = hybrid_params.transit_factor;
+        try {
+            hybrid_params.applyPreset(hybrid_preset);
+        } catch (const std::exception& e) {
+            std::cerr << "Error: " << e.what() << '\n';
+            return 1;
+        }
+        // Restore scalars only if they were explicitly set (≠ HybridParams defaults).
+        // We detect "explicit" by comparing against the defaults; since user
+        // values overwrite defaults only via the CLI flags above, this is fine:
+        if (saved_accept  != HybridParams{}.accept_threshold) hybrid_params.accept_threshold = saved_accept;
+        if (saved_sigma   != HybridParams{}.thermal_sigma)    hybrid_params.thermal_sigma    = saved_sigma;
+        if (saved_recomb  != HybridParams{}.recomb_radius)    hybrid_params.recomb_radius    = saved_recomb;
+        if (saved_transit != HybridParams{}.transit_factor)   hybrid_params.transit_factor   = saved_transit;
+
+        if (!hybrid_weights_csv.empty()) {
+            std::vector<double> w;
+            std::stringstream ss(hybrid_weights_csv);
+            std::string tok;
+            while (std::getline(ss, tok, ',')) {
+                try { w.push_back(std::stod(tok)); }
+                catch (...) {
+                    std::cerr << "Error: --hybrid-weights: invalid number '" << tok << "'\n";
+                    return 1;
+                }
+            }
+            if (w.size() != 8) {
+                std::cerr << "Error: --hybrid-weights expects 8 comma-separated floats "
+                             "(ws,soft,vor,dens,soap,topo,transit,frenkel)\n";
+                return 1;
+            }
+            hybrid_params.w_ws       = w[0]; hybrid_params.w_soft_ws  = w[1];
+            hybrid_params.w_voronoi  = w[2]; hybrid_params.w_density  = w[3];
+            hybrid_params.w_soap     = w[4]; hybrid_params.w_topology = w[5];
+            hybrid_params.w_transit  = w[6]; hybrid_params.w_frenkel  = w[7];
+        }
+        hybrid_params.grid_spacing = grid_spacing;
+    }
+
     // ── Print configuration ───────────────────────────────────────────────────
     std::cout << "Configuration:\n"
               << "  SOAP  n_max=" << soap.n_max
               << "  l_max="       << soap.l_max
               << "  r_cut="       << soap.r_cut << " Å"
-              << "  DV size="     << soap.dvSize() << "\n"
-              << "  Threshold=" << threshold
-              << "  grid_spacing=" << grid_spacing << " Å\n";
+              << "  DV size="     << soap.dvSize() << "\n";
+    if (threshold_pct >= 0.0)
+        std::cout << "  Threshold=p" << (threshold_pct * 100.0) << " (reference percentile)";
+    else
+        std::cout << "  Threshold=" << threshold;
+    std::cout << "  grid_spacing=" << grid_spacing << " Å\n";
     if (do_ws) {
         const double wr = (ws_r_cut > 0.0) ? ws_r_cut : soap.r_cut;
         std::cout << "  WS r_cut=" << wr << " Å\n";
@@ -536,6 +657,9 @@ int main(int argc, char* argv[]) {
 
     SOAPDescriptor desc(soap);
     DefectClassifier clf(threshold);
+    clf.setPerSpecies(per_species);
+    clf.setEmpiricalProb(empirical_prob);
+    clf.setThresholdPercentile(threshold_pct);
 
     try {
         // ══════════════════════════════════════════════════════════════════════
@@ -601,6 +725,17 @@ int main(int argc, char* argv[]) {
 
         clf.buildReference(ref_frame.atoms);
 
+        // PCA must be fitted on the reference DVs *before* they are freed below.
+        // We keep only the (tiny) fitted model + later the projection; the bulky
+        // per-atom DV matrix is never retained. See PCA block near the end.
+        PCA pca;
+        std::vector<std::vector<double>> pca_proj;
+        if (do_pca) {
+            std::cout << "      Fitting PCA on reference frame ("
+                      << pca_nc << " components)…\n";
+            pca.fit(ref_frame.atoms);
+        }
+
         // Build WS spatial index before freeing reference positions.
         WignerSeitz ws;
         if (do_ws) {
@@ -623,6 +758,29 @@ int main(int argc, char* argv[]) {
                   << "  σ_d=" << std::sqrt(ref.var_dist)
                   << "  χ(k=" << std::setprecision(1) << ref.k_chi
                   << ", σ=" << std::setprecision(4) << ref.sigma_chi << ")\n";
+
+        if (per_species) {
+            std::cout << "      Per-species references ("
+                      << clf.referencesByType().size() << " types):\n";
+            for (const auto& kv : clf.referencesByType()) {
+                const auto& r = kv.second;
+                std::cout << "        type " << kv.first
+                          << ":  <d>=" << std::fixed << std::setprecision(4) << r.mean_dist
+                          << "  σ_d=" << std::sqrt(r.var_dist)
+                          << "  χ(k=" << std::setprecision(1) << r.k_chi
+                          << ", σ=" << std::setprecision(4) << r.sigma_chi << ")";
+                if (threshold_pct >= 0.0)
+                    std::cout << "  thr=" << std::setprecision(4) << r.threshold;
+                std::cout << '\n';
+            }
+        }
+        std::cout << "      Probability model: "
+                  << (empirical_prob ? "empirical (percentile rank)"
+                                     : "chi-distribution (FaVaD Eq. 6)") << '\n';
+        if (threshold_pct >= 0.0)
+            std::cout << "      Threshold from reference percentile p="
+                      << std::fixed << std::setprecision(1) << threshold_pct * 100.0
+                      << "%  (global thr=" << std::setprecision(4) << ref.threshold << ")\n";
 
         // Load optional per-defect reference DVs for secondary classification
         {
@@ -708,6 +866,11 @@ int main(int argc, char* argv[]) {
         // ══════════════════════════════════════════════════════════════════════
         std::cout << "\n[4/4] Classifying defects…\n";
         clf.classify(dmg_frame);
+
+        // Project the damaged DVs onto the PCA axes *before* they are freed.
+        // The projection (n × pca_nc) is small and kept for output below.
+        if (do_pca)
+            pca_proj = pca.transform(dmg_frame.atoms, pca_nc);
 
         // Liberar DVs del frame dañado: classify ya extrajo todo lo necesario.
         // Los outputs (CSV, dump) sólo usan defect_type/dist_to_ref/defect_prob.
@@ -829,9 +992,82 @@ int main(int argc, char* argv[]) {
                           << " atoms re-classified as Interstitial (WS)\n";
         }
 
+        // ── Hybrid vacancy detector ──────────────────────────────────────────
+        std::vector<HybridVacancy> hybrid_vacs;
+        int hybrid_vac_count = -1, hybrid_agree = -1, hybrid_ws_only = -1, hybrid_only = -1;
+        if (do_hybrid) {
+            std::cout << "\n[Hybrid] Multi-signal vacancy consensus (preset='"
+                      << hybrid_preset << "')…\n";
+            HybridVacancyDetector hvd(hybrid_params);
+            hvd.buildReference(ref_frame, ws, &clf.reference());
+            hybrid_vacs = hvd.detect(dmg_frame, ws_results);
+            hybrid_vac_count = hvd.vacancyCount();
+            hybrid_agree     = hvd.wsAgreeCount();
+            hybrid_ws_only   = hvd.wsOnlyCount();
+            hybrid_only      = hvd.hybridOnlyCount();
+            std::cout << "      nn_ref = " << std::fixed << std::setprecision(3)
+                      << hvd.nnRef() << " Å,  σ_thermal = " << hvd.sigmaThermal()
+                      << " Å,  coord_ref = " << std::setprecision(2) << hvd.coordRef()
+                      << "\n      Candidates: " << hybrid_vacs.size()
+                      << " | Accepted: " << hybrid_vac_count
+                      << " (WS-agree=" << hybrid_agree
+                      << ", WS-only=" << hybrid_ws_only
+                      << ", hybrid-only=" << hybrid_only << ")\n";
+        }
+
         const double vac_vol = static_cast<double>(vac_pts.size())
                                * grid_spacing * grid_spacing * grid_spacing;
         printSummary(dmg_frame, clusters, vac_vol, ws_vac_count, ws_int_count);
+        if (do_hybrid) {
+            char buf[128];
+            std::cout << "┌─── Hybrid Vacancy Summary ───────────────────────┐\n";
+            snprintf(buf, sizeof(buf),
+                     "│  Accepted vacancies  : %6d                    │", hybrid_vac_count);
+            std::cout << buf << '\n';
+            snprintf(buf, sizeof(buf),
+                     "│  WS-agree            : %6d                    │", hybrid_agree);
+            std::cout << buf << '\n';
+            snprintf(buf, sizeof(buf),
+                     "│  WS-only (filtered)  : %6d                    │", hybrid_ws_only);
+            std::cout << buf << '\n';
+            snprintf(buf, sizeof(buf),
+                     "│  Hybrid-only (new)   : %6d                    │", hybrid_only);
+            std::cout << buf << '\n';
+            std::cout << "└──────────────────────────────────────────────────┘\n";
+        }
+
+        // ── Vacancy reconciliation ────────────────────────────────────────────
+        // The estimators measure physically different quantities and are NOT
+        // expected to be equal. Make that explicit so they are not mis-compared:
+        //   • WS / hybrid = topological site-based count (every displaced atom),
+        //   • grid        = open-void detector, threshold-dependent (only voids
+        //                   deeper than --vac-dist; relaxed single vacancies in a
+        //                   dense solid are typically shallower and not counted).
+        if (ws_vac_count >= 0) {
+            std::cout << "\n  Vacancy reconciliation:\n";
+            std::cout << "    topological (WS)      : " << ws_vac_count << " vacancies / "
+                      << ws_int_count << " interstitials (Frenkel pairs)\n";
+            if (do_hybrid) {
+                std::string verdict;
+                if (hybrid_ws_only == 0 && hybrid_only == 0)
+                    verdict = "agrees with WS";
+                else {
+                    if (hybrid_ws_only > 0)
+                        verdict = "filters " + std::to_string(hybrid_ws_only) +
+                                  " WS sites (ballistic regime?)";
+                    if (hybrid_only > 0)
+                        verdict += (verdict.empty() ? "" : "; ") + std::string("+") +
+                                   std::to_string(hybrid_only) + " non-WS sites";
+                }
+                std::cout << "    topological (hybrid)  : " << hybrid_vac_count
+                          << "  [" << verdict << "]\n";
+            }
+            std::cout << "    open void (grid)      : " << clusters.size()
+                      << " clusters,  " << std::fixed << std::setprecision(1) << vac_vol
+                      << " Å³  (threshold " << std::setprecision(2) << vac_dist << " Å)\n";
+            std::cout << "    → use WS/hybrid for vacancy counting; grid measures "
+                         "open-void volume.\n";
+        }
 
         // ══════════════════════════════════════════════════════════════════════
         // 4. OUTPUTS
@@ -848,6 +1084,12 @@ int main(int argc, char* argv[]) {
         // Vacancy file: one row per cluster (physical vacancy)
         if (!clusters.empty()) {
             writeVacancyCSV(clusters, prefixedPath("vacancies_", out_file));
+        }
+
+        // Hybrid vacancy outputs
+        if (do_hybrid) {
+            writeHybridVacancyCSV(hybrid_vacs, hybrid_params.accept_threshold,
+                                   prefixedPath("hybrid_vacancies_", out_file));
         }
 
         // Wigner-Seitz outputs
@@ -870,14 +1112,10 @@ int main(int argc, char* argv[]) {
             writeHistogram(dists, hist_bins, prefixedPath("hist_", out_file));
         }
 
-        // PCA (Fig. 7 equivalent)
+        // PCA (Fig. 7 equivalent) — fitted on the reference frame and the
+        // damaged frame already projected above (both before their DVs were
+        // freed). Here we only report variance and write the projection.
         if (do_pca) {
-            std::cout << "  Running PCA (" << pca_nc << " components)…\n";
-
-            // Fit on reference atoms so PCA axes reflect the pristine crystal
-            PCA pca;
-            pca.fit(ref_frame.atoms);
-
             const auto& evr = pca.explainedVarianceRatio();
             std::cout << "  Explained variance:";
             double cumvar = 0.0;
@@ -889,8 +1127,7 @@ int main(int argc, char* argv[]) {
             }
             std::cout << "  (cumulative " << cumvar*100 << "%)\n";
 
-            auto proj = pca.transform(dmg_frame.atoms, pca_nc);
-            writePCAcsv(proj, dmg_frame, prefixedPath("pca_", out_file));
+            writePCAcsv(pca_proj, dmg_frame, prefixedPath("pca_", out_file));
         }
 
     } catch (const std::exception& e) {

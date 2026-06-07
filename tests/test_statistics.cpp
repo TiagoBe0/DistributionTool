@@ -99,3 +99,47 @@ TEST_CASE("Statistics::fitChiParams — recovers k=8, sigma=0.1 from exact momen
     APPROX_EQ(k_fit,     8.0, 1e-9);
     APPROX_EQ(sigma_fit, 0.1, 1e-9);
 }
+
+// ── empiricalCdf ──────────────────────────────────────────────────────────────
+
+TEST_CASE("Statistics::empiricalCdf — empty sample returns 0") {
+    APPROX_EQ(Statistics::empiricalCdf({}, 1.0), 0.0, 1e-12);
+}
+
+TEST_CASE("Statistics::empiricalCdf — fraction of samples <= d") {
+    std::vector<double> s = {0.0, 1.0, 2.0, 3.0, 4.0};  // sorted ascending
+    APPROX_EQ(Statistics::empiricalCdf(s, -1.0), 0.0, 1e-12);  // below all
+    APPROX_EQ(Statistics::empiricalCdf(s,  2.0), 0.6, 1e-12);  // 3 of 5 are <= 2
+    APPROX_EQ(Statistics::empiricalCdf(s,  2.5), 0.6, 1e-12);  // still 3 of 5
+    APPROX_EQ(Statistics::empiricalCdf(s, 10.0), 1.0, 1e-12);  // above all
+}
+
+TEST_CASE("Statistics::empiricalCdf — counts ties (value <= d, inclusive)") {
+    std::vector<double> s = {1.0, 1.0, 1.0, 2.0};
+    APPROX_EQ(Statistics::empiricalCdf(s, 1.0), 0.75, 1e-12);  // 3 of 4 equal 1.0
+}
+
+// ── percentile ────────────────────────────────────────────────────────────────
+
+TEST_CASE("Statistics::percentile — empty sample returns 0") {
+    APPROX_EQ(Statistics::percentile({}, 0.5), 0.0, 1e-12);
+}
+
+TEST_CASE("Statistics::percentile — endpoints and median") {
+    std::vector<double> s = {0.0, 1.0, 2.0, 3.0, 4.0};  // sorted ascending
+    APPROX_EQ(Statistics::percentile(s, 0.0), 0.0, 1e-12);  // min
+    APPROX_EQ(Statistics::percentile(s, 1.0), 4.0, 1e-12);  // max
+    APPROX_EQ(Statistics::percentile(s, 0.5), 2.0, 1e-12);  // median
+}
+
+TEST_CASE("Statistics::percentile — linear interpolation between order stats") {
+    std::vector<double> s = {0.0, 10.0};  // pos = p*(n-1) = p*1
+    APPROX_EQ(Statistics::percentile(s, 0.25), 2.5, 1e-12);
+    APPROX_EQ(Statistics::percentile(s, 0.90), 9.0, 1e-12);
+}
+
+TEST_CASE("Statistics::percentile — clamps out-of-range p") {
+    std::vector<double> s = {5.0, 7.0, 9.0};
+    APPROX_EQ(Statistics::percentile(s, -0.5), 5.0, 1e-12);
+    APPROX_EQ(Statistics::percentile(s,  1.5), 9.0, 1e-12);
+}

@@ -41,6 +41,7 @@ set(LIB_SOURCES
     src/DefectClassifier.cpp
     src/PCA.cpp
     src/WignerSeitz.cpp
+    src/HybridVacancyDetector.cpp
 )
 
 add_library(distool_lib OBJECT ${LIB_SOURCES})

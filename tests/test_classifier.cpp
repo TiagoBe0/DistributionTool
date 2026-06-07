@@ -138,6 +138,169 @@ TEST_CASE("DefectClassifier::classify — very different DV flagged as non-Latti
     REQUIRE(outlier.defect_prob > 0.9);
 }
 
+// Build a frame from explicit (type, dv) pairs.
+static Frame make_typed_frame(const std::vector<int>& types,
+                              const std::vector<std::vector<double>>& dvs) {
+    Frame f;
+    f.box = make_box(50.0);
+    f.atoms.resize(dvs.size());
+    for (int i = 0; i < (int)dvs.size(); ++i) {
+        f.atoms[i].id   = i + 1;
+        f.atoms[i].type = types[i];
+        f.atoms[i].x    = i * 2.0;
+        f.atoms[i].dv   = dvs[i];
+    }
+    return f;
+}
+
+// ── per-species reference ─────────────────────────────────────────────────────
+
+TEST_CASE("DefectClassifier — per-species builds one reference per type") {
+    // Type 1 atoms ≈ (1,0); type 2 atoms ≈ (0,1). A single global reference
+    // would sit at (0.5,0.5), so every atom is ~0.707 from it → all flagged.
+    // Per-species references sit exactly on each cluster → distance 0 → Lattice.
+    std::vector<int> types;
+    std::vector<std::vector<double>> dvs;
+    for (int i = 0; i < 100; ++i) { types.push_back(1); dvs.push_back({1.0, 0.0}); }
+    for (int i = 0; i < 100; ++i) { types.push_back(2); dvs.push_back({0.0, 1.0}); }
+    auto frame = make_typed_frame(types, dvs);
+
+    // Global reference: everything looks like a defect.
+    {
+        auto g = frame;
+        DefectClassifier clf(0.15);
+        clf.buildReference(g.atoms);
+        clf.classify(g);
+        int non_lattice = 0;
+        for (const auto& a : g.atoms)
+            if (a.defect_type != DefectType::Lattice) ++non_lattice;
+        REQUIRE(non_lattice == 200);
+    }
+
+    // Per-species reference: every atom matches its species mean → Lattice.
+    {
+        auto p = frame;
+        DefectClassifier clf(0.15);
+        clf.setPerSpecies(true);
+        clf.buildReference(p.atoms);
+        REQUIRE(clf.referencesByType().size() == 2);
+        clf.classify(p);
+        for (const auto& a : p.atoms) {
+            REQUIRE(a.defect_type == DefectType::Lattice);
+            APPROX_EQ(a.dist_to_ref, 0.0, 1e-12);
+        }
+    }
+}
+
+TEST_CASE("DefectClassifier — under-populated species folds into global reference") {
+    // 200 atoms of type 1 plus a single type-4 atom (like a tagged PKA). The
+    // lone type-4 atom must NOT get its own (degenerate) per-species reference.
+    std::vector<int> types(200, 1);
+    std::vector<std::vector<double>> dvs(200, {1.0, 0.0});
+    types.push_back(4);
+    dvs.push_back({1.0, 0.0});
+    auto ref = make_typed_frame(types, dvs);
+
+    DefectClassifier clf(0.15);
+    clf.setPerSpecies(true);
+    clf.setThresholdPercentile(0.99);
+    clf.buildReference(ref.atoms);
+
+    // Only type 1 is populous enough for a per-species reference.
+    REQUIRE(clf.referencesByType().size() == 1);
+    REQUIRE(clf.referencesByType().count(1) == 1);
+    REQUIRE(clf.referencesByType().count(4) == 0);
+}
+
+TEST_CASE("DefectClassifier — unseen type falls back to global reference") {
+    // Reference has only type 1; classify an atom of an unseen type 9.
+    // It must use the global reference (no crash, deterministic distance).
+    std::vector<int> types(50, 1);
+    std::vector<std::vector<double>> dvs(50, {1.0, 0.0});
+    auto ref = make_typed_frame(types, dvs);
+
+    DefectClassifier clf(0.15);
+    clf.setPerSpecies(true);
+    clf.buildReference(ref.atoms);
+
+    Frame dmg = ref;
+    dmg.atoms.push_back({});
+    dmg.atoms.back().id = 999;
+    dmg.atoms.back().type = 9;        // unseen species
+    dmg.atoms.back().dv = {1.0, 0.0}; // identical to global mean → dist 0
+    clf.classify(dmg);
+    APPROX_EQ(dmg.atoms.back().dist_to_ref, 0.0, 1e-12);
+    REQUIRE(dmg.atoms.back().defect_type == DefectType::Lattice);
+}
+
+// ── empirical defect probability ──────────────────────────────────────────────
+
+TEST_CASE("DefectClassifier — empirical defect_prob is a percentile rank") {
+    // Reference DVs along axis 0 at {0,1,2,3,4}; mean = (2,0).
+    // Reference distances = {2,1,0,1,2} → sorted {0,1,1,2,2}.
+    auto ref = make_typed_frame({1,1,1,1,1},
+        {{0.0,0.0},{1.0,0.0},{2.0,0.0},{3.0,0.0},{4.0,0.0}});
+
+    DefectClassifier clf(0.15);
+    clf.setEmpiricalProb(true);
+    clf.buildReference(ref.atoms);
+
+    // Damaged atoms with distances 0, 1, 2 from the mean (2,0).
+    auto dmg = make_typed_frame({1,1,1},
+        {{2.0,0.0},{1.0,0.0},{0.0,0.0}});
+    clf.classify(dmg);
+
+    APPROX_EQ(dmg.atoms[0].dist_to_ref, 0.0, 1e-12);
+    APPROX_EQ(dmg.atoms[1].dist_to_ref, 1.0, 1e-12);
+    APPROX_EQ(dmg.atoms[2].dist_to_ref, 2.0, 1e-12);
+    // empiricalCdf over {0,1,1,2,2}: F(0)=1/5, F(1)=3/5, F(2)=5/5.
+    APPROX_EQ(dmg.atoms[0].defect_prob, 0.2, 1e-12);
+    APPROX_EQ(dmg.atoms[1].defect_prob, 0.6, 1e-12);
+    APPROX_EQ(dmg.atoms[2].defect_prob, 1.0, 1e-12);
+}
+
+// ── percentile-derived threshold ──────────────────────────────────────────────
+
+TEST_CASE("DefectClassifier — threshold-percentile sets the global threshold") {
+    // Reference distances sorted {0,1,1,2,2}; median (p=0.5) = 1.0.
+    auto ref = make_typed_frame({1,1,1,1,1},
+        {{0.0,0.0},{1.0,0.0},{2.0,0.0},{3.0,0.0},{4.0,0.0}});
+
+    DefectClassifier clf(0.15);              // fixed threshold ignored once pct set
+    clf.setThresholdPercentile(0.5);
+    clf.buildReference(ref.atoms);
+    APPROX_EQ(clf.reference().threshold, 1.0, 1e-12);
+
+    // d < 1 → Lattice;  d >= 1 → non-Lattice.
+    auto dmg = make_typed_frame({1,1}, {{2.0,0.0},{0.0,0.0}});  // d=0, d=2
+    clf.classify(dmg);
+    REQUIRE(dmg.atoms[0].defect_type == DefectType::Lattice);     // d=0 < 1
+    REQUIRE(dmg.atoms[1].defect_type != DefectType::Lattice);     // d=2 >= 1
+}
+
+TEST_CASE("DefectClassifier — per-species percentile thresholds are independent") {
+    // Type 1 distances spread to ~1; type 2 distances spread to ~10.
+    // Repeat each 5-value pattern 20× → 100 atoms/species (above the minimum)
+    // while preserving the median distance (1.0 for type 1, 10.0 for type 2).
+    std::vector<int> types;
+    std::vector<std::vector<double>> dvs;
+    for (int rep = 0; rep < 20; ++rep) {
+        for (double v : {0.0,1.0,2.0,3.0,4.0})     { types.push_back(1); dvs.push_back({v,0.0}); }
+        for (double v : {0.0,10.0,20.0,30.0,40.0}) { types.push_back(2); dvs.push_back({v,0.0}); }
+    }
+    auto ref = make_typed_frame(types, dvs);
+
+    DefectClassifier clf(0.15);
+    clf.setPerSpecies(true);
+    clf.setThresholdPercentile(0.5);
+    clf.buildReference(ref.atoms);
+
+    const auto& by_type = clf.referencesByType();
+    REQUIRE(by_type.size() == 2);
+    APPROX_EQ(by_type.at(1).threshold,  1.0, 1e-12);   // median dist for type 1
+    APPROX_EQ(by_type.at(2).threshold, 10.0, 1e-12);   // median dist for type 2
+}
+
 TEST_CASE("DefectClassifier::buildReference — throws on empty DVs") {
     DefectClassifier clf(0.15);
     Frame f;
@@ -158,15 +321,14 @@ TEST_CASE("findVacanciesGrid — throws on non-positive spacing or threshold") {
     CHECK_THROWS(clf.findVacanciesGrid(f, -1.0, 1.0));
 }
 
-TEST_CASE("findVacanciesGrid — empty frame: all grid points are vacancies") {
-    // No atoms → every grid point is farther than threshold from any atom.
+TEST_CASE("findVacanciesGrid — empty frame: no spurious overflow vacancies") {
+    // No atoms → CellList returns DBL_MAX, which is filtered out so the result
+    // is empty (instead of emitting d_near values like sqrt(DBL_MAX) ≈ 1.3e154
+    // that pollute downstream CSVs and clustering).
     DefectClassifier clf(0.15);
     Frame f; f.box = make_box(10.0);
-    // 10 / 2.5 = 4 cells per axis → 64 grid points
     auto vac = clf.findVacanciesGrid(f, 2.5, 1.0);
-    REQUIRE(vac.size() == 64);
-    for (const auto& v : vac)
-        REQUIRE(v.d_near > 1e100);  // sqrt(numeric_limits::max) — no neighbour found
+    REQUIRE(vac.empty());
 }
 
 TEST_CASE("findVacanciesGrid — dense atom packing: no vacancies") {

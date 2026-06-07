@@ -1,3 +1,0 @@
-/home/santi/Documents/DistributionTool/build_viewer/_deps/glfw-subbuild/CMakeFiles/glfw-populate.dir
-/home/santi/Documents/DistributionTool/build_viewer/_deps/glfw-subbuild/CMakeFiles/edit_cache.dir
-/home/santi/Documents/DistributionTool/build_viewer/_deps/glfw-subbuild/CMakeFiles/rebuild_cache.dir

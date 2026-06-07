@@ -89,6 +89,83 @@ public:
         return min_r2;
     }
 
+    // Return displacement vectors (dx, dy, dz, r2) from query point (qx,qy,qz)
+    // to every atom in the cell list within `radius` (with PBC minimum-image).
+    // `radius` must be <= r_cut used in build() — otherwise the 27-cell shell
+    // does not cover the full search volume.  Output is appended (caller may reuse).
+    void neighborsInRadius(double qx, double qy, double qz, double radius,
+                            std::vector<std::array<double,4>>& out) const {
+        const double r2max = radius * radius;
+        int ix, iy, iz;
+        posCell(qx, qy, qz, ix, iy, iz);
+
+        const SimBox& box = frame_->box;
+
+        for (int dix = -1; dix <= 1; ++dix)
+        for (int diy = -1; diy <= 1; ++diy)
+        for (int diz = -1; diz <= 1; ++diz) {
+            int jx = ix + dix, jy = iy + diy, jz = iz + diz;
+            if (box.periodic[0]) jx = ((jx % nx_) + nx_) % nx_;
+            else if (jx < 0 || jx >= nx_) continue;
+            if (box.periodic[1]) jy = ((jy % ny_) + ny_) % ny_;
+            else if (jy < 0 || jy >= ny_) continue;
+            if (box.periodic[2]) jz = ((jz % nz_) + nz_) % nz_;
+            else if (jz < 0 || jz >= nz_) continue;
+
+            for (int j : cells_[cellIdx(jx, jy, jz)]) {
+                const Atom& aj = frame_->atoms[j];
+                double dx = aj.x - qx;
+                double dy = aj.y - qy;
+                double dz = aj.z - qz;
+                if (box.periodic[0] && Lx_ > 0.0) dx -= Lx_ * std::round(dx / Lx_);
+                if (box.periodic[1] && Ly_ > 0.0) dy -= Ly_ * std::round(dy / Ly_);
+                if (box.periodic[2] && Lz_ > 0.0) dz -= Lz_ * std::round(dz / Lz_);
+                const double r2 = dx*dx + dy*dy + dz*dz;
+                if (r2 <= r2max) out.push_back({dx, dy, dz, r2});
+            }
+        }
+    }
+
+    // Indexed variant: returns atom indices (into frame->atoms) instead of displacements.
+    // `out_idx` and `out_r2` are appended.
+    void neighborsInRadiusIndexed(double qx, double qy, double qz, double radius,
+                                   std::vector<int>& out_idx,
+                                   std::vector<double>& out_r2) const {
+        const double r2max = radius * radius;
+        int ix, iy, iz;
+        posCell(qx, qy, qz, ix, iy, iz);
+
+        const SimBox& box = frame_->box;
+
+        for (int dix = -1; dix <= 1; ++dix)
+        for (int diy = -1; diy <= 1; ++diy)
+        for (int diz = -1; diz <= 1; ++diz) {
+            int jx = ix + dix, jy = iy + diy, jz = iz + diz;
+            if (box.periodic[0]) jx = ((jx % nx_) + nx_) % nx_;
+            else if (jx < 0 || jx >= nx_) continue;
+            if (box.periodic[1]) jy = ((jy % ny_) + ny_) % ny_;
+            else if (jy < 0 || jy >= ny_) continue;
+            if (box.periodic[2]) jz = ((jz % nz_) + nz_) % nz_;
+            else if (jz < 0 || jz >= nz_) continue;
+
+            for (int j : cells_[cellIdx(jx, jy, jz)]) {
+                const Atom& aj = frame_->atoms[j];
+                double dx = aj.x - qx;
+                double dy = aj.y - qy;
+                double dz = aj.z - qz;
+                if (box.periodic[0] && Lx_ > 0.0) dx -= Lx_ * std::round(dx / Lx_);
+                if (box.periodic[1] && Ly_ > 0.0) dy -= Ly_ * std::round(dy / Ly_);
+                if (box.periodic[2] && Lz_ > 0.0) dz -= Lz_ * std::round(dz / Lz_);
+                const double r2 = dx*dx + dy*dy + dz*dz;
+                if (r2 <= r2max) { out_idx.push_back(j); out_r2.push_back(r2); }
+            }
+        }
+    }
+
+    // Frame pointer accessor for callers that need atom data (e.g. detectors).
+    const Frame* frame() const { return frame_; }
+    double rCut() const { return r_cut_; }
+
     // Return displacement vectors (dx, dy, dz) from atom[i] to all neighbours
     // within r_cut (with PBC minimum-image).
     std::vector<std::array<double,3>> neighbours(int i) const {

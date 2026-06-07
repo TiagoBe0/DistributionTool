@@ -6,6 +6,7 @@ add_executable(distool_tests
     test_pca.cpp
     test_reader.cpp
     test_wigner_seitz.cpp
+    test_hybrid_vacancy.cpp
 )
 
 target_include_directories(distool_tests PRIVATE
