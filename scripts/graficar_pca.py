@@ -10,7 +10,7 @@ sns.set_context("paper", font_scale=1.5)
 column_names = ['id', 'type', 'pc1', 'pc2', 'dist_to_ref', 'defect_type']
 
 # Cargar datos: separador espacios, omitir primera línea (comentario)
-df = pd.read_csv("pca_output.csv", sep='\s+', skiprows=1, names=column_names)
+df = pd.read_csv("pca_output.csv", sep=r'\s+', skiprows=1, names=column_names)
 
 # Verificar que se cargó correctamente
 print(df.head())

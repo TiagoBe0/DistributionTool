@@ -15,9 +15,9 @@ target_include_directories(distool_tests PRIVATE
 
 target_link_libraries(distool_tests PRIVATE distool_lib)
 
-# Inject path to the test data (dump files live in the source root).
+# Inject path to the test data (dump files live in tests/data).
 target_compile_definitions(distool_tests PRIVATE
-    TEST_DATA_DIR="${CMAKE_SOURCE_DIR}"
+    TEST_DATA_DIR="${CMAKE_CURRENT_SOURCE_DIR}/data"
 )
 
 add_test(NAME distool_tests COMMAND distool_tests)

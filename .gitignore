@@ -33,6 +33,12 @@ analyzed_*.config
 *.relax
 data.*
 
+# Excepcion: el dump chico que usan los tests SI se versiona
+!tests/data/**
+
+# Datos locales pesados (dumps, CSVs de salida, barridos)
+/data/
+
 # Carpetas de barridos / datasets pesados (raiz)
 5kev_20_05/
 *_20_05/

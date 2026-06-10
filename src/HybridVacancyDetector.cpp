@@ -72,7 +72,7 @@ void HybridParams::applyPreset(const std::string& name) {
     } else {
         throw std::invalid_argument(
             "HybridParams::applyPreset: unknown preset '" + name +
-            "' (valid: ws, robust, sensitive)");
+            "' (valid: ws, robust, relaxed, sensitive)");
     }
 }
 
