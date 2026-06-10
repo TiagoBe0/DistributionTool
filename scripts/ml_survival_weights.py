@@ -86,7 +86,9 @@ def build_dataset(tracking_dir):
             continue
         tracks = pd.read_csv(f_tracks).set_index("track_id")
         points = pd.read_csv(f_points)
-        peak = points.step.min()
+        # Pico de daño = frame con más vacancias vivas (las series con dumping
+        # fino arrancan ANTES del pico: el primer frame no es representativo).
+        peak = int(points.groupby("step").size().idxmax())
         f_hv = os.path.join(endir, f"hybrid_vacancies_t{peak:06d}.csv")
         if not os.path.exists(f_hv):
             print(f"[{en}] sin hybrid_vacancies del pico, salto")
@@ -140,16 +142,31 @@ def main():
     y = df.survived.values.astype(float)
     X = df[SIGNALS].values.astype(float)
 
-    # ── AUC por señal individual (pooled) ────────────────────────────────────
-    print("\nAUC por señal (pooled, signo orientado a 'sobrevive'):")
-    sig_aucs = {}
+    # ── Normalización por cascada ────────────────────────────────────────────
+    # La pregunta operativa es relativa al frame: "¿cuáles de ESTOS candidatos
+    # sobreviven?". Las distribuciones absolutas de las señales se corren con
+    # la energía del PKA (Simpson), así que para el pooling usamos el rango
+    # percentil de cada señal DENTRO de su cascada. Es legítimo en inferencia:
+    # al analizar un frame siempre se ven todos sus candidatos.
+    # Señales constantes dentro de una cascada (saturadas) quedan en 0.5
+    # exacto: no aportan información y su rank promedio dependería del tamaño
+    # de la cascada (artefacto que la logística explotaría como ID de cascada).
+    Xr = np.zeros_like(X)
+    for en in df.energy.unique():
+        m = (df.energy == en).values
+        for k in range(X.shape[1]):
+            col = X[m, k]
+            Xr[m, k] = 0.5 if np.unique(col).size <= 1 \
+                else pd.Series(col).rank(pct=True).values
+
+    # ── AUC por señal individual (pooled, rank-normalizado por cascada) ──────
+    print("\nAUC por señal (pooled; crudo vs rank-por-cascada; signo orientado):")
     for k, s in enumerate(SIGNALS):
-        a = auc(y, X[:, k])
-        a = max(a, 1 - a)  # orientación
-        sig_aucs[s] = a
-        print(f"  {s:12s} {a:.3f}")
+        a_raw = auc(y, X[:, k]);  a_raw = max(a_raw, 1 - a_raw)
+        a_rk  = auc(y, Xr[:, k]); a_rk  = max(a_rk, 1 - a_rk)
+        print(f"  {s:12s} crudo {a_raw:.3f}   rank {a_rk:.3f}")
     a_robust = auc(y, df.score.values)
-    print(f"  {'score robust':12s} {max(a_robust, 1-a_robust):.3f}")
+    print(f"  {'score robust':12s} crudo {max(a_robust, 1-a_robust):.3f}")
 
     # precision/recall del preset robust en el pico
     acc = df.accepted.values == 1
@@ -159,8 +176,18 @@ def main():
           f"(precision {tp/max(1,acc.sum()):.1%}, recall {tp/max(1,npos):.1%})")
 
     # ── LOCO CV ──────────────────────────────────────────────────────────────
-    mu, sd = X.mean(0), X.std(0) + 1e-9
-    Xs = (X - mu) / sd
+    # Features = rank percentil dentro de la cascada (centrado en 0).
+    # Solo participan cascadas "resueltas": con ambas clases y ≥20 candidatos
+    # (2kev/3kev empezaron a dumpear post-recombinación: todo sobrevive, no
+    # informan la decisión del pico; 1kev es demasiado chica).
+    Xs = Xr - 0.5
+    ok = np.zeros(len(df), bool)
+    for en in df.energy.unique():
+        m = (df.energy == en).values
+        if m.sum() >= 20 and 0 < y[m].sum() < m.sum():
+            ok |= m
+    print(f"\nCascadas en el modelo: {sorted(df.energy[ok].unique())}")
+    df, y, X, Xr, Xs = df[ok].reset_index(drop=True), y[ok], X[ok], Xr[ok], Xs[ok]
     energies = sorted(df.energy.unique())
     print("\nLeave-one-cascade-out:")
     print(f"{'cascada':12s} {'n':>4s} {'pos':>4s} {'AUC_logreg':>10s} "
@@ -171,11 +198,15 @@ def main():
         tr = ~te
         if y[te].sum() == 0 or y[te].sum() == te.sum():
             print(f"{en:12s} {te.sum():4d} {int(y[te].sum()):4d}        n/a "
-                  f"(una sola clase)")
+                  f"(una sola clase en test)")
+            continue
+        if tr.sum() == 0 or y[tr].sum() in (0, y[tr].size):
+            print(f"{en:12s} {te.sum():4d} {int(y[te].sum()):4d}        n/a "
+                  f"(train vacío o de una sola clase)")
             continue
         w, b = fit_logreg(Xs[tr], y[tr])
         a_lr = auc(y[te], Xs[te] @ w + b)
-        a_tp = auc(y[te], X[te, SIGNALS.index("topo")])
+        a_tp = auc(y[te], Xr[te, SIGNALS.index("topo")])
         a_rb = auc(y[te], df.score.values[te])
         loco.append((en, a_lr, a_tp, a_rb))
         print(f"{en:12s} {te.sum():4d} {int(y[te].sum()):4d} {a_lr:10.3f} "
