@@ -138,9 +138,13 @@ static void printUsage(const char* prog) {
         "  --hybrid-transit-factor F   Ballistic-transit band as F·nn_ref (default: 1.5)\n\n"
         "Output options:\n"
         "  --output   FILE  Main output CSV file         (default: results/output.csv)\n"
+        "  --no-dump        Do not write the analyzed_<input> LAMMPS dump copy\n"
         "  --pca      [N]   Run PCA with N components    (default: 2)\n"
         "  --hist     [B]   Distance histogram, B bins   (default: 50)\n\n"
         "Other:\n"
+        "  --no-soap        Skip SOAP descriptors entirely — fast topological mode\n"
+        "                   (WS / grid / hybrid only; disables --pca, --hist,\n"
+        "                   --save-dv and the secondary DV classification)\n"
         "  --help           Print this message\n";
 }
 
@@ -494,6 +498,7 @@ int main(int argc, char* argv[]) {
     int         save_dv_id   = -1;
     std::string save_dv_path;
     std::string out_file = "results/output.csv";
+    bool   no_dump = false;
     bool   do_pca  = false;
     int    pca_nc  = 2;
     bool   do_hist = false;
@@ -502,6 +507,7 @@ int main(int argc, char* argv[]) {
     bool   empirical_prob = false; // non-parametric percentile-rank defect_prob
     double threshold_pct  = -1.0;  // -1 = use fixed --threshold; else percentile [0,1]
     bool   do_ws      = false;
+    bool   no_soap    = false; // skip SOAP entirely (fast WS/grid/hybrid mode)
     double ws_r_cut   = -1.0;  // -1 = use soap.r_cut
     bool   do_hybrid  = false;
     std::string hybrid_preset = "robust";
@@ -551,6 +557,7 @@ int main(int argc, char* argv[]) {
             save_dv_path = nextStr();
         }
         else if (a == "--output")    out_file     = nextStr();
+        else if (a == "--no-dump")   no_dump      = true;
         else if (a == "--pca") {
             do_pca = true;
             if (nextIsUInt()) pca_nc = nextInt();
@@ -560,6 +567,7 @@ int main(int argc, char* argv[]) {
             if (nextIsUInt()) hist_bins = nextInt();
         }
         else if (a == "--ws")       do_ws    = true;
+        else if (a == "--no-soap")  no_soap  = true;
         else if (a == "--ws-r-cut") ws_r_cut = nextDbl();
         else if (a == "--hybrid") { do_hybrid = true; do_ws = true; }
         else if (a == "--hybrid-preset")        hybrid_preset = nextStr();
@@ -589,6 +597,23 @@ int main(int argc, char* argv[]) {
     if (soap.r_cut <= 0.0) {
         std::cerr << "Error: --r-cut must be > 0\n";
         return 1;
+    }
+
+    // --no-soap: descriptor-dependent features are unavailable.
+    if (no_soap) {
+        if (save_dv_id >= 0) {
+            std::cerr << "Error: --save-dv requires SOAP descriptors (remove --no-soap)\n";
+            return 1;
+        }
+        if (do_pca)  { std::cout << "  [!] --pca ignored with --no-soap\n";  do_pca  = false; }
+        if (do_hist) { std::cout << "  [!] --hist ignored with --no-soap\n"; do_hist = false; }
+        if (!sia_file.empty() || !antv_file.empty() || !typea_file.empty()) {
+            std::cout << "  [!] reference DV files ignored with --no-soap\n";
+            sia_file.clear(); antv_file.clear(); typea_file.clear();
+        }
+        if (!do_ws && !do_hybrid)
+            std::cout << "  [!] --no-soap without --ws/--hybrid: only grid vacancy "
+                         "detection will run\n";
     }
 
     // Resolve hybrid params: preset first, then explicit weights override.
@@ -639,11 +664,14 @@ int main(int argc, char* argv[]) {
     }
 
     // ── Print configuration ───────────────────────────────────────────────────
-    std::cout << "Configuration:\n"
-              << "  SOAP  n_max=" << soap.n_max
-              << "  l_max="       << soap.l_max
-              << "  r_cut="       << soap.r_cut << " Å"
-              << "  DV size="     << soap.dvSize() << "\n";
+    std::cout << "Configuration:\n";
+    if (no_soap)
+        std::cout << "  SOAP  disabled (--no-soap, topological mode)\n";
+    else
+        std::cout << "  SOAP  n_max=" << soap.n_max
+                  << "  l_max="       << soap.l_max
+                  << "  r_cut="       << soap.r_cut << " Å"
+                  << "  DV size="     << soap.dvSize() << "\n";
     if (threshold_pct >= 0.0)
         std::cout << "  Threshold=p" << (threshold_pct * 100.0) << " (reference percentile)";
     else
@@ -674,7 +702,7 @@ int main(int argc, char* argv[]) {
             std::cout << "  [!] Reference file has multiple frames; only the first is used.\n";
 
         // ── Pre-flight memory check ───────────────────────────────────────────
-        {
+        if (!no_soap) {
             const double dv_gb = static_cast<double>(ref_frame.size())
                                  * soap.dvSize() * sizeof(double) / 1e9;
 
@@ -717,13 +745,17 @@ int main(int argc, char* argv[]) {
             }
         }
 
-        std::cout << "[2/4] Computing SOAP descriptors for reference frame…\n";
         auto t0 = std::chrono::steady_clock::now();
-        desc.computeAll(ref_frame);
-        std::cout << "      Done in " << std::fixed << std::setprecision(2)
-                  << timerSec(t0) << " s\n";
+        if (no_soap) {
+            std::cout << "[2/4] Skipping SOAP descriptors (--no-soap)\n";
+        } else {
+            std::cout << "[2/4] Computing SOAP descriptors for reference frame…\n";
+            desc.computeAll(ref_frame);
+            std::cout << "      Done in " << std::fixed << std::setprecision(2)
+                      << timerSec(t0) << " s\n";
 
-        clf.buildReference(ref_frame.atoms);
+            clf.buildReference(ref_frame.atoms);
+        }
 
         // PCA must be fitted on the reference DVs *before* they are freed below.
         // We keep only the (tiny) fitted model + later the projection; the bulky
@@ -752,6 +784,7 @@ int main(int argc, char* argv[]) {
         for (auto& a : ref_frame.atoms)
             std::vector<double>().swap(a.dv);
 
+        if (!no_soap) {
         const auto& ref = clf.reference();
         std::cout << "      q̄(T) built.  <d>="
                   << std::fixed << std::setprecision(4) << ref.mean_dist
@@ -801,6 +834,7 @@ int main(int argc, char* argv[]) {
             if (!dv_sia.empty() || !dv_antv.empty() || !dv_typea.empty())
                 clf.setDefectReferences(dv_sia, dv_antv, dv_typea);
         }
+        }  // if (!no_soap) — reference summary + DV files
 
         // ══════════════════════════════════════════════════════════════════════
         // 2. DAMAGED FRAME
@@ -814,7 +848,7 @@ int main(int argc, char* argv[]) {
             std::cout << "  [!] Damaged file has multiple frames; only the first is used.\n";
 
         // Pre-flight memory check for damaged frame (mirrors the reference check above)
-        {
+        if (!no_soap) {
             const double dv_gb2 = static_cast<double>(dmg_frame.size())
                                   * soap.dvSize() * sizeof(double) / 1e9;
             long avail_mb2 = -1;
@@ -851,11 +885,13 @@ int main(int argc, char* argv[]) {
             }
         }
 
-        std::cout << "      Computing SOAP descriptors for damaged frame…\n";
-        t0 = std::chrono::steady_clock::now();
-        desc.computeAll(dmg_frame);
-        std::cout << "      Done in " << std::fixed << std::setprecision(2)
-                  << timerSec(t0) << " s\n";
+        if (!no_soap) {
+            std::cout << "      Computing SOAP descriptors for damaged frame…\n";
+            t0 = std::chrono::steady_clock::now();
+            desc.computeAll(dmg_frame);
+            std::cout << "      Done in " << std::fixed << std::setprecision(2)
+                      << timerSec(t0) << " s\n";
+        }
 
         // Optional: save the DV of a specific atom for use as a reference later
         if (save_dv_id >= 0)
@@ -864,8 +900,12 @@ int main(int argc, char* argv[]) {
         // ══════════════════════════════════════════════════════════════════════
         // 3. CLASSIFY
         // ══════════════════════════════════════════════════════════════════════
-        std::cout << "\n[4/4] Classifying defects…\n";
-        clf.classify(dmg_frame);
+        if (no_soap) {
+            std::cout << "\n[4/4] Skipping SOAP classification (--no-soap)\n";
+        } else {
+            std::cout << "\n[4/4] Classifying defects…\n";
+            clf.classify(dmg_frame);
+        }
 
         // Project the damaged DVs onto the PCA axes *before* they are freed.
         // The projection (n × pca_nc) is small and kept for output below.
@@ -999,7 +1039,7 @@ int main(int argc, char* argv[]) {
             std::cout << "\n[Hybrid] Multi-signal vacancy consensus (preset='"
                       << hybrid_preset << "')…\n";
             HybridVacancyDetector hvd(hybrid_params);
-            hvd.buildReference(ref_frame, ws, &clf.reference());
+            hvd.buildReference(ref_frame, ws, no_soap ? nullptr : &clf.reference());
             hybrid_vacs = hvd.detect(dmg_frame, ws_results);
             hybrid_vac_count = hvd.vacancyCount();
             hybrid_agree     = hvd.wsAgreeCount();
@@ -1079,7 +1119,8 @@ int main(int argc, char* argv[]) {
         }
         std::cout << "\nWriting outputs…\n";
         writeAtomCSV(dmg_frame, out_file);
-        writeLAMMPSDump(dmg_frame, prefixedPath("analyzed_", dmg_file));
+        if (!no_dump)
+            writeLAMMPSDump(dmg_frame, prefixedPath("analyzed_", dmg_file));
 
         // Vacancy file: one row per cluster (physical vacancy)
         if (!clusters.empty()) {

@@ -671,7 +671,9 @@ cmake --build build_debug -j$(nproc)
 | `--ref-antv FILE` | — | Reference DV file for ANtV atoms |
 | `--ref-typea FILE` | — | Reference DV file for type-A atoms |
 | `--save-dv ID FILE` | — | Save DV of atom ID (damaged frame) to file |
-| `--output FILE` | output.csv | Main output CSV |
+| `--output FILE` | results/output.csv | Main output CSV |
+| `--no-dump` | off | Skip writing the `analyzed_<input>` LAMMPS dump copy |
+| `--no-soap` | off | Skip SOAP entirely — fast topological mode (WS/grid/hybrid only; disables `--pca`, `--hist`, `--save-dv`, DV references). ~100× faster on large frames; used by `scripts/run_ws_series.sh` for temporal tracking |
 | `--pca [N]` | 2 | Run PCA with N components |
 | `--hist [B]` | 50 | Write distance histogram (B bins) |
 | `--help` | — | Print help |
@@ -809,9 +811,35 @@ Atoms that were `Unknown` will now be assigned to `Interstitial` or `VacancyAdj`
 The output CSVs can be loaded into OVITO, VisIt, or plotted with the provided Python scripts:
 
 ```bash
-python3 graficar_output.py    # dist_to_ref distribution by defect type
-python3 graficar_pca.py       # 2D PCA scatter coloured by defect type
+python3 scripts/graficar_output.py    # dist_to_ref distribution by defect type
+python3 scripts/graficar_pca.py       # 2D PCA scatter coloured by defect type
 ```
+
+### Step 5 — temporal defect tracking (cascade time series)
+
+When you have a time series of frames from the same cascade (all sharing the
+pristine t=0 reference), you can track each WS vacancy across frames and label
+which defects survive to the relaxed final frame. Survival labels are the
+ground truth that single-frame counting cannot provide (WS at the ballistic
+peak overcounts transients by 1–2 orders of magnitude).
+
+```bash
+# 1. Run the fast topological mode over every frame of the series
+scripts/run_ws_series.sh \
+    cascade/dump.ballistic.0 results/mycascade/tracking \
+    cascade/dump.ballistic.{5000,10000,...} cascade/dump.relax.final
+
+# 2. Link vacancies into trajectories (persist / hop / death / birth)
+python3 scripts/track_defects.py \
+    --sites-dir results/mycascade/tracking \
+    --box-from  cascade/dump.ballistic.0 \
+    --out-prefix results/mycascade/tracking/tracks \
+    --fig figures/defect_tracking.png
+```
+
+Outputs: `tracks.csv` (one row per defect trajectory with `survived` label),
+`tracks_points.csv` (per-frame positions), and a summary figure with the
+survivor world-lines.
 
 ---
 
