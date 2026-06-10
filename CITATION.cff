@@ -1,0 +1,44 @@
+cff-version: 1.2.0
+message: "If you use DistributionTool in your research, please cite it as below."
+title: "DistributionTool: SOAP-based defect identification and classification in crystalline solids"
+type: software
+authors:
+  - family-names: Bergamin
+    given-names: Santiago
+    email: santiagobergamin@gmail.com
+repository-code: "https://github.com/TiagoBe0/DistributionTool"
+license: MIT
+version: 1.0.0
+keywords:
+  - molecular-dynamics
+  - LAMMPS
+  - defect-detection
+  - SOAP-descriptor
+  - Wigner-Seitz
+  - radiation-damage
+  - materials-science
+references:
+  - type: article
+    authors:
+      - family-names: Domínguez-Gutiérrez
+        given-names: F. J.
+      - family-names: von Toussaint
+        given-names: U.
+    title: "On the detection and classification of material defects in crystalline solids after energetic particle impact simulations"
+    journal: "Nuclear Materials and Energy"
+    volume: 22
+    year: 2019
+    doi: 10.1016/j.nme.2019.100724
+  - type: article
+    authors:
+      - family-names: Bartók
+        given-names: A. P.
+      - family-names: Kondor
+        given-names: R.
+      - family-names: Csányi
+        given-names: G.
+    title: "On representing chemical environments"
+    journal: "Physical Review B"
+    volume: 87
+    year: 2013
+    doi: 10.1103/PhysRevB.87.184115

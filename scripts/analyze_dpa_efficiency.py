@@ -42,6 +42,7 @@ RUNS = [
     ("5 keV",        "5kev.csv",         5),
     ("6 keV (run 1)", "6kev.csv",        6),
     ("6 keV (run 2)", "6kev_it1.csv",    6),
+    ("6 keV (run 3)", "6kev_it2.csv",    6),
     ("7 keV",        "7kev.csv",         7),
     ("8 keV",        "8kev_real.csv",    8),
 ]

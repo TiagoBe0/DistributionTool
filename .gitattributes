@@ -1,0 +1,22 @@
+# Normalise line endings to LF in the repository
+* text=auto eol=lf
+
+# Shell / Python / C++ are text
+*.sh    text eol=lf
+*.py    text eol=lf
+*.cpp   text eol=lf
+*.h     text eol=lf
+*.md    text eol=lf
+*.cff   text eol=lf
+CMakeLists.txt text eol=lf
+
+# Binary assets — never normalise or diff
+*.png   binary
+*.pdf   binary
+*.dat   binary
+*.dump  binary
+
+# Help GitHub Linguist classify the project as C++ (not docs/notebooks)
+docs/**          linguist-documentation
+*.tex            linguist-documentation
+scripts/**       linguist-language=Python

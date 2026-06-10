@@ -24,7 +24,10 @@ import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 
-BASE = "/home/santi/pka_acero"
+# Works both on the cluster (/home/santi/pka_acero) and from the local sshfs mount.
+_CANDS = ["/home/santi/pka_acero",
+          "/run/user/1000/gvfs/sftp:host=192.168.220.25/home/santi/pka_acero"]
+BASE = next((p for p in _CANDS if os.path.isdir(p)), _CANDS[0])
 SWEEP = os.path.join(BASE, "results", "distool_sweep")
 GT = os.path.join(BASE, "results")
 
