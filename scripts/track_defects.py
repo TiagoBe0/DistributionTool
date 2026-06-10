@@ -134,13 +134,20 @@ def greedy_match(pos_old, pos_new, box, periodic, max_hop):
 # Tracking
 # ─────────────────────────────────────────────────────────────────────────────
 
-def track(series, box, periodic, max_hop):
+def track(series, box, periodic, max_hop, max_hop_final=None):
     """Enlaza vacancias entre frames. Devuelve (tracks, points, per_frame).
 
     tracks: dict track_id -> dict(birth_step, death_step, hops, hop_dist)
     points: lista de dicts (track_id, step, ref_id, x, y, z, how)
     per_frame: lista de dicts con estadísticas por transición
+
+    max_hop_final: radio de matching para la ÚLTIMA transición (típicamente el
+    salto grande balístico→relajado, donde la población es rala y los defectos
+    pueden haber migrado más que entre frames balísticos consecutivos).
     """
+    if max_hop_final is None:
+        max_hop_final = max_hop
+    last_step = series[-1][0]
     tracks, points, per_frame = {}, [], []
     next_id = 0
 
@@ -182,7 +189,8 @@ def track(series, box, periodic, max_hop):
                             for r in gone_l]).reshape(-1, 3)
         pos_new = np.array([[vac_by_id[r].x, vac_by_id[r].y, vac_by_id[r].z]
                             for r in fresh_l]).reshape(-1, 3)
-        pairs = greedy_match(pos_old, pos_new, box, periodic, max_hop)
+        hop_r = max_hop_final if step == last_step else max_hop
+        pairs = greedy_match(pos_old, pos_new, box, periodic, hop_r)
 
         matched_old, matched_new = set(), set()
         for i, j, dist in pairs:
@@ -240,6 +248,9 @@ def main():
                     help="dump LAMMPS del que leer el box (la referencia sirve)")
     ap.add_argument("--max-hop", type=float, default=4.0,
                     help="distancia máxima de salto entre frames [Å] (def: 4.0)")
+    ap.add_argument("--max-hop-final", type=float, default=None,
+                    help="radio de matching para la última transición "
+                         "(salto balístico→relajado) [Å] (def: = max-hop)")
     ap.add_argument("--out-prefix", required=True,
                     help="prefijo de salida: <prefix>.csv y <prefix>_points.csv")
     ap.add_argument("--fig", default=None, help="ruta del PNG de la figura resumen")
@@ -251,7 +262,8 @@ def main():
     print(f"Frames: {steps}")
     print(f"Box: {box.round(2)} Å  periodic={periodic}  max_hop={args.max_hop} Å")
 
-    tracks, points, per_frame, survivors = track(series, box, periodic, args.max_hop)
+    tracks, points, per_frame, survivors = track(series, box, periodic,
+                                                 args.max_hop, args.max_hop_final)
 
     # ── Tablas de salida ─────────────────────────────────────────────────────
     pts = pd.DataFrame(points)
