@@ -5,9 +5,11 @@ REALES de supervivencia por defecto (del tracking temporal), reemplazando el
 contraste de regímenes del prototipo ml_hybrid_weights.py.
 
 Dataset: para cada cascada de results/pka_tracking/<energía>/,
-  - el frame PICO (primer frame de la serie) aporta un ejemplo por vacancia WS:
-    features = las 8 señales del breakdown híbrido en ese frame,
-    label    = ¿el track de esa vacancia sobrevive hasta el frame final?
+  - el frame PICO (el de mayor población de vacancias) aporta un ejemplo por
+    vacancia WS: features = las 8 señales del breakdown híbrido en ese frame
+    + 2 features espaciales de contexto (distancia al centroide de la nube de
+    vacancias y densidad local a <10 Å — estructura core-shell de cascada),
+    label = ¿el track de esa vacancia sobrevive hasta el frame final?
   - el matching vacancia↔candidato es por posición exacta (ambos usan la
     posición del sitio WS de referencia), con tolerancia PBC de 0.1 Å.
 
@@ -37,10 +39,17 @@ ROOT = os.path.normpath(os.path.join(HERE, ".."))
 
 SIGNALS = ["ws", "soft_ws", "vor", "dens", "soap", "topo",
            "transit_pen", "frenkel_pen"]
+# Features espaciales de contexto (no existen en el detector actual; se
+# calculan acá desde la nube de vacancias del pico): distancia al centroide
+# de la nube y densidad local de vacancias a <10 Å. Motivación: estructura
+# core-shell de cascada — los sobrevivientes viven en el núcleo denso.
+SPATIAL = ["dcent", "locdens"]
+FEATURES = SIGNALS + SPATIAL
 HV_COLS = ["x", "y", "z", "score"] + SIGNALS + \
           ["transit_filtered", "in_recomb", "ref_site_idx", "accepted"]
 ROBUST_W = {"ws": 1.0, "soft_ws": 0.8, "vor": 0.6, "dens": 0.6, "soap": 0.5,
-            "topo": 0.7, "transit_pen": -1.5, "frenkel_pen": -0.3}
+            "topo": 0.7, "transit_pen": -1.5, "frenkel_pen": -0.3,
+            "dcent": 0.0, "locdens": 0.0}
 
 
 def read_box(dirpath):
@@ -97,10 +106,22 @@ def build_dataset(tracking_dir):
         hv_ws = hv[hv.ref_site_idx >= 0].reset_index(drop=True)
 
         L = read_box(endir)
-        p_peak = points[points.step == peak]
+        p_peak = points[points.step == peak].reset_index(drop=True)
+
+        # Features espaciales de la nube de vacancias del pico (PBC
+        # desenrollado relativo al primer punto: la cascada es local << L/2).
+        pos = p_peak[["x", "y", "z"]].values.copy()
+        dpos = pos - pos[0]
+        dpos -= L * np.round(dpos / L)
+        pos = pos[0] + dpos
+        cent = pos.mean(0)
+        dcent = np.sqrt(((pos - cent) ** 2).sum(1))
+        dm = np.sqrt(((pos[:, None, :] - pos[None, :, :]) ** 2).sum(2))
+        locdens = (dm < 10).sum(1) - 1
+
         hv_pos = hv_ws[["x", "y", "z"]].values
         n_unmatched = 0
-        for _, p in p_peak.iterrows():
+        for j, p in p_peak.iterrows():
             d = hv_pos - [p.x, p.y, p.z]
             d -= L * np.round(d / L)
             r2 = (d ** 2).sum(1)
@@ -111,7 +132,8 @@ def build_dataset(tracking_dir):
             c = hv_ws.iloc[i]
             row = dict(energy=en, step=peak, track_id=int(p.track_id),
                        survived=int(tracks.loc[p.track_id].survived),
-                       score=c.score, accepted=int(c.accepted))
+                       score=c.score, accepted=int(c.accepted),
+                       dcent=dcent[j], locdens=float(locdens[j]))
             for s in SIGNALS:
                 row[s] = c[s]
             rows.append(row)
@@ -140,7 +162,7 @@ def main():
     print(f"TOTAL: {n} ejemplos, {npos} positivos ({100*npos/n:.1f}%)")
 
     y = df.survived.values.astype(float)
-    X = df[SIGNALS].values.astype(float)
+    X = df[FEATURES].values.astype(float)
 
     # ── Normalización por cascada ────────────────────────────────────────────
     # La pregunta operativa es relativa al frame: "¿cuáles de ESTOS candidatos
@@ -161,7 +183,7 @@ def main():
 
     # ── AUC por señal individual (pooled, rank-normalizado por cascada) ──────
     print("\nAUC por señal (pooled; crudo vs rank-por-cascada; signo orientado):")
-    for k, s in enumerate(SIGNALS):
+    for k, s in enumerate(FEATURES):
         a_raw = auc(y, X[:, k]);  a_raw = max(a_raw, 1 - a_raw)
         a_rk  = auc(y, Xr[:, k]); a_rk  = max(a_rk, 1 - a_rk)
         print(f"  {s:12s} crudo {a_raw:.3f}   rank {a_rk:.3f}")
@@ -206,7 +228,7 @@ def main():
             continue
         w, b = fit_logreg(Xs[tr], y[tr])
         a_lr = auc(y[te], Xs[te] @ w + b)
-        a_tp = auc(y[te], Xr[te, SIGNALS.index("topo")])
+        a_tp = auc(y[te], Xr[te, FEATURES.index("topo")])
         a_rb = auc(y[te], df.score.values[te])
         loco.append((en, a_lr, a_tp, a_rb))
         print(f"{en:12s} {te.sum():4d} {int(y[te].sum()):4d} {a_lr:10.3f} "
@@ -218,16 +240,16 @@ def main():
 
     # ── Fit final + figura ───────────────────────────────────────────────────
     w, b = fit_logreg(Xs, y)
-    learned = dict(zip(SIGNALS, w))
+    learned = dict(zip(FEATURES, w))
     print("\nPesos aprendidos (estandarizados, + ⇒ predice sobrevivir):")
-    for s in sorted(SIGNALS, key=lambda s: -abs(learned[s])):
+    for s in sorted(FEATURES, key=lambda s: -abs(learned[s])):
         print(f"  {s:12s} {learned[s]:+.3f}   (robust: {ROBUST_W[s]:+.1f})")
 
     fig, axes = plt.subplots(1, 3, figsize=(15.5, 4.4),
                              gridspec_kw={"width_ratios": [1.3, 1, 1]})
     ax = axes[0]
-    order = sorted(range(len(SIGNALS)), key=lambda i: learned[SIGNALS[i]])
-    names = [SIGNALS[i] for i in order]
+    order = sorted(range(len(FEATURES)), key=lambda i: learned[FEATURES[i]])
+    names = [FEATURES[i] for i in order]
     yb = np.arange(len(names))
     ax.barh(yb - 0.2, [learned[s] for s in names], 0.4,
             color="#1f6fb2", label="aprendido (supervivencia)")
