@@ -23,8 +23,8 @@ Required inputs (produced by distool):
     results/hea_finalCool/relaxed.log
     results/hea_finalCool/hybrid_vacancies_robust.csv
 Regenerate those with:
-    ./build/distool --hybrid --hybrid-preset robust  --output results/hea_finalCool/robust.csv  dump-finalCool.0 dump-finalCool.160000
-    ./build/distool --hybrid --hybrid-preset relaxed --output results/hea_finalCool/relaxed.csv dump-finalCool.0 dump-finalCool.160000
+    ./build/distool --hybrid --hybrid-preset robust  --output results/hea_finalCool/robust.csv  data/dumps/dump-finalCool.0 data/dumps/dump-finalCool.160000
+    ./build/distool --hybrid --hybrid-preset relaxed --output results/hea_finalCool/relaxed.csv data/dumps/dump-finalCool.0 data/dumps/dump-finalCool.160000
 
 Usage:
     python3 scripts/plot_hea_presets.py

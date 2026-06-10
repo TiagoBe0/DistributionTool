@@ -512,17 +512,27 @@ DistributionTool/
 │   ├── Statistics.h        # mean, euclidean, chiProbability, fitChiParams, empiricalCdf
 │   ├── PCA.h               # PCA fit/transform
 │   └── LammpsDumpReader.h  # LAMMPS dump parser
-└── src/
-    ├── RadialBasis.cpp
-    ├── SphericalHarmonics.cpp
-    ├── SOAPDescriptor.cpp
-    ├── DefectClassifier.cpp
-    ├── WignerSeitz.cpp
-    ├── HybridVacancyDetector.cpp
-    ├── Statistics.cpp
-    ├── PCA.cpp
-    ├── LammpsDumpReader.cpp
-    └── main.cpp            # CLI, output writers, reconciliation report
+├── src/
+│   ├── RadialBasis.cpp
+│   ├── SphericalHarmonics.cpp
+│   ├── SOAPDescriptor.cpp
+│   ├── DefectClassifier.cpp
+│   ├── WignerSeitz.cpp
+│   ├── HybridVacancyDetector.cpp
+│   ├── Statistics.cpp
+│   ├── PCA.cpp
+│   ├── LammpsDumpReader.cpp
+│   └── main.cpp            # CLI, output writers, reconciliation report
+├── tests/                  # unit tests (ctest) + tests/data/ (small test dump)
+├── viewer/                 # OpenGL/ImGui visualizer (separate CMake project)
+├── scripts/                # Python/shell analysis & plotting scripts
+├── docs/                   # paper.tex, CHULETA.md (cheatsheet), references/
+├── examples/               # example reference-DV files (e.g. sia_test.dat)
+├── figures/                # generated publication figures (tracked)
+├── packaging/              # AppImage / desktop integration assets
+├── clementina/             # SLURM scripts + results from the Clementina cluster
+├── data/                   # local heavy data: dumps, output CSVs (gitignored)
+└── results/                # analysis outputs (gitignored)
 ```
 
 ### Key data structures

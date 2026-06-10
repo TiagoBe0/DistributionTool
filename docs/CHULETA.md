@@ -28,7 +28,7 @@ cmake --build build_viewer -j$(nproc)
 ### HEA — dump-finalCool (bulk ~1M átomos, FCC)
 ```bash
 ./build/distool \
-    dump-finalCool.0 dump-finalCool.160000 \
+    data/dumps/dump-finalCool.0 data/dumps/dump-finalCool.160000 \
     --n-max 9 --l-max 9 --r-cut 5.0 \
     --threshold 0.15 --grid-spacing 1.0 \
     --pca 3 --hist \
@@ -38,8 +38,9 @@ cmake --build build_viewer -j$(nproc)
 
 ### Nanopartícula BCC (~31k átomos, r_cut corto, vacías desactivadas)
 ```bash
+# la referencia pristina vive en tests/data/; el frame dañado en data/dumps/
 ./build/distool \
-    dump.nanoparticula.0 dump.nanoparticula.8000 \
+    tests/data/dump.nanoparticula.0 data/dumps/dump.nanoparticula.8000 \
     --n-max 9 --l-max 9 --r-cut 3.5 \
     --threshold 0.15 --grid-spacing 200.0 \
     --pca 2 --hist \
@@ -101,16 +102,16 @@ cmake --build build_viewer -j$(nproc)
 
 ```bash
 # Visualizar distribución 3D + histograma de defect_prob
-python3 graficar_output.py          # usa output.csv
+python3 scripts/graficar_output.py          # usa output.csv
 
 # PCA scatter + boxplot por tipo
-python3 graficar_pca.py             # usa pca_output.csv
+python3 scripts/graficar_pca.py             # usa pca_output.csv
 
 # Análisis completo nanopartícula vs Wigner-Seitz
-python3 analisis_nanoparticula.py   # usa output_nano.csv + dump WS
+python3 scripts/analisis_nanoparticula.py   # usa output_nano.csv + dump WS
 
 # Figuras de publicación (HEA)
-python3 publication_charts.py
+python3 scripts/publication_charts.py
 ```
 
 ---
