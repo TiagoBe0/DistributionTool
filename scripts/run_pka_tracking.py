@@ -39,20 +39,29 @@ FALLBACK_REF = "1kev"   # energías sin frame .0 usan la referencia de 1kev
 
 
 def discover(dirpath):
-    """Devuelve (ref_path|None, [(step, path)] balísticos, [(step, path)] relax)."""
-    ball, relax = {}, {}
+    """Devuelve (ref_path|None, [(step, path)] balísticos, [(step, path)] relax).
+
+    Si el directorio mezcla más de una serie balística (p.ej. 6kev_it1 tiene
+    un dump.ballistic.FeCrNi_6keV.0 copiado además de su propia serie _it1),
+    se queda con el prefijo DOMINANTE (más frames) para no mezclar referencias.
+    """
+    ball, relax = {}, {}   # prefix -> {step: path} / {step: path}
     for path in glob.glob(os.path.join(dirpath, "dump.*")):
-        m = re.match(r".*\.(\d+)$", path)
+        m = re.match(r"(.*)\.(\d+)$", path)
         if not m:
             continue
-        step = int(m.group(1))
+        prefix, step = m.group(1), int(m.group(2))
         base = os.path.basename(path)
         if base.startswith("dump.relax"):
             relax[step] = path
         elif base.startswith("dump.ballistic") or base.startswith("dump.final"):
-            ball[step] = path
-    ref = ball.pop(0, None)
-    return ref, sorted(ball.items()), sorted(relax.items())
+            ball.setdefault(prefix, {})[step] = path
+    if not ball:
+        return None, [], sorted(relax.items())
+    dominant = max(ball, key=lambda p: len(ball[p]))
+    series = ball[dominant]
+    ref = series.pop(0, None)
+    return ref, sorted(series.items()), sorted(relax.items())
 
 
 def select_steps(ball, relax):
