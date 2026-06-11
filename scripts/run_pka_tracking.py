@@ -88,6 +88,9 @@ def main():
     ap.add_argument("--grid-spacing", default="2.0")
     ap.add_argument("--max-hop", default="4.0")
     ap.add_argument("--max-hop-final", default="10.0")
+    ap.add_argument("--fig-max-step", default="150000",
+                    help="recorte del eje temporal en las figuras (no afecta "
+                         "el tracking)")
     ap.add_argument("--force", action="store_true")
     args = ap.parse_args()
 
@@ -142,6 +145,7 @@ def main():
              "--box-from", ref,
              "--max-hop", args.max_hop,
              "--max-hop-final", args.max_hop_final,
+             "--fig-max-step", args.fig_max_step,
              "--out-prefix", os.path.join(outdir, "tracks"),
              "--fig", os.path.join(REPO, "figures", f"tracking_{en}.png")],
             cwd=REPO, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)

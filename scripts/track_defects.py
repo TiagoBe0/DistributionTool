@@ -254,6 +254,10 @@ def main():
     ap.add_argument("--out-prefix", required=True,
                     help="prefijo de salida: <prefix>.csv y <prefix>_points.csv")
     ap.add_argument("--fig", default=None, help="ruta del PNG de la figura resumen")
+    ap.add_argument("--fig-max-step", type=int, default=None,
+                    help="recorta el eje temporal de la figura en este paso "
+                         "(el tracking igual usa todos los frames; útil cuando "
+                         "el frame relajado final está muy lejos, p.ej. t=700k)")
     args = ap.parse_args()
 
     box, periodic = read_box(args.box_from)
@@ -347,6 +351,16 @@ def main():
         ax.set_ylabel("track_id")
         ax.set_title("World-lines de los sobrevivientes\n"
                      "(verde=nace, amarillo=hop, azul=persiste)")
+
+        # Recorte opcional del eje temporal (el último frame puede estar muy
+        # lejos del resto, p.ej. el relax a t=700k en las cascadas de 1-3 keV).
+        if args.fig_max_step is not None and max(steps) > args.fig_max_step:
+            for ax in axes:
+                ax.set_xlim(min(steps) - 0.02 * args.fig_max_step,
+                            args.fig_max_step)
+            axes[0].annotate(f"frame final: t={max(steps):,} (fuera de escala)",
+                             xy=(0.98, 0.02), xycoords="axes fraction",
+                             ha="right", fontsize=8, color="0.35")
 
         fig.suptitle(f"Tracking temporal de vacancias WS — max_hop={args.max_hop} Å",
                      y=1.02)
