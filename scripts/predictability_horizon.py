@@ -32,9 +32,16 @@ ROOT = os.path.normpath(os.path.join(HERE, ".."))
 BOX_L = 243.74   # lado del box cúbico compartido por todas las cascadas pka_acero
 SIGNALS = ["ws", "soft_ws", "vor", "dens", "soap", "topo",
            "transit_pen", "frenkel_pen"]
-HV_COLS = ["x", "y", "z", "score"] + SIGNALS + \
-          ["transit_filtered", "in_recomb", "ref_site_idx", "accepted"]
 EXCLUDE = {"1kev", "2kev", "3kev"}   # sin fase de recombinación resuelta
+
+
+def read_hv(path):
+    """Lee un hybrid_vacancies CSV usando su header comentado (tolera tanto el
+    formato viejo de 16 columnas como el nuevo con centrality/cloud_dens)."""
+    with open(path) as f:
+        names = f.readline().lstrip("#").split()
+    df = pd.read_csv(path, sep=r"\s+", skiprows=1, names=names)
+    return df.rename(columns={"consensus_score": "score"})
 
 
 def auc(y, s):
@@ -69,7 +76,7 @@ def main():
             f_hv = os.path.join(endir, f"hybrid_vacancies_t{step:06d}.csv")
             if not os.path.exists(f_hv):
                 continue
-            hv = pd.read_csv(f_hv, sep=r"\s+", skiprows=1, names=HV_COLS)
+            hv = read_hv(f_hv)
             hv = hv[hv.ref_site_idx >= 0].reset_index(drop=True)
             P = pts[pts.step == step]
             if len(P) < 4:

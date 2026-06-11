@@ -130,8 +130,12 @@ static void printUsage(const char* prog) {
         "  --ws-r-cut R     WS search radius [Å] (default: same as --r-cut)\n\n"
         "Hybrid vacancy detector (multi-signal consensus):\n"
         "  --hybrid                    Enable HybridVacancyDetector (implies --ws)\n"
-        "  --hybrid-preset NAME        ws | robust | relaxed | sensitive  (default: robust)\n"
-        "  --hybrid-weights w1,...,w8  Override weights: ws,soft,vor,dens,soap,topo,transit,frenkel\n"
+        "  --hybrid-preset NAME        ws | robust | relaxed | sensitive | survival\n"
+        "                              (default: robust; 'survival' ranks peak-damage\n"
+        "                               candidates by survival likelihood)\n"
+        "  --hybrid-weights w1,...     Override weights. 8 values:\n"
+        "                              ws,soft,vor,dens,soap,topo,transit,frenkel\n"
+        "                              or 10 values: ...,frenkel,centrality,cloud_dens\n"
         "  --hybrid-accept T           Score threshold [0,1] (default: 0.5)\n"
         "  --hybrid-thermal-sigma S    Thermal RMS displacement [Å] (default: 0.05·nn_ref)\n"
         "  --hybrid-recomb-radius R    Frenkel pair recombination radius [Å] (default: 3.3)\n"
@@ -336,26 +340,22 @@ static void writeWSAtomCSV(
     std::cout << "  → WS atom CSV written: " << path << '\n';
 }
 
-// Hybrid vacancy CSV: every candidate, with an `accepted` flag so users can
-// inspect why a WS vacancy was filtered (transit, frenkel, or low score).
+// Hybrid vacancy CSV: every candidate, with the detector's `accepted` flag so
+// users can inspect why a WS vacancy was filtered (transit, frenkel, low score).
 static void writeHybridVacancyCSV(
     const std::vector<HybridVacancy>& vacs,
-    double accept_threshold,
     const std::string& path)
 {
     std::ofstream f(path);
     if (!f) throw std::runtime_error("Cannot write: " + path);
     f << "# x y z consensus_score ws soft_ws vor dens soap topo "
+         "centrality cloud_dens "
          "transit_pen frenkel_pen transit_filtered in_recomb ref_site_idx accepted\n"
       << std::fixed << std::setprecision(8);
 
     int n_accepted = 0;
     for (const auto& v : vacs) {
-        const bool penalty_clear = !v.transit_filtered && !v.in_recombination;
-        const bool ws_says       = v.breakdown.ws >= 0.5;
-        const bool score_passes  = v.consensus_score >= accept_threshold;
-        const bool accepted      = penalty_clear && (ws_says || score_passes);
-        if (accepted) ++n_accepted;
+        if (v.accepted) ++n_accepted;
         f << v.pos[0] << ' ' << v.pos[1] << ' ' << v.pos[2] << ' '
           << v.consensus_score        << ' '
           << v.breakdown.ws           << ' '
@@ -364,12 +364,14 @@ static void writeHybridVacancyCSV(
           << v.breakdown.density_deficit << ' '
           << v.breakdown.soap_neighbor   << ' '
           << v.breakdown.topology_anomaly<< ' '
+          << v.breakdown.cloud_centrality<< ' '
+          << v.breakdown.cloud_density   << ' '
           << v.breakdown.transit_penalty << ' '
           << v.breakdown.frenkel_penalty << ' '
           << (v.transit_filtered ? 1 : 0) << ' '
           << (v.in_recombination ? 1 : 0) << ' '
           << v.ref_site_idx << ' '
-          << (accepted ? 1 : 0) << '\n';
+          << (v.accepted ? 1 : 0) << '\n';
     }
     std::cout << "  → hybrid vacancy CSV written: " << path
               << "  (" << n_accepted << " accepted / " << vacs.size() << " candidates)\n";
@@ -650,15 +652,20 @@ int main(int argc, char* argv[]) {
                     return 1;
                 }
             }
-            if (w.size() != 8) {
+            if (w.size() != 8 && w.size() != 10) {
                 std::cerr << "Error: --hybrid-weights expects 8 comma-separated floats "
-                             "(ws,soft,vor,dens,soap,topo,transit,frenkel)\n";
+                             "(ws,soft,vor,dens,soap,topo,transit,frenkel)\n"
+                             "       or 10 (...,frenkel,centrality,cloud_dens)\n";
                 return 1;
             }
             hybrid_params.w_ws       = w[0]; hybrid_params.w_soft_ws  = w[1];
             hybrid_params.w_voronoi  = w[2]; hybrid_params.w_density  = w[3];
             hybrid_params.w_soap     = w[4]; hybrid_params.w_topology = w[5];
             hybrid_params.w_transit  = w[6]; hybrid_params.w_frenkel  = w[7];
+            if (w.size() == 10) {
+                hybrid_params.w_centrality    = w[8];
+                hybrid_params.w_cloud_density = w[9];
+            }
         }
         hybrid_params.grid_spacing = grid_spacing;
     }
@@ -1129,8 +1136,8 @@ int main(int argc, char* argv[]) {
 
         // Hybrid vacancy outputs
         if (do_hybrid) {
-            writeHybridVacancyCSV(hybrid_vacs, hybrid_params.accept_threshold,
-                                   prefixedPath("hybrid_vacancies_", out_file));
+            writeHybridVacancyCSV(hybrid_vacs,
+                                  prefixedPath("hybrid_vacancies_", out_file));
         }
 
         // Wigner-Seitz outputs

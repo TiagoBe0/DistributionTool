@@ -59,6 +59,15 @@ def read_box(dirpath):
     return 243.74
 
 
+def read_hv(path):
+    """Lee un hybrid_vacancies CSV usando su header comentado (tolera tanto el
+    formato viejo de 16 columnas como el nuevo con centrality/cloud_dens)."""
+    with open(path) as f:
+        names = f.readline().lstrip("#").split()
+    df = pd.read_csv(path, sep=r"\s+", skiprows=1, names=names)
+    return df.rename(columns={"consensus_score": "score"})
+
+
 def sigmoid(z):
     return 1.0 / (1.0 + np.exp(-z))
 
@@ -102,7 +111,7 @@ def build_dataset(tracking_dir):
         if not os.path.exists(f_hv):
             print(f"[{en}] sin hybrid_vacancies del pico, salto")
             continue
-        hv = pd.read_csv(f_hv, sep=r"\s+", skiprows=1, names=HV_COLS)
+        hv = read_hv(f_hv)
         hv_ws = hv[hv.ref_site_idx >= 0].reset_index(drop=True)
 
         L = read_box(endir)

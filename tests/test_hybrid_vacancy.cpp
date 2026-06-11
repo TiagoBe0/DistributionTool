@@ -254,6 +254,105 @@ TEST_CASE("Hybrid 'relaxed' preset — surviving Frenkel pair is kept, not filte
     }
 }
 
+TEST_CASE("HybridParams::applyPreset — 'survival' enables cloud signals, disables auto-accept") {
+    HybridParams p;
+    p.applyPreset("survival");
+    REQUIRE(p.w_centrality > 0.0);
+    REQUIRE(p.w_cloud_density > 0.0);
+    REQUIRE(p.w_transit == 0.0);
+    REQUIRE(p.w_frenkel == 0.0);
+    REQUIRE(p.ws_auto_accept == false);
+
+    // The historical presets must keep the cloud signals OFF and auto-accept ON
+    // (preserves their WS-equivalence invariants).
+    for (const char* name : {"ws", "robust", "relaxed", "sensitive"}) {
+        HybridParams q;
+        q.applyPreset(name);
+        REQUIRE(q.w_centrality == 0.0);
+        REQUIRE(q.w_cloud_density == 0.0);
+        REQUIRE(q.ws_auto_accept == true);
+    }
+}
+
+TEST_CASE("Hybrid cloud signals — clustered vacancies rank above an isolated one") {
+    // 4 vacancies clustered near the box center + 1 isolated far away (> cloud
+    // radius from the cluster). Core-shell expectation: the clustered sites get
+    // higher cloud_centrality and cloud_density than the isolated one, and the
+    // isolated one has the lowest consensus score under the 'survival' preset.
+    const int nc = 8;                      // box 22.96 Å (half-box > cloud_radius)
+    const double a = 2.87;
+    Frame ref = make_bcc(nc, a);
+    Frame dmg = ref;
+
+    // Find 4 mutually-close atoms near the center and 1 far from all of them.
+    const double cx = nc * a / 2.0;
+    std::vector<int> cluster;
+    for (int i = 0; i < (int)ref.atoms.size() && (int)cluster.size() < 4; ++i) {
+        const auto& at = ref.atoms[i];
+        const double r = std::sqrt((at.x-cx)*(at.x-cx) + (at.y-cx)*(at.y-cx)
+                                   + (at.z-cx)*(at.z-cx));
+        if (r < 1.1 * a) cluster.push_back(i);
+    }
+    REQUIRE((int)cluster.size() == 4);
+    int isolated = -1;
+    for (int i = 0; i < (int)ref.atoms.size(); ++i) {
+        const auto& at = ref.atoms[i];
+        // corner region: ≥ 11 Å from the center cluster in minimum image
+        double dx = at.x - cx, dy = at.y - cx, dz = at.z - cx;
+        const double L = nc * a;
+        dx -= L * std::round(dx / L); dy -= L * std::round(dy / L);
+        dz -= L * std::round(dz / L);
+        if (std::sqrt(dx*dx + dy*dy + dz*dz) > 11.0) { isolated = i; break; }
+    }
+    REQUIRE(isolated >= 0);
+
+    const double iso_x = ref.atoms[isolated].x;
+    const double iso_y = ref.atoms[isolated].y;
+    const double iso_z = ref.atoms[isolated].z;
+
+    auto to_remove = cluster;
+    to_remove.push_back(isolated);
+    remove_atoms(dmg, to_remove);
+
+    WignerSeitz ws;
+    ws.build(ref, 1.6 * a);
+    auto ws_res = ws.classify(dmg);
+    REQUIRE(ws.vacancyCount() == 5);
+
+    HybridParams p;
+    p.applyPreset("survival");
+    HybridVacancyDetector hvd(p);
+    hvd.buildReference(ref, ws);
+    auto vacs = hvd.detect(dmg, ws_res);
+
+    // Locate the isolated candidate by position; compare against the others.
+    const HybridVacancy* iso = nullptr;
+    double min_clu_centrality = 2.0, min_clu_density = 2.0;
+    for (const auto& v : vacs) {
+        if (v.ref_site_idx < 0) continue;
+        const double d = std::sqrt((v.pos[0]-iso_x)*(v.pos[0]-iso_x)
+                                 + (v.pos[1]-iso_y)*(v.pos[1]-iso_y)
+                                 + (v.pos[2]-iso_z)*(v.pos[2]-iso_z));
+        if (d < 0.1) {
+            iso = &v;
+        } else {
+            min_clu_centrality = std::min(min_clu_centrality, v.breakdown.cloud_centrality);
+            min_clu_density    = std::min(min_clu_density,    v.breakdown.cloud_density);
+        }
+    }
+    REQUIRE(iso != nullptr);
+    REQUIRE(iso->breakdown.cloud_centrality < min_clu_centrality);
+    REQUIRE(iso->breakdown.cloud_density    < min_clu_density);
+
+    // The isolated vacancy must have the lowest consensus score of all 5.
+    double min_other_score = 2.0;
+    for (const auto& v : vacs) {
+        if (v.ref_site_idx < 0 || &v == iso) continue;
+        min_other_score = std::min(min_other_score, v.consensus_score);
+    }
+    REQUIRE(iso->consensus_score < min_other_score);
+}
+
 TEST_CASE("Hybrid 'robust' preset — thermal noise T~300K: pristine stays at 0 vacancies") {
     const int nc = 6;
     const double a = 2.87;

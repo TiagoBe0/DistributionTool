@@ -46,6 +46,10 @@ inline double pbcDist2(const std::array<double,3>& a,
 // HybridParams::applyPreset
 // ─────────────────────────────────────────────────────────────────────────────
 void HybridParams::applyPreset(const std::string& name) {
+    // All presets overwrite every weight; the cloud-context signals are only
+    // enabled by 'survival' so the historical presets keep their invariants.
+    w_centrality = 0.0; w_cloud_density = 0.0; ws_auto_accept = true;
+
     if (name == "ws") {
         w_ws = 1.0; w_soft_ws = 0.0; w_voronoi = 0.0; w_density = 0.0;
         w_soap = 0.0; w_topology = 0.0; w_transit = 0.0; w_frenkel = 0.0;
@@ -69,11 +73,42 @@ void HybridParams::applyPreset(const std::string& name) {
         w_ws = 1.0; w_soft_ws = 1.0; w_voronoi = 0.8; w_density = 1.0;
         w_soap = 0.7; w_topology = 0.8; w_transit = 0.8; w_frenkel = 0.2;
         accept_threshold = 0.35;
+    } else if (name == "survival") {
+        // Rank peak-damage candidates by survival likelihood. Weights follow
+        // what per-defect survival labels supported (tracked FeCrNi 4–8 keV
+        // cascades, leave-one-cascade-out AUC ≈ 0.70): the dominant predictor
+        // is cloud centrality (core-shell structure), then local candidate
+        // density and the KDE density deficit. The saturated signals
+        // (soft_ws/voronoi/soap/topology) and both penalties carried no
+        // usable peak-frame information and stay off. ws_auto_accept is
+        // disabled so the reported count reflects the score threshold —
+        // i.e. the PREDICTED SURVIVORS, not every WS-vacant site.
+        w_ws = 0.3; w_soft_ws = 0.0; w_voronoi = 0.0; w_density = 0.4;
+        w_soap = 0.0; w_topology = 0.0; w_transit = 0.0; w_frenkel = 0.0;
+        w_centrality = 1.0; w_cloud_density = 0.4;
+        accept_threshold = 0.6;
+        ws_auto_accept = false;
     } else {
         throw std::invalid_argument(
             "HybridParams::applyPreset: unknown preset '" + name +
-            "' (valid: ws, robust, relaxed, sensitive)");
+            "' (valid: ws, robust, relaxed, sensitive, survival)");
     }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Acceptance rule
+// ─────────────────────────────────────────────────────────────────────────────
+//   A candidate is accepted iff:
+//     (a) no transit / Frenkel penalty is firing, AND
+//     (b) the consensus score passes the threshold, OR ws_auto_accept is set
+//         and the site is WS-vacant (preserves the WS-equivalence invariants
+//         of the ws/robust/relaxed presets; 'survival' disables it so the
+//         count reflects the predicted survivors).
+static inline bool isAccepted(const HybridVacancy& c, const HybridParams& p) {
+    const bool penalty_clear = !c.transit_filtered && !c.in_recombination;
+    const bool ws_says       = p.ws_auto_accept && c.breakdown.ws >= 0.5;
+    const bool score_passes  = c.consensus_score >= p.accept_threshold;
+    return penalty_clear && (ws_says || score_passes);
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -407,19 +442,104 @@ std::vector<HybridVacancy> HybridVacancyDetector::detect(
                 ? std::exp(-min_inter_r2 / (2.0 * rrec2))
                 : 0.0;
 
-        // ── Consensus ────────────────────────────────────────────────────────
-        const double w_sum =
-              p_.w_ws + p_.w_soft_ws + p_.w_voronoi + p_.w_density
-            + p_.w_soap + p_.w_topology;
+    }
+
+    // ── Step 2b: cloud-context signals (cascade core-shell structure) ───────
+    // Reference cloud = WS-vacant candidates (the population whose survival
+    // was tracked). Signals are rank percentiles WITHIN this frame: the
+    // operative question is relative ("which of THESE candidates survive"),
+    // and absolute distances shift with PKA energy.
+    {
+        std::vector<int> ws_idx;
+        ws_idx.reserve(raw.size());
+        for (size_t i = 0; i < raw.size(); ++i)
+            if (raw[i].ref_site_idx >= 0) ws_idx.push_back(static_cast<int>(i));
+
+        const int n_all = static_cast<int>(raw.size());
+        if (!ws_idx.empty() && n_all > 1) {
+            // Centroid of the WS-vacancy cloud under PBC via the circular
+            // mean per axis (robust regardless of where the cloud sits in
+            // the box — a single-reference unwrap folds clouds that span
+            // more than half a box length).
+            const double L[3]  = { box.lx(), box.ly(), box.lz() };
+            const double lo[3] = { box.xb[0], box.yb[0], box.zb[0] };
+            std::array<double,3> cent{0,0,0};
+            for (int d = 0; d < 3; ++d) {
+                if (box.periodic[d] && L[d] > 0.0) {
+                    double sc = 0.0, ss = 0.0;
+                    for (int i : ws_idx) {
+                        const double th = 2.0 * kPi * (raw[i].pos[d] - lo[d]) / L[d];
+                        sc += std::cos(th);
+                        ss += std::sin(th);
+                    }
+                    double th = std::atan2(ss, sc);
+                    if (th < 0.0) th += 2.0 * kPi;
+                    cent[d] = lo[d] + th * L[d] / (2.0 * kPi);
+                } else {
+                    double s = 0.0;
+                    for (int i : ws_idx) s += raw[i].pos[d];
+                    cent[d] = s / ws_idx.size();
+                }
+            }
+
+            // Distances with plain minimum image — no unwrap needed.
+            std::vector<double> dcent(n_all), ldens(n_all);
+            const double cr2 = p_.cloud_radius * p_.cloud_radius;
+            for (int i = 0; i < n_all; ++i) {
+                dcent[i] = std::sqrt(pbcDist2(raw[i].pos, cent, box));
+                int cnt = 0;
+                for (int j : ws_idx) {
+                    if (j == i) continue;
+                    if (pbcDist2(raw[i].pos, raw[j].pos, box) <= cr2) ++cnt;
+                }
+                ldens[i] = cnt;
+            }
+
+            // Rank percentil con empates promediados (como pandas rank pct).
+            auto rankPct = [n_all](const std::vector<double>& v) {
+                std::vector<int> order(n_all);
+                std::iota(order.begin(), order.end(), 0);
+                std::sort(order.begin(), order.end(),
+                          [&](int a, int b){ return v[a] < v[b]; });
+                std::vector<double> pct(n_all);
+                int i = 0;
+                while (i < n_all) {
+                    int j = i;
+                    while (j + 1 < n_all && v[order[j+1]] == v[order[i]]) ++j;
+                    const double avg_rank = 0.5 * (i + j) + 1.0;   // 1-based
+                    for (int k = i; k <= j; ++k)
+                        pct[order[k]] = avg_rank / n_all;
+                    i = j + 1;
+                }
+                return pct;
+            };
+            const auto pct_d = rankPct(dcent);
+            const auto pct_l = rankPct(ldens);
+            for (int i = 0; i < n_all; ++i) {
+                raw[i].breakdown.cloud_centrality = 1.0 - pct_d[i];
+                raw[i].breakdown.cloud_density    = pct_l[i];
+            }
+        }
+    }
+
+    // ── Step 3: consensus + accept decision ──────────────────────────────────
+    const double w_sum =
+          p_.w_ws + p_.w_soft_ws + p_.w_voronoi + p_.w_density
+        + p_.w_soap + p_.w_topology
+        + p_.w_centrality + p_.w_cloud_density;
+
+    for (auto& hv : raw) {
         double pos_score = 0.0;
         if (w_sum > 0.0) {
             pos_score = (
-                  p_.w_ws        * hv.breakdown.ws
-                + p_.w_soft_ws   * hv.breakdown.soft_ws
-                + p_.w_voronoi   * hv.breakdown.voronoi_anomaly
-                + p_.w_density   * hv.breakdown.density_deficit
-                + p_.w_soap      * hv.breakdown.soap_neighbor
-                + p_.w_topology  * hv.breakdown.topology_anomaly
+                  p_.w_ws            * hv.breakdown.ws
+                + p_.w_soft_ws       * hv.breakdown.soft_ws
+                + p_.w_voronoi       * hv.breakdown.voronoi_anomaly
+                + p_.w_density       * hv.breakdown.density_deficit
+                + p_.w_soap          * hv.breakdown.soap_neighbor
+                + p_.w_topology      * hv.breakdown.topology_anomaly
+                + p_.w_centrality    * hv.breakdown.cloud_centrality
+                + p_.w_cloud_density * hv.breakdown.cloud_density
             ) / w_sum;
         }
         const double penalty = p_.w_transit * hv.breakdown.transit_penalty
@@ -430,64 +550,45 @@ std::vector<HybridVacancy> HybridVacancyDetector::detect(
 
         hv.transit_filtered  = (p_.w_transit > 0.0) && (hv.breakdown.transit_penalty > 0.5);
         hv.in_recombination  = (p_.w_frenkel > 0.0) && (hv.breakdown.frenkel_penalty > 0.5);
+        hv.accepted          = isAccepted(hv, p_);
     }
 
-    // ── Step 3: filter + sort ────────────────────────────────────────────────
+    // ── Step 4: sort by score ────────────────────────────────────────────────
     std::sort(raw.begin(), raw.end(), [](const HybridVacancy& a, const HybridVacancy& b) {
         return a.consensus_score > b.consensus_score;
     });
 
     cand_ = std::move(raw);
-
-    (void)ws_results;   // currently unused; reserved for future fine-grained logic
     return cand_;
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Accessors
+// Accessors — counts use the accept decision stored by detect().
 // ─────────────────────────────────────────────────────────────────────────────
-// Acceptance rule:
-//   A candidate is accepted iff:
-//     (a) it is a WS-vacant site OR the positive consensus score passes the
-//         threshold (non-WS candidates need explicit evidence), AND
-//     (b) no transit penalty is firing (atom in ballistic transit nearby), AND
-//     (c) no Frenkel recombination penalty is firing.
-//
-// This preserves two invariants:
-//   * preset 'ws' (transit/frenkel weights = 0) ⇒ count == WignerSeitz::vacancyCount()
-//   * preset 'robust' on a clean lattice with isolated WS vacancies ⇒ count = WS
-//   * preset 'robust' on ballistic-transit candidates ⇒ count < WS
-static inline bool isAccepted(const HybridVacancy& c, double accept_threshold) {
-    const bool penalty_clear = !c.transit_filtered && !c.in_recombination;
-    const bool ws_says       = c.breakdown.ws >= 0.5;
-    const bool score_passes  = c.consensus_score >= accept_threshold;
-    return penalty_clear && (ws_says || score_passes);
-}
-
 int HybridVacancyDetector::vacancyCount() const {
     int n = 0;
-    for (const auto& c : cand_) if (isAccepted(c, p_.accept_threshold)) ++n;
+    for (const auto& c : cand_) if (c.accepted) ++n;
     return n;
 }
 
 int HybridVacancyDetector::wsAgreeCount() const {
     int n = 0;
     for (const auto& c : cand_)
-        if (c.ref_site_idx >= 0 && isAccepted(c, p_.accept_threshold)) ++n;
+        if (c.ref_site_idx >= 0 && c.accepted) ++n;
     return n;
 }
 
 int HybridVacancyDetector::wsOnlyCount() const {
     int n = 0;
     for (const auto& c : cand_)
-        if (c.ref_site_idx >= 0 && !isAccepted(c, p_.accept_threshold)) ++n;
+        if (c.ref_site_idx >= 0 && !c.accepted) ++n;
     return n;
 }
 
 int HybridVacancyDetector::hybridOnlyCount() const {
     int n = 0;
     for (const auto& c : cand_)
-        if (c.ref_site_idx < 0 && isAccepted(c, p_.accept_threshold)) ++n;
+        if (c.ref_site_idx < 0 && c.accepted) ++n;
     return n;
 }
 

@@ -361,6 +361,13 @@ WS exactly when desired*. Each signal is squashed to $[0,1]$ by a sigmoid.
 | 4 | Density deficit (KDE) | reference-free local-density drop |
 | 5 | SOAP neighbour anomaly | reuses the populated `dist_to_ref` |
 | 6 | Topology / coordination anomaly | coordination number vs ideal lattice |
+| 7 | Cloud centrality | 1 − rank percentile of the distance to the centroid of the WS-vacancy cloud (PBC circular mean). Cascade core-shell structure: vacancies in the dense damage core survive; peripheral ones recombine |
+| 8 | Cloud density | rank percentile of the number of other WS-vacancy candidates within `cloud_radius` (default 10 Å) |
+
+Signals 7–8 are *frame-relative* (rank percentiles within the candidate set) and
+were derived from per-defect survival labels obtained by temporal tracking of
+FeCrNi 4–8 keV cascades (`scripts/track_defects.py`); distance-to-centroid is the
+strongest single survival predictor found (pooled AUC 0.77, per-cascade up to 0.87).
 
 **Penalties** $p_m$ (subtracted — they encode *why a WS-empty site may not be a
 real defect*):
@@ -374,19 +381,29 @@ real defect*):
 
 $$\text{score} = \frac{\sum_k w_k\, s_k}{\sum_k w_k} \;-\; w_\text{transit}\, p_\text{transit} \;-\; w_\text{frenkel}\, p_\text{frenkel}$$
 
-A candidate is accepted as a vacancy iff $\text{score} \ge \tau_\text{acc}$ (default
-0.5) **and** $p_\text{transit} < 0.5$. The physical parameters $d_\text{nn}$,
-volume-per-atom, ideal coordination and $\sigma_\text{th}$ are auto-fitted from the
-pristine reference frame.
+A candidate is accepted as a vacancy iff the penalties are clear
+($p_\text{transit}, p_\text{frenkel} < 0.5$ where weighted) **and** either the
+score passes $\tau_\text{acc}$ or — when `ws_auto_accept` is on (all presets
+except `survival`) — the site is WS-vacant. The physical parameters
+$d_\text{nn}$, volume-per-atom, ideal coordination and $\sigma_\text{th}$ are
+auto-fitted from the pristine reference frame.
 
 **Presets** (`--hybrid-preset`) set all weights at once:
 
-| Preset | $w_\text{ws}$ | $w_\text{soft}$ | $w_\text{vor}$ | $w_\text{den}$ | $w_\text{soap}$ | $w_\text{topo}$ | $w_\text{transit}$ | $w_\text{frenkel}$ | $\tau_\text{acc}$ | Use case |
-|---|---|---|---|---|---|---|---|---|---|---|
-| `ws` | 1.0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0.5 | **reproduces WS exactly** |
-| `robust` | 1.0 | 0.8 | 0.6 | 0.6 | 0.5 | 0.7 | **1.5** | **0.3** | 0.5 | ballistic / peak-damage snapshot |
-| `relaxed` | 1.0 | 0.8 | 0.6 | 0.6 | 0.5 | 0.7 | **0** | **0** | 0.5 | cooled / relaxed final structure |
-| `sensitive` | 1.0 | 1.0 | 0.8 | 1.0 | 0.7 | 0.8 | 0.8 | 0.2 | 0.35 | wide net, exploratory |
+| Preset | $w_\text{ws}$ | $w_\text{soft}$ | $w_\text{vor}$ | $w_\text{den}$ | $w_\text{soap}$ | $w_\text{topo}$ | $w_\text{cent}$ | $w_\text{cdens}$ | $w_\text{transit}$ | $w_\text{frenkel}$ | $\tau_\text{acc}$ | Use case |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| `ws` | 1.0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0.5 | **reproduces WS exactly** |
+| `robust` | 1.0 | 0.8 | 0.6 | 0.6 | 0.5 | 0.7 | 0 | 0 | **1.5** | **0.3** | 0.5 | ballistic / peak-damage snapshot |
+| `relaxed` | 1.0 | 0.8 | 0.6 | 0.6 | 0.5 | 0.7 | 0 | 0 | **0** | **0** | 0.5 | cooled / relaxed final structure |
+| `sensitive` | 1.0 | 1.0 | 0.8 | 1.0 | 0.7 | 0.8 | 0 | 0 | 0.8 | 0.2 | 0.35 | wide net, exploratory |
+| `survival` | 0.3 | 0 | 0 | 0.4 | 0 | 0 | **1.0** | **0.4** | 0 | 0 | 0.6 | rank peak-damage candidates by survival likelihood (`ws_auto_accept` off) |
+
+The `survival` weights were fitted on tracked per-defect survival labels
+(FeCrNi 4–8 keV cascades, leave-one-cascade-out AUC ≈ 0.70; on the 8 keV
+held-out cascade the native score reaches AUC 0.87 with 12/12 survivor recall).
+Unlike the other presets it does **not** auto-accept WS-vacant sites, so its
+count estimates the *predicted surviving* vacancies, not the instantaneous
+WS count; tune the cut with `--hybrid-accept`.
 
 The only difference between `robust` and `relaxed` is that **`relaxed` disables the
 two ballistic penalties.** This is the key design choice: in a cooled frame the MD
@@ -661,8 +678,8 @@ cmake --build build_debug -j$(nproc)
 | `--ws` | off | Run Wigner-Seitz topological vacancy/interstitial count (§3.7) |
 | `--ws-r-cut R` | = r_cut | WS nearest-site search cutoff [Å] |
 | `--hybrid` | off | Run hybrid consensus detector (implies `--ws`) (§3.8) |
-| `--hybrid-preset NAME` | robust | `ws` \| `robust` \| `relaxed` \| `sensitive` |
-| `--hybrid-weights CSV` | — | Override the 8 signal weights manually (ws,soft,vor,den,soap,topo,transit,frenkel) |
+| `--hybrid-preset NAME` | robust | `ws` \| `robust` \| `relaxed` \| `sensitive` \| `survival` |
+| `--hybrid-weights CSV` | — | Override the signal weights manually: 8 values (ws,soft,vor,den,soap,topo,transit,frenkel) or 10 (…,frenkel,centrality,cloud_dens) |
 | `--hybrid-accept A` | 0.5 | Consensus acceptance threshold $\tau_\text{acc}$ |
 | `--hybrid-thermal-sigma S` | auto | Soft-WS Gaussian width [Å] (-1 = 0.05·$d_\text{nn}$) |
 | `--hybrid-recomb-radius R` | 3.3 | Frenkel recombination radius [Å] |

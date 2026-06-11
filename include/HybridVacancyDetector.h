@@ -26,6 +26,11 @@ namespace DistTool {
  *   4. Density deficit (KDE)                 — reference-free void detector
  *   5. SOAP neighbor anomaly                 — uses dist_to_ref already populated
  *   6. Topology / coordination anomaly       — # neighbours vs ideal lattice
+ *   7. Cloud centrality                      — 1 − rank percentil of the distance
+ *      to the centroid of the WS-vacancy cloud (cascade core-shell structure:
+ *      surviving vacancies sit in the dense core of the damage cloud)
+ *   8. Cloud density                         — rank percentil of the number of
+ *      other WS-vacancy candidates within cloud_radius
  *
  * Penalties (subtracted from the consensus):
  *   P1. Transit filter (ballistic atom near a "vacant" site is no defect)
@@ -34,8 +39,8 @@ namespace DistTool {
  * Consensus formula:
  *   score = (Σ_k w_k · s_k) / (Σ_k w_k)  −  w_transit · p_transit  −  w_frenkel · p_frenkel
  *
- * A candidate is reported as a vacancy iff `score >= accept_threshold` and
- * `p_transit < 0.5`.
+ * A candidate is accepted iff the penalties are clear AND (the score passes
+ * the threshold OR, when ws_auto_accept is set, the site is WS-vacant).
  */
 
 struct VacancySignal {
@@ -45,6 +50,8 @@ struct VacancySignal {
     double density_deficit = 0.0;
     double soap_neighbor   = 0.0;
     double topology_anomaly= 0.0;
+    double cloud_centrality= 0.5;   // rank within frame; 0.5 = neutral
+    double cloud_density   = 0.5;   // rank within frame; 0.5 = neutral
     double transit_penalty = 0.0;
     double frenkel_penalty = 0.0;
     double consensus_score = 0.0;
@@ -57,6 +64,7 @@ struct HybridVacancy {
     VacancySignal breakdown;
     bool   transit_filtered     = false;
     bool   in_recombination     = false;
+    bool   accepted             = false;  // final accept decision (set by detect())
 };
 
 struct HybridParams {
@@ -67,16 +75,24 @@ struct HybridParams {
     double w_density   = 0.0;
     double w_soap      = 0.0;
     double w_topology  = 0.0;
+    double w_centrality     = 0.0;   // cloud centrality (cascade core-shell)
+    double w_cloud_density  = 0.0;   // local candidate density
     double w_transit   = 0.0;
     double w_frenkel   = 0.0;
 
     double accept_threshold = 0.5;        // [0,1]
+
+    // When true (default), a WS-vacant site is accepted regardless of the
+    // score (preserves the WS-equivalence invariants of ws/robust/relaxed).
+    // The "survival" preset disables it so the count reflects the score.
+    bool ws_auto_accept = true;
 
     // Physical parameters
     double thermal_sigma   = -1.0;        // -1 = auto (0.05 · nn_ref)
     double recomb_radius   = 3.3;         // Å, Fe-BCC default
     double transit_factor  = 1.5;         // < transit_factor · nn_ref ⇒ ballistic
     double grid_spacing    = 0.5;         // Å, for grid-vacancy seed candidates
+    double cloud_radius    = 10.0;        // Å, neighbourhood for cloud_density
 
     // Apply a named preset (overwrites all weights).
     //   "ws"        — w_ws=1, rest=0  (reproduces WignerSeitz exactly)
@@ -85,6 +101,10 @@ struct HybridParams {
     //   "relaxed"   — multi-signal consensus, penalties OFF
     //                 (for cooled / relaxed final structures; reconciles with WS)
     //   "sensitive" — wider net, lower accept_threshold
+    //   "survival"  — rank peak-damage candidates by survival likelihood
+    //                 (cloud centrality/density dominant, ws_auto_accept OFF;
+    //                  weights fitted on tracked per-defect survival labels,
+    //                  FeCrNi 4–8 keV cascades, LOCO AUC ≈ 0.70)
     void applyPreset(const std::string& name);
 };
 
