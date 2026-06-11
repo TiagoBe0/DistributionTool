@@ -24,7 +24,8 @@ namespace DistTool {
  *   2. Soft-WS gaussian occupancy            — thermal-noise robust
  *   3. NN-excess (Voronoi proxy)             — neighbour-distance anomaly
  *   4. Density deficit (KDE)                 — reference-free void detector
- *   5. SOAP neighbor anomaly                 — uses dist_to_ref already populated
+ *   5. SOAP neighbor anomaly                 — rank percentil (within the frame's
+ *      candidate set) of the mean neighbour dist_to_ref; neutral 0.5 without SOAP
  *   6. Topology / coordination anomaly       — # neighbours vs ideal lattice
  *   7. Cloud centrality                      — 1 − rank percentil of the distance
  *      to the centroid of the WS-vacancy cloud (cascade core-shell structure:

@@ -359,7 +359,7 @@ WS exactly when desired*. Each signal is squashed to $[0,1]$ by a sigmoid.
 | 2 | Soft-WS Gaussian occupancy | thermal-noise-robust occupancy $\exp(-d^2/2\sigma_\text{th}^2)$ |
 | 3 | NN-excess (Voronoi proxy) | anomalous nearest-neighbour distance |
 | 4 | Density deficit (KDE) | reference-free local-density drop |
-| 5 | SOAP neighbour anomaly | reuses the populated `dist_to_ref` |
+| 5 | SOAP neighbour anomaly | rank percentile (within the candidate set) of the mean neighbour `dist_to_ref`. Frame-relative: the old absolute scale (reference mean+3σ) saturated at 1.0 for every candidate in damage-peak frames (AUC 0.500 vs tracked survival labels); neutral 0.5 when SOAP is disabled |
 | 6 | Topology / coordination anomaly | coordination number vs ideal lattice |
 | 7 | Cloud centrality | 1 − rank percentile of the distance to the centroid of the WS-vacancy cloud (PBC circular mean). Cascade core-shell structure: vacancies in the dense damage core survive; peripheral ones recombine |
 | 8 | Cloud density | rank percentile of the number of other WS-vacancy candidates within `cloud_radius` (default 10 Å) |

@@ -352,9 +352,10 @@ std::vector<HybridVacancy> HybridVacancyDetector::detect(
         hv.breakdown.density_deficit = clamp01(1.0 - dens / rho_ref);
 
         // ── (5) SOAP neighbor anomaly
-        //   Mean dist_to_ref over neighbours within 1.2·nn_ref, normalised by
-        //   the SOAP reference scale (mean + 3·std).  When DVs are not computed
-        //   (dist_to_ref == 0 everywhere), this signal falls back to 0.
+        //   Mean dist_to_ref over neighbours within 1.2·nn_ref. Converted to a
+        //   rank percentil within the frame's candidate set in Step 2b. When
+        //   DVs are not computed (dist_to_ref == 0 everywhere) every candidate
+        //   ties and the signal collapses to the neutral 0.5.
         double soap_mean = 0.0;
         int    soap_n    = 0;
         std::vector<int>    nbr_idx;
@@ -366,12 +367,13 @@ std::vector<HybridVacancy> HybridVacancyDetector::detect(
         }
         if (soap_n > 0) soap_mean /= soap_n;
 
-        double soap_scale = 0.5;     // safe default if no SOAP reference is supplied
-        if (soap_ref_ && soap_ref_->isSet()) {
-            soap_scale = soap_ref_->mean_dist + 3.0 * std::sqrt(std::max(0.0, soap_ref_->var_dist));
-            if (soap_scale < 1e-6) soap_scale = 0.5;
-        }
-        hv.breakdown.soap_neighbor = clamp01(soap_mean / soap_scale);
+        // Store the RAW neighbourhood mean distance here; it is converted to a
+        // rank percentil within this frame's candidate set in Step 2b. The old
+        // absolute normalisation (reference mean + 3σ) saturated at 1.0 for
+        // EVERY candidate in damage-peak frames (measured AUC 0.500 against
+        // tracked survival labels in all 7 FeCrNi cascades) — the scale is
+        // calibrated for near-lattice discrimination, not the cascade core.
+        hv.breakdown.soap_neighbor = soap_mean;
 
         // ── (6) Topology / coordination anomaly
         //   For each atom within 1.5·nn_ref of the candidate, count its own neighbours
@@ -456,6 +458,41 @@ std::vector<HybridVacancy> HybridVacancyDetector::detect(
             if (raw[i].ref_site_idx >= 0) ws_idx.push_back(static_cast<int>(i));
 
         const int n_all = static_cast<int>(raw.size());
+
+        // Rank percentil con empates promediados (como pandas rank pct).
+        // Columnas constantes (sin información) quedan en 0.5 neutro.
+        auto rankPct = [n_all](const std::vector<double>& v) {
+            std::vector<int> order(n_all);
+            std::iota(order.begin(), order.end(), 0);
+            std::sort(order.begin(), order.end(),
+                      [&](int a, int b){ return v[a] < v[b]; });
+            std::vector<double> pct(n_all, 0.5);
+            if (v[order.front()] == v[order.back()])
+                return pct;                          // todo empatado: neutro
+            int i = 0;
+            while (i < n_all) {
+                int j = i;
+                while (j + 1 < n_all && v[order[j+1]] == v[order[i]]) ++j;
+                const double avg_rank = 0.5 * (i + j) + 1.0;   // 1-based
+                for (int k = i; k <= j; ++k)
+                    pct[order[k]] = avg_rank / n_all;
+                i = j + 1;
+            }
+            return pct;
+        };
+
+        // Señal 5 (SOAP): rank del promedio crudo de dist_to_ref vecinal.
+        if (n_all > 1) {
+            std::vector<double> soap_raw(n_all);
+            for (int i = 0; i < n_all; ++i)
+                soap_raw[i] = raw[i].breakdown.soap_neighbor;
+            const auto pct_s = rankPct(soap_raw);
+            for (int i = 0; i < n_all; ++i)
+                raw[i].breakdown.soap_neighbor = pct_s[i];
+        } else if (n_all == 1) {
+            raw[0].breakdown.soap_neighbor = 0.5;
+        }
+
         if (!ws_idx.empty() && n_all > 1) {
             // Centroid of the WS-vacancy cloud under PBC via the circular
             // mean per axis (robust regardless of where the cloud sits in
@@ -495,24 +532,6 @@ std::vector<HybridVacancy> HybridVacancyDetector::detect(
                 ldens[i] = cnt;
             }
 
-            // Rank percentil con empates promediados (como pandas rank pct).
-            auto rankPct = [n_all](const std::vector<double>& v) {
-                std::vector<int> order(n_all);
-                std::iota(order.begin(), order.end(), 0);
-                std::sort(order.begin(), order.end(),
-                          [&](int a, int b){ return v[a] < v[b]; });
-                std::vector<double> pct(n_all);
-                int i = 0;
-                while (i < n_all) {
-                    int j = i;
-                    while (j + 1 < n_all && v[order[j+1]] == v[order[i]]) ++j;
-                    const double avg_rank = 0.5 * (i + j) + 1.0;   // 1-based
-                    for (int k = i; k <= j; ++k)
-                        pct[order[k]] = avg_rank / n_all;
-                    i = j + 1;
-                }
-                return pct;
-            };
             const auto pct_d = rankPct(dcent);
             const auto pct_l = rankPct(ldens);
             for (int i = 0; i < n_all; ++i) {
