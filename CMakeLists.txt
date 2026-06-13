@@ -44,9 +44,27 @@ set(LIB_SOURCES
     src/HybridVacancyDetector.cpp
 )
 
+# ── CGAL (optional — required for --delaunay-voids) ──────────────────────────
+option(USE_CGAL "Enable reference-free Delaunay void detection (requires libcgal-dev)" ON)
+if(USE_CGAL)
+    find_package(CGAL QUIET)
+    if(CGAL_FOUND)
+        list(APPEND LIB_SOURCES src/DelaunayVoidDetector.cpp)
+        message(STATUS "CGAL found: Delaunay void detector enabled")
+    else()
+        message(STATUS "CGAL not found: --delaunay-voids unavailable (install libcgal-dev)")
+        set(USE_CGAL OFF)
+    endif()
+endif()
+
 add_library(distool_lib OBJECT ${LIB_SOURCES})
 target_include_directories(distool_lib PUBLIC include)
 target_link_libraries(distool_lib PUBLIC Eigen3::Eigen)
+
+if(USE_CGAL AND CGAL_FOUND)
+    target_link_libraries(distool_lib PUBLIC CGAL::CGAL)
+    target_compile_definitions(distool_lib PUBLIC USE_CGAL)
+endif()
 
 if(OpenMP_CXX_FOUND)
     target_link_libraries(distool_lib PUBLIC OpenMP::OpenMP_CXX)

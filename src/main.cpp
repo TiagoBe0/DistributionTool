@@ -1,6 +1,9 @@
 #include "DefectClassifier.h"
 #include "HybridVacancyDetector.h"
 #include "LammpsDumpReader.h"
+#ifdef USE_CGAL
+#include "DelaunayVoidDetector.h"
+#endif
 #include "PCA.h"
 #include "SOAPDescriptor.h"
 #include "Statistics.h"
@@ -140,6 +143,15 @@ static void printUsage(const char* prog) {
         "  --hybrid-thermal-sigma S    Thermal RMS displacement [Å] (default: 0.05·nn_ref)\n"
         "  --hybrid-recomb-radius R    Frenkel pair recombination radius [Å] (default: 3.3)\n"
         "  --hybrid-transit-factor F   Ballistic-transit band as F·nn_ref (default: 1.5)\n\n"
+        "Delaunay void detector (reference-free, requires CGAL):\n"
+        "  --delaunay-voids            Detect vacancies without a reference frame.\n"
+        "                              Uses periodic 3D Delaunay triangulation;\n"
+        "                              works for HEAs, grain boundaries, compressed cells.\n"
+        "  --dv-threshold T            R_circumsphere/d_nn > T → void cell (default: 0.90)\n"
+        "  --dv-max-cells N            Max Delaunay cells per point vacancy (default: 50)\n"
+        "  --dv-max-aspect A           Max aspect ratio for point vacancy (default: 5.0)\n"
+        "  --dv-nn D                   Override auto-detected d_nn [Å]\n"
+        "  --dv-no-calibrate           Do not use --ref to calibrate d_nn\n\n"
         "Output options:\n"
         "  --output   FILE  Main output CSV file         (default: results/output.csv)\n"
         "  --no-dump        Do not write the analyzed_<input> LAMMPS dump copy\n"
@@ -411,6 +423,28 @@ static void writeWSSitesCSV(
               << n_int_sites << " interstitial sites)\n";
 }
 
+#ifdef USE_CGAL
+// Delaunay void CSV: one row per void cluster.
+static void writeDelaunayVoidCSV(const std::vector<DelaunayVoid>& voids,
+                                  const std::string& path)
+{
+    std::ofstream f(path);
+    if (!f) throw std::runtime_error("Cannot write: " + path);
+    f << "x,y,z,circumradius_A,n_cells,aspect_ratio,is_point_defect\n"
+      << std::fixed << std::setprecision(4);
+    int n_pt = 0;
+    for (const auto& v : voids) {
+        f << v.pos[0] << ',' << v.pos[1] << ',' << v.pos[2] << ','
+          << v.circumradius << ',' << v.n_cells << ','
+          << std::setprecision(2) << v.aspect_ratio << ','
+          << (v.is_point_defect ? 1 : 0) << '\n';
+        if (v.is_point_defect) ++n_pt;
+    }
+    std::cout << "  → Delaunay void CSV written: " << path
+              << "  (" << n_pt << " point vacancies / " << voids.size() << " clusters)\n";
+}
+#endif
+
 // ─────────────────────────────────────────────────────────────────────────────
 // Path helpers
 // ─────────────────────────────────────────────────────────────────────────────
@@ -515,6 +549,11 @@ int main(int argc, char* argv[]) {
     std::string hybrid_preset = "robust";
     std::string hybrid_weights_csv;       // empty = use preset
     HybridParams hybrid_params;
+#ifdef USE_CGAL
+    bool   do_delaunay      = false;
+    bool   dv_no_calibrate  = false;
+    DelaunayVoidParams dv_params;
+#endif
     std::string ref_file, dmg_file;
 
     // ── Parse CLI ─────────────────────────────────────────────────────────────
@@ -578,6 +617,21 @@ int main(int argc, char* argv[]) {
         else if (a == "--hybrid-thermal-sigma") hybrid_params.thermal_sigma    = nextDbl();
         else if (a == "--hybrid-recomb-radius") hybrid_params.recomb_radius    = nextDbl();
         else if (a == "--hybrid-transit-factor")hybrid_params.transit_factor   = nextDbl();
+#ifdef USE_CGAL
+        else if (a == "--delaunay-voids")   do_delaunay            = true;
+        else if (a == "--dv-threshold")     dv_params.threshold_ratio   = nextDbl();
+        else if (a == "--dv-max-cells")     dv_params.max_cluster_cells = nextInt();
+        else if (a == "--dv-max-aspect")    dv_params.max_aspect_ratio  = nextDbl();
+        else if (a == "--dv-nn")            dv_params.nn_override        = nextDbl();
+        else if (a == "--dv-no-calibrate")  dv_no_calibrate              = true;
+#else
+        else if (a == "--delaunay-voids" || a == "--dv-threshold" ||
+                 a == "--dv-max-cells"  || a == "--dv-max-aspect" ||
+                 a == "--dv-nn"         || a == "--dv-no-calibrate") {
+            std::cerr << "Option " << a << " requires CGAL (build with -DUSE_CGAL=ON and install libcgal-dev).\n";
+            return 1;
+        }
+#endif
         else if (a[0] != '-') {
             if      (ref_file.empty()) ref_file = a;
             else if (dmg_file.empty()) dmg_file = a;
@@ -1062,6 +1116,33 @@ int main(int argc, char* argv[]) {
                       << ", hybrid-only=" << hybrid_only << ")\n";
         }
 
+#ifdef USE_CGAL
+        // ── Delaunay void detector (reference-free) ──────────────────────────
+        std::vector<DelaunayVoid> delaunay_voids;
+        int delaunay_vac_count = -1;
+        if (do_delaunay) {
+            std::cout << "\n[Delaunay] Reference-free void detection…\n";
+            DelaunayVoidDetector dvd(dv_params);
+            if (!ref_file.empty() && !dv_no_calibrate)
+                dvd.calibrate(ref_frame);
+            {
+                const double d_nn_disp = dvd.nnRef() > 0.0      ? dvd.nnRef()
+                                        : dv_params.nn_override > 0.0 ? dv_params.nn_override
+                                        : DelaunayVoidDetector::estimateNN(dmg_frame);
+                const char* src = dvd.nnRef() > 0.0      ? " (calibrated)"
+                                : dv_params.nn_override > 0.0 ? " (--dv-nn)"
+                                                               : " (auto from density)";
+                std::cout << std::fixed << std::setprecision(3)
+                          << "      d_nn = " << d_nn_disp << " Å" << src
+                          << "  threshold = " << dv_params.threshold_ratio << " × d_nn\n";
+            }
+            delaunay_voids    = dvd.detect(dmg_frame);
+            delaunay_vac_count = dvd.vacancyCount(delaunay_voids);
+            std::cout << "      Total void clusters: " << delaunay_voids.size()
+                      << " | Point vacancies: " << delaunay_vac_count << "\n";
+        }
+#endif
+
         const double vac_vol = static_cast<double>(vac_pts.size())
                                * grid_spacing * grid_spacing * grid_spacing;
         printSummary(dmg_frame, clusters, vac_vol, ws_vac_count, ws_int_count);
@@ -1112,9 +1193,24 @@ int main(int argc, char* argv[]) {
             std::cout << "    open void (grid)      : " << clusters.size()
                       << " clusters,  " << std::fixed << std::setprecision(1) << vac_vol
                       << " Å³  (threshold " << std::setprecision(2) << vac_dist << " Å)\n";
+#ifdef USE_CGAL
+            if (do_delaunay)
+                std::cout << "    Delaunay (ref-free)   : " << delaunay_vac_count
+                          << " point vacancies  (" << delaunay_voids.size()
+                          << " total clusters, filtered by size/shape)\n";
+#endif
             std::cout << "    → use WS/hybrid for vacancy counting; grid measures "
                          "open-void volume.\n";
         }
+#ifdef USE_CGAL
+        else if (do_delaunay) {
+            // Reconciliation when WS was not run
+            std::cout << "\n  Vacancy reconciliation:\n"
+                      << "    Delaunay (ref-free)   : " << delaunay_vac_count
+                      << " point vacancies  (" << delaunay_voids.size()
+                      << " total clusters)\n";
+        }
+#endif
 
         // ══════════════════════════════════════════════════════════════════════
         // 4. OUTPUTS
@@ -1139,6 +1235,14 @@ int main(int argc, char* argv[]) {
             writeHybridVacancyCSV(hybrid_vacs,
                                   prefixedPath("hybrid_vacancies_", out_file));
         }
+
+#ifdef USE_CGAL
+        // Delaunay void outputs
+        if (do_delaunay && !delaunay_voids.empty()) {
+            writeDelaunayVoidCSV(delaunay_voids,
+                                 prefixedPath("delaunay_voids_", out_file));
+        }
+#endif
 
         // Wigner-Seitz outputs
         if (do_ws && !ws_results.empty()) {

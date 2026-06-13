@@ -18,7 +18,8 @@ A C++17 command-line tool for semi-automatic identification and classification o
    - 3.7 [Vacancy detection — Wigner-Seitz](#37-vacancy-detection--wigner-seitz)
    - 3.8 [Vacancy detection — hybrid consensus](#38-vacancy-detection--hybrid-consensus)
    - 3.9 [Regime dependence and method reconciliation](#39-regime-dependence-and-method-reconciliation)
-   - 3.10 [Principal Component Analysis](#310-principal-component-analysis)
+   - 3.10 [Reference-free vacancy detection — Delaunay voids](#310-reference-free-vacancy-detection--delaunay-voids)
+   - 3.11 [Principal Component Analysis](#311-principal-component-analysis)
 4. [Code architecture](#4-code-architecture)
 5. [Build instructions](#5-build-instructions)
 6. [Usage](#6-usage)
@@ -492,7 +493,84 @@ Regenerate with `python3 scripts/plot_hea_presets.py`.*
 
 ---
 
-### 3.10 Principal Component Analysis
+### 3.10 Reference-free vacancy detection — Delaunay voids
+
+All three estimators above (grid, Wigner-Seitz, hybrid) share a hidden dependency:
+they need a **pristine reference frame**. Wigner-Seitz in particular maps every
+damaged atom onto the nearest *reference lattice site*. This assumption breaks in
+exactly the cases where vacancy counting matters most:
+
+- **High-entropy alloys.** The reference lattice carries an arbitrary chemical
+  decoration. An atom that merely swapped neighbours (without leaving its site) can
+  be mapped to the "wrong" reference site and counted as a Frenkel pair — a false
+  positive that has nothing to do with a real vacancy.
+- **Uniaxial / hydrostatic strain.** Under load every site shifts systematically
+  away from the reference positions. WS then reports a spurious vacancy/interstitial
+  signal across the *entire* cell.
+- **Grain boundaries & free surfaces.** There is no single reference lattice that
+  fits both grains, so WS mislabels the boundary region wholesale.
+
+The Delaunay void detector removes the reference frame entirely. A vacancy is
+defined **intrinsically, from the current frame alone**, as a hole in the atomic
+point cloud.
+
+**Construction.** Build the periodic 3D Delaunay triangulation of the atom
+positions (CGAL, `Periodic_3_Delaunay_triangulation_3`). By the empty-sphere
+property, the circumsphere of every Delaunay tetrahedron contains no atom — it is a
+certified empty region. A tetrahedron whose circumradius $R$ exceeds the local
+nearest-neighbour spacing is therefore sitting in a void:
+
+$$\frac{R}{d_\text{nn}} > \tau, \qquad \tau \approx 0.90.$$
+
+The threshold is *relative* to $d_\text{nn}$, which is estimated from the frame's
+own number density,
+
+$$d_\text{nn} \approx 1.1\,\left(\frac{V}{N}\right)^{1/3},$$
+
+so it rescales automatically under compression or expansion — no reference lattice
+required. The constant $\tau \approx 0.90$ is below the largest interstitial-hole
+ratio of a perfect BCC/FCC lattice (octahedral/tetrahedral holes give
+$R/d_\text{nn} \lesssim 0.87$), so the bulk crystal produces *no* void cells while a
+genuine monovacancy — whose empty sphere is necessarily larger than any lattice
+hole — does.
+
+**Clustering and shape filter.** Adjacent void tetrahedra (sharing a face) are
+merged by connected components. Each cluster's shape is characterised by the
+eigenvalues $\lambda_1 \le \lambda_2 \le \lambda_3$ of the covariance matrix of its
+tetrahedra circumcenters:
+
+$$\text{aspect ratio} = \sqrt{\lambda_3/\lambda_1}.$$
+
+A **point vacancy** is a compact, roughly isotropic cluster (few cells, aspect
+ratio $\lesssim 5$). Extended defects separate out naturally: a grain-boundary or
+surface void forms a *planar* sheet of void cells (high aspect ratio) and a
+dislocation-core void forms an *elongated* tube — both are filtered out of the
+point-vacancy count and reported separately as extended voids.
+
+| Failure mode of WS | Delaunay voids |
+|---|---|
+| HEA chemical disorder | no reference → immune |
+| Uniaxial / hydrostatic strain | $\tau$ scales with local $d_\text{nn}$ → immune |
+| Grain boundary / surface | planar cluster, high aspect ratio → filtered out |
+
+**Implementation notes.** The circumcenter of each tetrahedron is computed
+*analytically* from its four vertices (taken in CGAL's per-cell consistent spatial
+frame via `periodic_point(c, i)`), not by differencing canonical periodic points —
+this avoids an offset-wrapping error for cells that straddle a box boundary.
+Near-degenerate (sliver) tetrahedra are skipped. The triangulation must reach a
+1-sheeted periodic cover, which any full MD frame (box $\gg$ largest void)
+satisfies; the code aborts with a clear message otherwise rather than silently
+over-counting.
+
+> **Status.** The method is implemented and builds against CGAL ≥ 5.6
+> (`--delaunay-voids`). Empirical calibration of $\tau$ against thermal noise and
+> head-to-head validation versus WS on HEA / strained / grain-boundary frames is in
+> progress; the default $\tau = 0.90$ is the geometric (0 K) value and may need to be
+> raised slightly at finite temperature. See `--dv-threshold` to sweep it.
+
+---
+
+### 3.11 Principal Component Analysis
 
 PCA is applied to the DV matrix of the damaged frame (fitted on the reference DVs so that the principal axes reflect the pristine crystal).
 
@@ -625,11 +703,13 @@ struct VacancyCluster {
 | Eigen3 | ≥ 3.3 | Linear algebra (header-only) |
 | C++17 compiler | GCC ≥ 7, Clang ≥ 5 | |
 | OpenMP | optional | Parallel SOAP computation |
+| CGAL | ≥ 5.6, optional | Reference-free Delaunay void detector (`--delaunay-voids`). Auto-detected; build with `-DUSE_CGAL=OFF` to skip. |
 
 **Ubuntu / Debian**
 
 ```bash
 sudo apt install cmake libeigen3-dev g++
+sudo apt install libcgal-dev   # optional — enables --delaunay-voids
 ```
 
 **Build**
@@ -684,6 +764,12 @@ cmake --build build_debug -j$(nproc)
 | `--hybrid-thermal-sigma S` | auto | Soft-WS Gaussian width [Å] (-1 = 0.05·$d_\text{nn}$) |
 | `--hybrid-recomb-radius R` | 3.3 | Frenkel recombination radius [Å] |
 | `--hybrid-transit-factor F` | 1.5 | Transit cutoff as multiple of $d_\text{nn}$ |
+| `--delaunay-voids` | off | Reference-free Delaunay void detector (§3.10); needs CGAL |
+| `--dv-threshold T` | 0.90 | Void cell iff $R_\text{circ}/d_\text{nn} > T$ |
+| `--dv-max-cells N` | 50 | Max Delaunay cells per point vacancy (else extended void) |
+| `--dv-max-aspect A` | 5.0 | Max aspect ratio for a point vacancy (else planar/elongated) |
+| `--dv-nn D` | auto | Override the auto-detected $d_\text{nn}$ [Å] |
+| `--dv-no-calibrate` | off | Do not calibrate $d_\text{nn}$ from the reference frame (use damaged-frame density) |
 | `--ref-sia FILE` | — | Reference DV file for SIA atoms |
 | `--ref-antv FILE` | — | Reference DV file for ANtV atoms |
 | `--ref-typea FILE` | — | Reference DV file for type-A atoms |
@@ -753,6 +839,27 @@ probability model, which avoid the chi-fit degeneracy of a single global referen
     pristine_FeCrNi.dump damaged_FeCrNi.dump
 ```
 
+### Example — reference-free counting (HEA, strain, grain boundary)
+
+When a trustworthy reference lattice is unavailable or misleading — a chemically
+disordered HEA, a strained cell, or a polycrystal — use the Delaunay void detector
+(§3.10). It needs no reference site map. Run it alongside `--ws` to compare, or on
+its own:
+
+```bash
+# compare reference-free vs Wigner-Seitz on the same frame
+./build/distool --no-soap --ws --delaunay-voids \
+    pristine_FeCrNi.dump damaged_FeCrNi.dump
+
+# sweep the threshold if thermal noise inflates the count
+./build/distool --no-soap --delaunay-voids --dv-threshold 0.95 \
+    any_frame.dump any_frame.dump
+```
+
+> **Performance.** The triangulation is built with batched, spatially-sorted range
+> insertion. Periodic Delaunay of a ~10⁶-atom frame is still the heaviest step in
+> the pipeline (single-threaded in CGAL); budget accordingly for large trajectories.
+
 ---
 
 ## 7. Output files
@@ -768,6 +875,7 @@ probability model, which avoid the chi-fit degeneracy of a single global referen
 | `ws_sites_output.csv` | Per reference site: position and final occupancy | `--ws` |
 | `interstitials_output.csv` | Crowded WS cells ($o_a \ge 2$) | `--ws`, if any |
 | `hybrid_vacancies_output.csv` | Accepted hybrid vacancies with full per-signal score breakdown | `--hybrid` |
+| `delaunay_voids_output.csv` | One row per void cluster: `x y z circumradius_A n_cells aspect_ratio is_point_defect` | `--delaunay-voids` |
 
 The terminal also prints a **Vacancy reconciliation** block summarising the
 topological (WS), topological (hybrid, with an `agrees with WS` / `filters N WS
