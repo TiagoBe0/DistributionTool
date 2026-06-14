@@ -534,39 +534,73 @@ $R/d_\text{nn} \lesssim 0.87$), so the bulk crystal produces *no* void cells whi
 genuine monovacancy — whose empty sphere is necessarily larger than any lattice
 hole — does.
 
-**Clustering and shape filter.** Adjacent void tetrahedra (sharing a face) are
-merged by connected components. Each cluster's shape is characterised by the
-eigenvalues $\lambda_1 \le \lambda_2 \le \lambda_3$ of the covariance matrix of its
-tetrahedra circumcenters:
+**Clustering, shape filter and vacancy count.** Adjacent void tetrahedra (sharing
+a face) are merged by connected components. Each cluster is then classified by its
+**linear extent** — the maximum distance between its void-cell circumcenters:
 
-$$\text{aspect ratio} = \sqrt{\lambda_3/\lambda_1}.$$
+- *Compact* clusters (extent $\le 3\,d_\text{nn}$) are **vacancy clusters**
+  (mono-, di-, tri-vacancies …). The number of vacancies is estimated from the
+  cluster's void volume, $n_\text{vac} = \mathrm{round}(V_\text{cluster}/V_1)$,
+  where $V_1 \approx 3.2\,(V/N)$ is the void volume of a single vacancy.
+- *Extended* clusters (extent $> 3\,d_\text{nn}$) are **extended defects**
+  (grain-boundary sheets, dislocation-core tubes, surface voids) — reported
+  separately and **not** counted as vacancies.
 
-A **point vacancy** is a compact, roughly isotropic cluster (few cells, aspect
-ratio $\lesssim 5$). Extended defects separate out naturally: a grain-boundary or
-surface void forms a *planar* sheet of void cells (high aspect ratio) and a
-dislocation-core void forms an *elongated* tube — both are filtered out of the
-point-vacancy count and reported separately as extended voids.
+> **Why extent, not aspect ratio.** An earlier version filtered on aspect ratio
+> ($\sqrt{\lambda_3/\lambda_1}$), but a *di-vacancy* is geometrically elongated
+> (aspect ratio $\sim 18$) while being only $\sim 3$ Å across — it was wrongly
+> discarded as an extended defect. Absolute extent is the correct discriminator: a
+> di-vacancy is tiny, a grain boundary spans the cell.
 
 | Failure mode of WS | Delaunay voids |
 |---|---|
 | HEA chemical disorder | no reference → immune |
 | Uniaxial / hydrostatic strain | $\tau$ scales with local $d_\text{nn}$ → immune |
-| Grain boundary / surface | planar cluster, high aspect ratio → filtered out |
+| Grain boundary / surface | large extent → classified as extended, not a vacancy |
 
 **Implementation notes.** The circumcenter of each tetrahedron is computed
 *analytically* from its four vertices (taken in CGAL's per-cell consistent spatial
 frame via `periodic_point(c, i)`), not by differencing canonical periodic points —
 this avoids an offset-wrapping error for cells that straddle a box boundary.
-Near-degenerate (sliver) tetrahedra are skipped. The triangulation must reach a
-1-sheeted periodic cover, which any full MD frame (box $\gg$ largest void)
-satisfies; the code aborts with a clear message otherwise rather than silently
-over-counting.
+Near-degenerate (sliver) tetrahedra are skipped. The triangulation is built by
+**batched, spatially-sorted range insertion**; point-by-point insertion of a
+crystal-ordered dump degrades to $O(N^2)$ and is ~50× slower (see §5 note). The
+triangulation must reach a 1-sheeted periodic cover, which any full MD frame
+(box $\gg$ largest void) satisfies; the code aborts with a clear message otherwise
+rather than silently over-counting.
 
-> **Status.** The method is implemented and builds against CGAL ≥ 5.6
-> (`--delaunay-voids`). Empirical calibration of $\tau$ against thermal noise and
-> head-to-head validation versus WS on HEA / strained / grain-boundary frames is in
-> progress; the default $\tau = 0.90$ is the geometric (0 K) value and may need to be
-> raised slightly at finite temperature. See `--dv-threshold` to sweep it.
+**Validation — FeCrNi (BCC) cascades, reference-free vs Wigner-Seitz.** The
+per-vacancy void volume $V_1$ was calibrated once on the 6 keV relaxed frame
+(monovacancy void $\approx 35$ Å³, di-vacancy $\approx 65$ Å³, $V/N \approx 11$ Å³)
+and then applied **unchanged** to 7 keV and 8 keV:
+
+| Frame | WS vacancies | Delaunay (ref-free) | Delaunay clusters | WS spatial clusters |
+|---|---|---|---|---|
+| Pristine (0 K) | 0 | **0** | 0 | 0 |
+| 6 keV relaxed | 10 | **10** | 8 | 8 (incl. 2 di-vacancies) |
+| 7 keV relaxed | 9 | 8 | 7 | — |
+| 8 keV relaxed | 14 | 10 | 8 | 7 (incl. one penta-, one tetra-vacancy) |
+| 6 keV peak (ballistic) | 394 | 35 (+5 extended) | 30 | — |
+
+In every frame the detected voids land **within ~1 Å of a true WS vacancy** (zero
+bulk false positives), and cluster *positions/counts* track WS closely. Two limits
+are visible and honest:
+
+1. **Dense vacancy clusters are under-counted.** The 8 keV penta-vacancy has a void
+   volume of 121 Å³ → counted as 3, not 5: fused vacancies share void surface, so
+   volume scales *sub*-linearly with vacancy number. The linear $V_\text{cluster}/V_1$
+   estimate is exact for dispersed mono/di-vacancies but under-estimates by
+   10–30 % when large compact clusters dominate.
+2. **The ballistic peak is not a topological count.** Delaunay counts open holes
+   (35), not displaced atoms (WS 394) — the tightly-bound transient Frenkel pairs
+   have their interstitial sitting in the would-be void, so no open hole exists.
+   This is the same regime distinction as the hybrid `robust` preset (§3.9), not an
+   error.
+
+The method's purpose is the regime where WS *over*-counts (HEA disorder, strain,
+grain boundaries — all reference-induced false positives); its own error is the
+opposite and milder (slight under-count in dense clusters), and it never
+fabricates a vacancy in the bulk.
 
 ---
 
@@ -766,8 +800,8 @@ cmake --build build_debug -j$(nproc)
 | `--hybrid-transit-factor F` | 1.5 | Transit cutoff as multiple of $d_\text{nn}$ |
 | `--delaunay-voids` | off | Reference-free Delaunay void detector (§3.10); needs CGAL |
 | `--dv-threshold T` | 0.90 | Void cell iff $R_\text{circ}/d_\text{nn} > T$ |
-| `--dv-max-cells N` | 50 | Max Delaunay cells per point vacancy (else extended void) |
-| `--dv-max-aspect A` | 5.0 | Max aspect ratio for a point vacancy (else planar/elongated) |
+| `--dv-extended-factor F` | 3.0 | Cluster extent $> F\cdot d_\text{nn}$ → extended defect, not a vacancy |
+| `--dv-vac-volume V` | auto | Void volume per vacancy [Å³] for splitting clusters (auto = $3.2\,V/N$) |
 | `--dv-nn D` | auto | Override the auto-detected $d_\text{nn}$ [Å] |
 | `--dv-no-calibrate` | off | Do not calibrate $d_\text{nn}$ from the reference frame (use damaged-frame density) |
 | `--ref-sia FILE` | — | Reference DV file for SIA atoms |
@@ -875,7 +909,7 @@ its own:
 | `ws_sites_output.csv` | Per reference site: position and final occupancy | `--ws` |
 | `interstitials_output.csv` | Crowded WS cells ($o_a \ge 2$) | `--ws`, if any |
 | `hybrid_vacancies_output.csv` | Accepted hybrid vacancies with full per-signal score breakdown | `--hybrid` |
-| `delaunay_voids_output.csv` | One row per void cluster: `x y z circumradius_A n_cells aspect_ratio is_point_defect` | `--delaunay-voids` |
+| `delaunay_voids_output.csv` | One row per void cluster: `x y z circumradius_A n_cells extent_A aspect_ratio volume_A3 n_vacancies is_extended` | `--delaunay-voids` |
 
 The terminal also prints a **Vacancy reconciliation** block summarising the
 topological (WS), topological (hybrid, with an `agrees with WS` / `filters N WS

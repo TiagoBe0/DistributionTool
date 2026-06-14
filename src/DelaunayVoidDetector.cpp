@@ -9,7 +9,10 @@
 #include <Eigen/Dense>
 
 #include <algorithm>
+#include <chrono>
 #include <cmath>
+#include <cstdlib>
+#include <iostream>
 #include <limits>
 #include <queue>
 #include <stdexcept>
@@ -107,6 +110,18 @@ std::vector<DelaunayVoid> DelaunayVoidDetector::detect(const Frame& frame) const
 
     const double r_thresh2 = std::pow(p_.threshold_ratio * d_nn, 2.0);
 
+    // Optional phase timing (set DV_TIMING=1) to profile the triangulation cost.
+    const bool dv_timing = std::getenv("DV_TIMING") != nullptr;
+    using clk = std::chrono::steady_clock;
+    auto t_mark = clk::now();
+    auto lap = [&](const char* label) {
+        if (!dv_timing) return;
+        auto now = clk::now();
+        const double ms = std::chrono::duration<double, std::milli>(now - t_mark).count();
+        std::cerr << "[Delaunay timing] " << label << ": " << ms << " ms\n";
+        t_mark = now;
+    };
+
     // ── 1. Build periodic Delaunay triangulation ─────────────────────────────
     GT::Iso_cuboid_3 domain(xlo, ylo, zlo, xhi, yhi, zhi);
     PDT dt(domain);
@@ -124,6 +139,11 @@ std::vector<DelaunayVoid> DelaunayVoidDetector::detect(const Frame& frame) const
                          wrapCoord(atom.z, zlo, zhi));
     }
     dt.insert(pts.begin(), pts.end(), /*is_large_point_set=*/true);
+    lap("range insert");
+    if (dv_timing)
+        std::cerr << "[Delaunay timing]   1-cover=" << dt.is_1_cover()
+                  << "  cells=" << dt.number_of_cells()
+                  << "  vertices=" << dt.number_of_vertices() << "\n";
 
     // Periodic Delaunay starts in a 27-sheeted cover and collapses to a single
     // sheet only once that is provably a simplicial complex.  Iterating cells
@@ -146,10 +166,12 @@ std::vector<DelaunayVoid> DelaunayVoidDetector::detect(const Frame& frame) const
         cell_idx[cellKey(cit)] = static_cast<int>(all_cells.size());
         all_cells.push_back(cit);
     }
+    lap("index cells");
 
     const int n_cells = static_cast<int>(all_cells.size());
     std::vector<bool>   is_void(n_cells, false);
     std::vector<double> circ_r2(n_cells, 0.0);
+    std::vector<double> cell_vol(n_cells, 0.0);
     std::vector<std::array<double,3>> circ_center(n_cells, {0,0,0});
 
     for (int i = 0; i < n_cells; i++) {
@@ -169,11 +191,21 @@ std::vector<DelaunayVoid> DelaunayVoidDetector::detect(const Frame& frame) const
             continue;
         }
         circ_r2[i]     = r2;
+        // Tetrahedron volume |det(p1-p0, p2-p0, p3-p0)| / 6.
+        cell_vol[i]    = std::abs((pv[1]-pv[0]).dot((pv[2]-pv[0]).cross(pv[3]-pv[0]))) / 6.0;
         circ_center[i] = {wrapCoord(cc.x(), xlo, xhi),
                           wrapCoord(cc.y(), ylo, yhi),
                           wrapCoord(cc.z(), zlo, zhi)};
         is_void[i]     = (r2 > r_thresh2);
     }
+    lap("circumcenters");
+
+    // d_nn ⇒ per-vacancy void volume for splitting compact clusters into a count.
+    const double vol_per_atom = std::pow(d_nn / 1.1, 3.0);   // inverse of estimateNN
+    const double vac_vol = (p_.vac_volume > 0.0)
+                         ? p_.vac_volume
+                         : p_.vac_volume_factor * vol_per_atom;
+    const double extent_thresh = p_.extended_factor * d_nn;
 
     // ── 3. BFS: connected components of void cells ───────────────────────────
     std::vector<bool> visited(n_cells, false);
@@ -207,25 +239,41 @@ std::vector<DelaunayVoid> DelaunayVoidDetector::detect(const Frame& frame) const
         // ── 4. Cluster properties ────────────────────────────────────────────
         const int nc = static_cast<int>(cluster.size());
 
-        // Reuse the circumcenters/radii computed once in Step 2.
+        // Reuse the circumcenters/radii/volumes computed once in Step 2.
         std::vector<std::array<double,3>> centers;
         centers.reserve(nc);
-        double max_r2 = 0.0;
+        double max_r2 = 0.0, vol_sum = 0.0;
 
         for (int ci : cluster) {
             centers.push_back(circ_center[ci]);
+            vol_sum += cell_vol[ci];
             if (circ_r2[ci] > max_r2) max_r2 = circ_r2[ci];
         }
 
-        // PBC-aware centroid: wrap each point relative to the running mean.
+        // PBC-aware unwrap: bring every centre into the same image as centre 0,
+        // then take the centroid.  Unwrapped coords are reused for extent/shape.
         std::array<double,3> centroid = centers[0];
         for (int i = 1; i < nc; i++) {
-            wrapRelativeTo(centers[i].data(), centroid.data(), L);
+            wrapRelativeTo(centers[i].data(), centers[0].data(), L);
             for (int d = 0; d < 3; d++)
-                centroid[d] = (centroid[d] * i + centers[i][d]) / (i + 1);
+                centroid[d] += centers[i][d];
         }
-        for (int d = 0; d < 3; d++)
-            centroid[d] = wrapCoord(centroid[d], lo[d], lo[d] + L[d]);
+        for (int d = 0; d < 3; d++) centroid[d] /= nc;
+
+        // Linear extent = max pairwise distance between void-cell centres [Å].
+        // This is the physical size of the cluster and the discriminator between
+        // a compact vacancy cluster and an extended defect — independent of the
+        // aspect ratio, which is high even for a tiny di-vacancy.
+        double extent = 0.0;
+        for (int i = 0; i < nc; i++)
+            for (int j = i + 1; j < nc; j++) {
+                double d2 = 0.0;
+                for (int d = 0; d < 3; d++) {
+                    const double dd = centers[i][d] - centers[j][d];
+                    d2 += dd * dd;
+                }
+                if (d2 > extent * extent) extent = std::sqrt(d2);
+            }
 
         // Aspect ratio via covariance-matrix eigendecomposition (needs ≥ 4 points).
         double aspect_ratio = 1.0;
@@ -246,30 +294,49 @@ std::vector<DelaunayVoid> DelaunayVoidDetector::detect(const Frame& frame) const
         }
 
         DelaunayVoid dv;
-        dv.pos           = centroid;
+        for (int d = 0; d < 3; d++)
+            dv.pos[d] = wrapCoord(centroid[d], lo[d], lo[d] + L[d]);
         dv.circumradius  = std::sqrt(max_r2);
         dv.n_cells       = nc;
+        dv.extent        = extent;
         dv.aspect_ratio  = aspect_ratio;
-        dv.is_point_defect = (nc <= p_.max_cluster_cells)
-                          && (aspect_ratio <= p_.max_aspect_ratio);
+        dv.volume        = vol_sum;
+        dv.is_extended   = (extent > extent_thresh);
+        // A compact cluster holds round(volume / per-vacancy void volume) vacancies,
+        // floored at 1.  Extended defects are not assigned a vacancy count.
+        dv.n_vacancies   = dv.is_extended
+                         ? 0
+                         : std::max(1, (int)std::lround(vol_sum / vac_vol));
         results.push_back(dv);
     }
 
-    // Sort: point defects first, then by n_cells descending.
+    // Sort: vacancy clusters first, then by vacancy count descending.
     std::sort(results.begin(), results.end(),
               [](const DelaunayVoid& a, const DelaunayVoid& b) {
-                  if (a.is_point_defect != b.is_point_defect)
-                      return a.is_point_defect > b.is_point_defect;
-                  return a.n_cells > b.n_cells;
+                  if (a.is_extended != b.is_extended)
+                      return a.is_extended < b.is_extended;   // vacancies first
+                  return a.n_vacancies > b.n_vacancies;
               });
+    lap("BFS + cluster props");
 
     return results;
 }
 
 int DelaunayVoidDetector::vacancyCount(const std::vector<DelaunayVoid>& voids) const {
     int n = 0;
-    for (const auto& v : voids)
-        if (v.is_point_defect) ++n;
+    for (const auto& v : voids) n += v.n_vacancies;   // 0 for extended defects
+    return n;
+}
+
+int DelaunayVoidDetector::clusterCount(const std::vector<DelaunayVoid>& voids) const {
+    int n = 0;
+    for (const auto& v : voids) if (!v.is_extended) ++n;
+    return n;
+}
+
+int DelaunayVoidDetector::extendedCount(const std::vector<DelaunayVoid>& voids) const {
+    int n = 0;
+    for (const auto& v : voids) if (v.is_extended) ++n;
     return n;
 }
 

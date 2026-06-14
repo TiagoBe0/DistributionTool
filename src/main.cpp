@@ -148,8 +148,10 @@ static void printUsage(const char* prog) {
         "                              Uses periodic 3D Delaunay triangulation;\n"
         "                              works for HEAs, grain boundaries, compressed cells.\n"
         "  --dv-threshold T            R_circumsphere/d_nn > T → void cell (default: 0.90)\n"
-        "  --dv-max-cells N            Max Delaunay cells per point vacancy (default: 50)\n"
-        "  --dv-max-aspect A           Max aspect ratio for point vacancy (default: 5.0)\n"
+        "  --dv-extended-factor F      Cluster extent > F·d_nn → extended defect, not a\n"
+        "                              vacancy (GB/dislocation/surface) (default: 3.0)\n"
+        "  --dv-vac-volume V           Void volume per vacancy [Å³] for splitting clusters\n"
+        "                              (default: auto = 6·vol_per_atom)\n"
         "  --dv-nn D                   Override auto-detected d_nn [Å]\n"
         "  --dv-no-calibrate           Do not use --ref to calibrate d_nn\n\n"
         "Output options:\n"
@@ -430,18 +432,19 @@ static void writeDelaunayVoidCSV(const std::vector<DelaunayVoid>& voids,
 {
     std::ofstream f(path);
     if (!f) throw std::runtime_error("Cannot write: " + path);
-    f << "x,y,z,circumradius_A,n_cells,aspect_ratio,is_point_defect\n"
+    f << "x,y,z,circumradius_A,n_cells,extent_A,aspect_ratio,volume_A3,n_vacancies,is_extended\n"
       << std::fixed << std::setprecision(4);
-    int n_pt = 0;
+    int n_vac = 0;
     for (const auto& v : voids) {
         f << v.pos[0] << ',' << v.pos[1] << ',' << v.pos[2] << ','
           << v.circumradius << ',' << v.n_cells << ','
-          << std::setprecision(2) << v.aspect_ratio << ','
-          << (v.is_point_defect ? 1 : 0) << '\n';
-        if (v.is_point_defect) ++n_pt;
+          << std::setprecision(2) << v.extent << ',' << v.aspect_ratio << ','
+          << std::setprecision(1) << v.volume << ','
+          << v.n_vacancies << ',' << (v.is_extended ? 1 : 0) << '\n';
+        n_vac += v.n_vacancies;
     }
     std::cout << "  → Delaunay void CSV written: " << path
-              << "  (" << n_pt << " point vacancies / " << voids.size() << " clusters)\n";
+              << "  (" << n_vac << " vacancies / " << voids.size() << " clusters)\n";
 }
 #endif
 
@@ -619,15 +622,15 @@ int main(int argc, char* argv[]) {
         else if (a == "--hybrid-transit-factor")hybrid_params.transit_factor   = nextDbl();
 #ifdef USE_CGAL
         else if (a == "--delaunay-voids")   do_delaunay            = true;
-        else if (a == "--dv-threshold")     dv_params.threshold_ratio   = nextDbl();
-        else if (a == "--dv-max-cells")     dv_params.max_cluster_cells = nextInt();
-        else if (a == "--dv-max-aspect")    dv_params.max_aspect_ratio  = nextDbl();
-        else if (a == "--dv-nn")            dv_params.nn_override        = nextDbl();
+        else if (a == "--dv-threshold")       dv_params.threshold_ratio = nextDbl();
+        else if (a == "--dv-extended-factor") dv_params.extended_factor = nextDbl();
+        else if (a == "--dv-vac-volume")      dv_params.vac_volume      = nextDbl();
+        else if (a == "--dv-nn")              dv_params.nn_override      = nextDbl();
         else if (a == "--dv-no-calibrate")  dv_no_calibrate              = true;
 #else
-        else if (a == "--delaunay-voids" || a == "--dv-threshold" ||
-                 a == "--dv-max-cells"  || a == "--dv-max-aspect" ||
-                 a == "--dv-nn"         || a == "--dv-no-calibrate") {
+        else if (a == "--delaunay-voids"      || a == "--dv-threshold" ||
+                 a == "--dv-extended-factor"  || a == "--dv-vac-volume" ||
+                 a == "--dv-nn"               || a == "--dv-no-calibrate") {
             std::cerr << "Option " << a << " requires CGAL (build with -DUSE_CGAL=ON and install libcgal-dev).\n";
             return 1;
         }
@@ -1119,7 +1122,7 @@ int main(int argc, char* argv[]) {
 #ifdef USE_CGAL
         // ── Delaunay void detector (reference-free) ──────────────────────────
         std::vector<DelaunayVoid> delaunay_voids;
-        int delaunay_vac_count = -1;
+        int delaunay_vac_count = -1, delaunay_cl_count = -1, delaunay_ext_count = -1;
         if (do_delaunay) {
             std::cout << "\n[Delaunay] Reference-free void detection…\n";
             DelaunayVoidDetector dvd(dv_params);
@@ -1136,10 +1139,13 @@ int main(int argc, char* argv[]) {
                           << "      d_nn = " << d_nn_disp << " Å" << src
                           << "  threshold = " << dv_params.threshold_ratio << " × d_nn\n";
             }
-            delaunay_voids    = dvd.detect(dmg_frame);
+            delaunay_voids     = dvd.detect(dmg_frame);
             delaunay_vac_count = dvd.vacancyCount(delaunay_voids);
-            std::cout << "      Total void clusters: " << delaunay_voids.size()
-                      << " | Point vacancies: " << delaunay_vac_count << "\n";
+            delaunay_cl_count  = dvd.clusterCount(delaunay_voids);
+            delaunay_ext_count = dvd.extendedCount(delaunay_voids);
+            std::cout << "      Vacancies: " << delaunay_vac_count
+                      << " in " << delaunay_cl_count << " clusters"
+                      << " | Extended defects: " << delaunay_ext_count << "\n";
         }
 #endif
 
@@ -1196,8 +1202,11 @@ int main(int argc, char* argv[]) {
 #ifdef USE_CGAL
             if (do_delaunay)
                 std::cout << "    Delaunay (ref-free)   : " << delaunay_vac_count
-                          << " point vacancies  (" << delaunay_voids.size()
-                          << " total clusters, filtered by size/shape)\n";
+                          << " vacancies in " << delaunay_cl_count << " clusters"
+                          << (delaunay_ext_count > 0
+                              ? "  (+" + std::to_string(delaunay_ext_count) + " extended defects)"
+                              : "")
+                          << "\n";
 #endif
             std::cout << "    → use WS/hybrid for vacancy counting; grid measures "
                          "open-void volume.\n";
@@ -1207,8 +1216,11 @@ int main(int argc, char* argv[]) {
             // Reconciliation when WS was not run
             std::cout << "\n  Vacancy reconciliation:\n"
                       << "    Delaunay (ref-free)   : " << delaunay_vac_count
-                      << " point vacancies  (" << delaunay_voids.size()
-                      << " total clusters)\n";
+                      << " vacancies in " << delaunay_cl_count << " clusters"
+                      << (delaunay_ext_count > 0
+                          ? "  (+" + std::to_string(delaunay_ext_count) + " extended defects)"
+                          : "")
+                      << "\n";
         }
 #endif
 

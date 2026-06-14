@@ -25,11 +25,14 @@ namespace DistTool {
  */
 
 struct DelaunayVoid {
-    std::array<double,3> pos;   // vacancy centroid (wrapped into simulation box)
+    std::array<double,3> pos;   // cluster centroid (wrapped into simulation box)
     double circumradius;         // max circumsphere radius in cluster [Å]
     int    n_cells;              // Delaunay cells in this void cluster
-    double aspect_ratio;         // sqrt(λ_max/λ_min): 1.0 = spherical, high = planar
-    bool   is_point_defect;     // passes size + shape filters → likely a point vacancy
+    double extent;               // max pairwise distance between void-cell centres [Å]
+    double aspect_ratio;         // sqrt(λ_max/λ_min): 1.0 = spherical, high = planar/linear
+    double volume;               // summed volume of the void cells [Å³]
+    int    n_vacancies;          // estimated vacancies in this cluster (≥1 if not extended)
+    bool   is_extended;          // GB / dislocation / surface (extent ≫ d_nn) → not a vacancy
 };
 
 struct DelaunayVoidParams {
@@ -39,13 +42,25 @@ struct DelaunayVoidParams {
     // very few false positives in the bulk.
     double threshold_ratio   = 0.90;
 
-    // Point vacancy clusters span at most this many Delaunay cells.
-    // Extended defects (GB voids, dislocation loops) span far more.
-    int    max_cluster_cells = 50;
+    // A void cluster whose linear extent exceeds extended_factor · d_nn is an
+    // EXTENDED defect (grain-boundary sheet, dislocation-core tube, surface) and
+    // is reported separately, not counted as a vacancy.  A mono/di/tri-vacancy
+    // spans only a few d_nn, so this — NOT the aspect ratio — is the right
+    // discriminator: a di-vacancy is "elongated" (high aspect ratio) yet tiny.
+    double extended_factor   = 3.0;   // extent threshold = extended_factor · d_nn
 
-    // Point vacancies have aspect ratio below this.
-    // Planar GB voids have aspect_ratio >> 5.
-    double max_aspect_ratio  = 5.0;
+    // Volume occupied by a single vacancy, used to split a compact void cluster
+    // into a vacancy count (n_vac ≈ round(cluster_volume / vac_volume)).
+    // -1 = auto: calibrated to the per-vacancy void volume of the lattice
+    // (≈ vac_volume_factor · vol_per_atom; see .cpp).
+    //
+    // The factor 3.2 is the summed volume of the empty Delaunay cells around one
+    // vacancy, in units of vol_per_atom — calibrated on a relaxed FeCrNi (BCC)
+    // frame where Delaunay's per-cluster volumes were {mono ≈ 35 Å³, di ≈ 65 Å³}
+    // against vol_per_atom ≈ 11 Å³, reproducing the WS count (6 mono + 2 di = 10)
+    // exactly. May need re-calibration for FCC; override with --dv-vac-volume.
+    double vac_volume        = -1.0;
+    double vac_volume_factor = 3.2;   // void-cell volume per vacancy ≈ 3.2 · vol_per_atom
 
     // If > 0, use this value as d_nn instead of auto-detecting from frame density.
     double nn_override       = -1.0;
@@ -63,8 +78,14 @@ public:
     // Does NOT require a reference frame.
     std::vector<DelaunayVoid> detect(const Frame& frame) const;
 
-    // Count clusters that pass the point-defect filters.
+    // Total estimated vacancies = Σ n_vacancies over non-extended clusters.
     int vacancyCount(const std::vector<DelaunayVoid>& voids) const;
+
+    // Number of distinct vacancy clusters (non-extended voids).
+    int clusterCount(const std::vector<DelaunayVoid>& voids) const;
+
+    // Number of extended defects (GB / dislocation / surface voids).
+    int extendedCount(const std::vector<DelaunayVoid>& voids) const;
 
     double nnRef() const { return nn_ref_; }
 
