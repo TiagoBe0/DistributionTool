@@ -26,6 +26,8 @@ import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 
+from _figstyle import setup, save, C
+
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.normpath(os.path.join(HERE, ".."))
 
@@ -109,25 +111,25 @@ def main():
                                score=("auc_score", "mean"))
     print(agg.round(3).to_string())
 
+    setup()
     fig, ax = plt.subplots(figsize=(8, 5))
     for en, g in df.groupby("energy"):
-        ax.plot(g.dt / 1000, g.auc_score, "o", ms=4, alpha=0.35, color="#c0392b")
-        ax.plot(g.dt / 1000, g.auc_topo, "s", ms=4, alpha=0.35, color="#2a9d8f")
-    ax.plot(agg.index / 1000, agg.score, "-", lw=2.5, color="#c0392b",
+        ax.plot(g.dt / 1000, g.auc_score, "o", ms=4, alpha=0.35, color=C["ws"])
+        ax.plot(g.dt / 1000, g.auc_topo, "s", ms=4, alpha=0.35, color=C["survive"])
+    ax.plot(agg.index / 1000, agg.score, "-", lw=2.5, color=C["ws"],
             label="score consenso (robust)")
-    ax.plot(agg.index / 1000, agg.topo, "-", lw=2.5, color="#2a9d8f",
+    ax.plot(agg.index / 1000, agg.topo, "-", lw=2.5, color=C["survive"],
             label="topología sola")
-    ax.axhline(0.5, ls="--", color="0.5", lw=1, label="azar")
+    ax.axhline(0.5, ls="--", color=C["muted"], lw=1, label="azar")
     ax.set_xlabel("Δt desde el pico de daño [×1000 pasos]")
     ax.set_ylabel("AUC — predicción de supervivencia de vacancias vivas")
     ax.set_ylim(0, 1.05)
     ax.set_title("Horizonte de predictibilidad del daño superviviente\n"
                  "(cascadas FeCrNi 4–8 keV; puntos = cascadas, línea = media)")
-    ax.legend(frameon=False)
+    ax.legend()
     ax.grid(alpha=0.25)
     fig.tight_layout()
-    out_fig = os.path.join(ROOT, "figures", "predictability_horizon.png")
-    fig.savefig(out_fig, dpi=150, bbox_inches="tight")
+    out_fig = save(fig, "predictability_horizon")
     print(f"\nFigura: {os.path.relpath(out_fig, ROOT)}")
     print(f"CSV:    {os.path.relpath(out_csv, ROOT)}")
 

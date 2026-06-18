@@ -34,6 +34,8 @@ import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 
+from _figstyle import setup, save, C
+
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.normpath(os.path.join(HERE, ".."))
 
@@ -254,6 +256,7 @@ def main():
     for s in sorted(FEATURES, key=lambda s: -abs(learned[s])):
         print(f"  {s:12s} {learned[s]:+.3f}   (robust: {ROBUST_W[s]:+.1f})")
 
+    setup()
     fig, axes = plt.subplots(1, 3, figsize=(15.5, 4.4),
                              gridspec_kw={"width_ratios": [1.3, 1, 1]})
     ax = axes[0]
@@ -261,9 +264,9 @@ def main():
     names = [FEATURES[i] for i in order]
     yb = np.arange(len(names))
     ax.barh(yb - 0.2, [learned[s] for s in names], 0.4,
-            color="#1f6fb2", label="aprendido (supervivencia)")
+            color=C["hybrid"], label="aprendido (supervivencia)")
     ax.barh(yb + 0.2, [ROBUST_W[s] for s in names], 0.4,
-            color="#c0392b", alpha=0.7, label="robust (a mano)")
+            color=C["ws"], alpha=0.7, label="robust (a mano)")
     ax.axvline(0, color="0.4", lw=0.8)
     ax.set_yticks(yb); ax.set_yticklabels(names, fontsize=9)
     ax.set_title("Pesos: aprendidos con labels reales vs preset")
@@ -274,11 +277,11 @@ def main():
         ens = [e for e, *_ in loco]
         xb = np.arange(len(ens))
         ax.bar(xb - 0.25, [a for _, a, _, _ in loco], 0.25, label="logreg",
-               color="#1f6fb2")
+               color=C["hybrid"])
         ax.bar(xb, [t for _, _, t, _ in loco], 0.25, label="topo sola",
-               color="#2a9d8f")
+               color=C["survive"])
         ax.bar(xb + 0.25, [r for _, _, _, r in loco], 0.25,
-               label="score robust", color="#c0392b", alpha=0.8)
+               label="score robust", color=C["ws"], alpha=0.8)
         ax.axhline(0.5, color="0.5", ls="--", lw=0.8)
         ax.set_xticks(xb); ax.set_xticklabels(ens, rotation=45, fontsize=8,
                                               ha="right")
@@ -290,16 +293,15 @@ def main():
     s_all = Xs @ w + b
     bins = np.linspace(s_all.min(), s_all.max(), 35)
     ax.hist(s_all[y == 0], bins=bins, alpha=0.6, label="transitorias",
-            color="#e76f51", density=True)
+            color=C["transient"], density=True)
     ax.hist(s_all[y == 1], bins=bins, alpha=0.7, label="sobreviven",
-            color="#2a9d8f", density=True)
+            color=C["survive"], density=True)
     ax.set_xlabel("score logístico"); ax.set_title(
         f"Separación en el pico (in-sample AUC {auc(y, s_all):.3f})")
     ax.legend(frameon=False, fontsize=8)
 
     fig.tight_layout()
-    out = os.path.join(ROOT, "figures", "ml_survival_weights.png")
-    fig.savefig(out, dpi=150, bbox_inches="tight")
+    out = save(fig, "ml_survival_weights")
     print(f"\nFigura: {os.path.relpath(out, ROOT)}")
     print(f"Dataset: {os.path.relpath(out_csv, ROOT)}")
 

@@ -24,6 +24,8 @@ matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 from matplotlib import cm
 
+from _figstyle import setup, save, C
+
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.normpath(os.path.join(HERE, ".."))
 
@@ -46,6 +48,7 @@ def main():
     colors = {en: cm.viridis(i / max(1, len(data) - 1))
               for i, en in enumerate(data)}
 
+    setup()
     fig, axes = plt.subplots(1, 3, figsize=(15.5, 4.6))
 
     # (a) población viva vs tiempo
@@ -71,13 +74,13 @@ def main():
         rows.append((ENERGY_KEV[en], n_peak, n_fin, en))
     rows.sort()
     E = [r[0] for r in rows]
-    ax.plot(E, [r[1] for r in rows], "o", ms=8, color="#e76f51",
+    ax.plot(E, [r[1] for r in rows], "o", ms=8, color=C["transient"],
             label="pico de daño")
-    ax.plot(E, [r[2] for r in rows], "s", ms=8, color="#2a9d8f",
+    ax.plot(E, [r[2] for r in rows], "s", ms=8, color=C["survive"],
             label="sobreviven al final")
     for e, npk, nfn, _ in rows:
         ax.annotate(f"{100*nfn/npk:.0f}%", (e, nfn), textcoords="offset points",
-                    xytext=(0, -14), ha="center", fontsize=7, color="#2a9d8f")
+                    xytext=(0, -14), ha="center", fontsize=7, color=C["survive"])
     ax.set_yscale("log")
     ax.set_xlabel("energía del PKA [keV]")
     ax.set_ylabel("vacancias WS")
@@ -104,9 +107,7 @@ def main():
     fig.suptitle("Supervivencia de vacancias en cascadas FeCrNi (tracking WS temporal)",
                  y=1.03, fontsize=13)
     fig.tight_layout()
-    out = os.path.join(ROOT, "figures", "survival_overview.png")
-    fig.savefig(out, dpi=150, bbox_inches="tight")
-    fig.savefig(out.replace(".png", ".pdf"), bbox_inches="tight")
+    out = save(fig, "survival_overview")
     print("Figura:", os.path.relpath(out, ROOT))
 
 

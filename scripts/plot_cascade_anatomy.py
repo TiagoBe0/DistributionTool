@@ -25,6 +25,8 @@ import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 
+from _figstyle import setup, save, C
+
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.normpath(os.path.join(HERE, ".."))
 
@@ -76,6 +78,7 @@ def main():
     ax1, ax2 = np.argsort(var)[::-1][:2]
     lbl = "xyz"
 
+    setup()
     fig = plt.figure(figsize=(15.5, 5.4))
     gs = fig.add_gridspec(1, 3, width_ratios=[1.5, 1, 1])
 
@@ -84,21 +87,21 @@ def main():
     ax.scatter(ints[:, ax1], ints[:, ax2], marker="+", s=14, c="#7fa8d9",
                alpha=0.5, label=f"intersticiales WS ({len(ints)})")
     doom = pos[y == 0]
-    ax.scatter(doom[:, ax1], doom[:, ax2], s=12, c="#e76f51", alpha=0.6,
+    ax.scatter(doom[:, ax1], doom[:, ax2], s=12, c=C["transient"], alpha=0.6,
                label=f"vacancias transitorias ({int((y==0).sum())})")
     surv_ids = [t for t, s in zip(P.track_id, y) if s == 1]
     first = True
     for tid in surv_ids:
         tp = pts[pts.track_id == tid].sort_values("step")
         tr_pos = unwrap(tp[["x", "y", "z"]].values, pos[0])
-        ax.plot(tr_pos[:, ax1], tr_pos[:, ax2], "-", lw=1.4, color="#1d7d6b",
+        ax.plot(tr_pos[:, ax1], tr_pos[:, ax2], "-", lw=1.4, color=C["traj"],
                 alpha=0.8)
         ax.scatter(tr_pos[0, ax1], tr_pos[0, ax2], marker="*", s=160,
-                   c="#2a9d8f", edgecolors="k", linewidths=0.6, zorder=5,
+                   c=C["survive"], edgecolors="k", linewidths=0.6, zorder=5,
                    label=f"sobreviven ({len(surv_ids)}) + trayectoria"
                          if first else None)
         ax.scatter(tr_pos[-1, ax1], tr_pos[-1, ax2], marker="o", s=36,
-                   facecolors="none", edgecolors="#1d7d6b", zorder=5)
+                   facecolors="none", edgecolors=C["traj"], zorder=5)
         first = False
     ax.scatter(*[[cent[ax1]], [cent[ax2]]], marker="x", s=90, c="k",
                label="centroide de la nube")
@@ -124,11 +127,11 @@ def main():
 
     def panel(ax, vals, xlabel, title, bins):
         ax.hist(vals[YY == 0], bins=bins, density=True, alpha=0.6,
-                color="#e76f51", label="transitorias")
+                color=C["transient"], label="transitorias")
         ax.hist(vals[YY == 1], bins=bins, density=True, alpha=0.75,
-                color="#2a9d8f", label="sobreviven")
+                color=C["survive"], label="sobreviven")
         ax.axvline(np.median(vals[YY == 0]), color="#b23a22", ls="--", lw=1.2)
-        ax.axvline(np.median(vals[YY == 1]), color="#1d7d6b", ls="--", lw=1.2)
+        ax.axvline(np.median(vals[YY == 1]), color=C["traj"], ls="--", lw=1.2)
         ax.set_xlabel(xlabel)
         ax.set_title(title)
         ax.legend(fontsize=8, frameon=False)
@@ -146,9 +149,7 @@ def main():
                  "denso de la nube de vacancias (FeCrNi 4–8 keV)",
                  y=1.02, fontsize=12.5)
     fig.tight_layout()
-    out = os.path.join(ROOT, "figures", f"cascade_anatomy_{en}.png")
-    fig.savefig(out, dpi=150, bbox_inches="tight")
-    fig.savefig(out.replace(".png", ".pdf"), bbox_inches="tight")
+    out = save(fig, f"cascade_anatomy_{en}")
     print("Figura:", os.path.relpath(out, ROOT))
 
 

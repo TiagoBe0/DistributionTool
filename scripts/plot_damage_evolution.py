@@ -18,6 +18,8 @@ import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 
+from _figstyle import setup, save, C
+
 # timestep : (WS_vac, hybrid_robust_accepted, WS_filtered, grid_voids, grid_volume_A3)
 DATA = {
     5000:   (424, 79, 345, 57, 297.0),
@@ -41,25 +43,22 @@ def main():
     filtered = [DATA[t][2] for t in ts]
     grid     = [DATA[t][3] for t in ts]
 
-    here = os.path.dirname(os.path.abspath(__file__))
-    figdir = os.path.join(here, "..", "figures")
-    os.makedirs(figdir, exist_ok=True)
-
+    setup()
     fig, (ax, axz) = plt.subplots(
         1, 2, figsize=(11, 4.6), gridspec_kw={"width_ratios": [2.0, 1.0]})
 
     # ---- main panel: full damage evolution -------------------------------
-    ax.plot(ts, ws,     "o-",  color="#c0392b", lw=2, ms=7,
+    ax.plot(ts, ws,     "o-",  color=C["ws"], lw=2, ms=7,
             label="Wigner-Seitz (topological count)")
-    ax.plot(ts, hybrid, "s-",  color="#1f6fb2", lw=2, ms=7,
+    ax.plot(ts, hybrid, "s-",  color=C["hybrid"], lw=2, ms=7,
             label="Hybrid  `robust`  (stable defects)")
-    ax.plot(ts, grid,   "^--", color="#27ae60", lw=1.6, ms=6,
+    ax.plot(ts, grid,   "^--", color=C["grid"], lw=1.6, ms=6,
             label="Grid open-void clusters")
     ax.axhline(SURVIVORS, color="0.4", ls=":", lw=1.4)
     ax.annotate(f"{SURVIVORS} surviving Frenkel pairs",
                 xy=(45000, SURVIVORS), xytext=(46000, 70),
                 fontsize=9, color="0.3",
-                arrowprops=dict(arrowstyle="->", color="0.5"))
+                arrowprops=dict(arrowstyle="->", color=C["muted"]))
 
     # shade the ballistic regime
     ax.axvspan(0, 12500, color="#f4d03f", alpha=0.18)
@@ -70,15 +69,15 @@ def main():
     ax.set_xlabel("MD timestep after PKA")
     ax.set_ylabel("Defect count")
     ax.set_title("FeCrNi 5 keV cascade — vacancy estimators vs. regime")
-    ax.legend(frameon=False, fontsize=9, loc="upper right")
+    ax.legend(fontsize=9, loc="upper right")
     ax.grid(alpha=0.25)
     ax.margins(x=0.02)
 
     # ---- inset/zoom panel: relaxed plateau -------------------------------
     mask = [t >= 15000 for t in ts]
     tz   = [t for t, m in zip(ts, mask) if m]
-    axz.plot(tz, [v for v, m in zip(ws, mask) if m],     "o-", color="#c0392b", lw=2, ms=7)
-    axz.plot(tz, [v for v, m in zip(hybrid, mask) if m], "s-", color="#1f6fb2", lw=2, ms=6)
+    axz.plot(tz, [v for v, m in zip(ws, mask) if m],     "o-", color=C["ws"], lw=2, ms=7)
+    axz.plot(tz, [v for v, m in zip(hybrid, mask) if m], "s-", color=C["hybrid"], lw=2, ms=6)
     axz.axhline(SURVIVORS, color="0.4", ls=":", lw=1.4)
     axz.set_ylim(0, 12)
     axz.set_xlabel("MD timestep")
@@ -88,12 +87,9 @@ def main():
              transform=axz.transAxes, ha="center", fontsize=8.5, color="0.35")
 
     fig.tight_layout()
-    png = os.path.join(figdir, "damage_evolution.png")
-    pdf = os.path.join(figdir, "damage_evolution.pdf")
-    fig.savefig(png, dpi=150, bbox_inches="tight")
-    fig.savefig(pdf, bbox_inches="tight")
+    png = save(fig, "damage_evolution")
     print("wrote", os.path.normpath(png))
-    print("wrote", os.path.normpath(pdf))
+    print("wrote", os.path.normpath(png.replace(".png", ".pdf")))
 
 if __name__ == "__main__":
     main()
